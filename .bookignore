@@ -1,1 +1,3 @@
-rename.sh
+*.sh
+.bookignore
+.gitignore
