@@ -21,8 +21,8 @@
     "-search",
     "-image-captions",
     "-3-ba",
-    "versions-select@0.1.1",
     "favicon@0.0.2",
+    "versions-select@0.1.1",
     "splitter@0.0.8",
     "advanced-emoji@0.2.2",
     "anchor-navigation-ex@1.0.14",
@@ -47,9 +47,9 @@
   ],
   "pluginsConfig": {
     "favicon": {
-      "shortcut": "https://raw.githubusercontent.com/weedge/mypic/master/me.ico",
-      "bookmark": "https://raw.githubusercontent.com/weedge/mypic/master/me.ico",
-      "appleTouch": "https://raw.githubusercontent.com/weedge/mypic/master/me.ico"
+      "shortcut": "../assets/imgs/me.ico",
+      "bookmark": "../assets/imgs/me.ico",
+      "appleTouch": "../assets/imgs/me.ico"
     },
     "sharing": {
       "douban": false,
