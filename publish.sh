@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 # gitbook build
 
 git checkout gh-pages
