@@ -1,0 +1,156 @@
+{
+  "title": "现代CPU上的性能分析与优化",
+  "author": "weedge",
+  "language": "zh-hans",
+  "root": ".",
+  "structure": {
+    "readme": "README.md"
+  },
+  "links": {
+    "sidebar": {
+      "首页": "https://weedge.github.io"
+    }
+  },
+  "variables": {
+    "name": "《现代CPU性能分析与优化》",
+    "en_name": "《Performance Analysis and Tuning on Modern CPU》"
+  },
+  "plugins": [
+    "-sharing",
+    "-lunr",
+    "-search",
+    "-image-captions",
+    "-3-ba",
+    "versions-select@0.1.1",
+    "favicon@0.0.2",
+    "splitter@0.0.8",
+    "advanced-emoji@0.2.2",
+    "anchor-navigation-ex@1.0.14",
+    "back-to-top-button@0.1.4",
+    "sharing-plus@0.0.2",
+    "katex@1.1.4",
+    "emphasize@1.1.0",
+    "flexible-alerts@1.0.4",
+    "code@0.1.0",
+    "pandoc@1.0.7",
+    "chapter-fold@0.0.4",
+    "search-plus@1.0.3",
+    "disqus@0.1.0",
+    "edit-link@2.0.2",
+    "github@2.0.0",
+    "github-buttons@3.0.0",
+    "donate@1.0.2",
+    "my-toolbar@0.6.5",
+    "rss@3.0.2",
+    "theme-comscore@0.0.3",
+    "page-footer-ex@0.1.2"
+  ],
+  "pluginsConfig": {
+    "favicon": {
+      "shortcut": "https://raw.githubusercontent.com/weedge/mypic/master/me.ico",
+      "bookmark": "https://raw.githubusercontent.com/weedge/mypic/master/me.ico",
+      "appleTouch": "https://raw.githubusercontent.com/weedge/mypic/master/me.ico"
+    },
+    "sharing": {
+      "douban": false,
+      "facebook": false,
+      "google": false,
+      "hatenaBookmark": false,
+      "instapaper": false,
+      "line": false,
+      "linkedin": false,
+      "messenger": false,
+      "pocket": false,
+      "qq": true,
+      "qzone": true,
+      "stumbleupon": false,
+      "twitter": false,
+      "viber": false,
+      "vk": false,
+      "weibo": true,
+      "whatsapp": false,
+      "all": ["weibo", "qq", "qzone", "douban"]
+    },
+    "donate": {
+      "wechat": "https://raw.githubusercontent.com/weedge/mypic/master/wx_pay.jpg",
+      "alipay": "https://raw.githubusercontent.com/weedge/mypic/master/ali_pay.jpg",
+      "title": "",
+      "button": "打赏",
+      "alipayText": "支付宝捐赠",
+      "wechatText": "微信捐赠"
+    },
+    "image-captions": {
+      "caption": "Image - _CAPTION_"
+    },
+    "rss": {
+      "title": "现代CPU上的性能分析与优化",
+      "description": "现代CPU上的性能分析与优化",
+      "author": "weedge",
+      "feed_url": "https://weedge.github.io/index.xml",
+      "site_url": "https://weedge.github.io/",
+      "managingEditor": "weege007@gmail.com",
+      "webMaster": "weege007@gmail.com",
+      "categories": ["gitbook"]
+    },
+    "my-toolbar": {
+      "buttons": [
+        {
+          "label": "下载PDF",
+          "icon": "fa fa-file-pdf-o",
+          "url": "http://localhost:4000/book.pdf",
+          "position": "left",
+          "text": "下载PDF",
+          "target": "_blank"
+        }
+      ]
+    },
+    "anchor-navigation-ex": {
+      "showLevel": false,
+      "showGoTop": false,
+      "isShowTocTitleIcon": true,
+      "tocLevel1Icon": "fa fa-hand-o-right",
+      "tocLevel2Icon": "fa fa-hand-o-right",
+      "tocLevel3Icon": "fa fa-hand-o-right"
+    },
+    "disqus": {
+      "shortName": "perf-book-cn"
+    },
+    "edit-link": {
+      "base": "https://github.com/weedge/weedge.github.io/blob/master",
+      "label": "编辑本页"
+    },
+    "github": {
+      "url": "https://github.com/weedge"
+    },
+    "github-buttons": {
+      "buttons": [
+        {
+          "user": "weedge",
+          "repo": "perf-book-cn",
+          "type": "star",
+          "size": "small"
+        }
+      ]
+    },
+    "versions": {
+      "gitbookConfigURL": "https://raw.githubusercontent.com/weedge/perf-book-cn/main/book.json",
+      "options": [
+        {
+          "value": "https://book.easyperf.net/perf_book",
+          "text": "原版电子书"
+        },
+        {
+          "value": "https://github.com/dendibakh/perf-book",
+          "text": "perf-book",
+          "selected": true
+        }
+      ]
+    },
+    "page-footer-ex": {
+      "copyright": "zh &copy; [weedge](http://weedge.github.io)，使用[知识共享 署名-相同方式共享 4.0协议](https://creativecommons.org/licenses/by-sa/4.0/)发布",
+      "markdown": true,
+      "update_label": "此页面修订于：",
+      "update_format": "YYYY-MM-DD HH:mm:ss"
+    }
+  }
+}
