@@ -1,0 +1,2386 @@
+
+<!DOCTYPE HTML>
+<html lang="zh" >
+    <head>
+        <meta charset="UTF-8">
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>13-7.缓存一致性问题 · 现代CPU上的性能分析与优化</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 3.2.3">
+        <meta name="author" content="weedge">
+        
+        
+    
+    <link rel="stylesheet" href="../../../gitbook/style.css">
+
+    
+            
+                
+                <link rel="stylesheet" href="../../../gitbook/gitbook-plugin-versions-select/plugin.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../../gitbook/gitbook-plugin-splitter/splitter.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../../gitbook/gitbook-plugin-advanced-emoji/emoji-website.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../../gitbook/gitbook-plugin-anchor-navigation-ex/style/plugin.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../../gitbook/gitbook-plugin-back-to-top-button/plugin.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../../gitbook/gitbook-plugin-katex/katex.min.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../../gitbook/gitbook-plugin-emphasize/plugin.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../../gitbook/gitbook-plugin-flexible-alerts/style.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../../gitbook/gitbook-plugin-code/plugin.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../../gitbook/gitbook-plugin-chapter-fold/chapter-fold.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../../gitbook/gitbook-plugin-search-plus/search.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../../gitbook/gitbook-plugin-disqus/plugin.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../../gitbook/gitbook-plugin-donate/plugin.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../../gitbook/gitbook-plugin-page-footer-ex/style/plugin.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../../gitbook/gitbook-plugin-highlight/website.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../../gitbook/gitbook-plugin-fontsettings/website.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../../gitbook/gitbook-plugin-theme-comscore/test.css">
+                
+            
+        
+
+    
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+        
+    
+    
+    
+    
+    
+    <meta name="HandheldFriendly" content="true"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="../../../gitbook/images/apple-touch-icon-precomposed-152.png">
+    <link rel="shortcut icon" href="../../../gitbook/images/favicon.ico" type="image/x-icon">
+
+    
+    <link rel="next" href="13-8_Questions-Exercises_cn.html" />
+    
+    
+    <link rel="prev" href="13-6_Analysis_with_eBPF_and_GAPP_cn.html" />
+    
+
+    <link href="https://weedge.github.io/index.xml" title="现代CPU上的性能分析与优化" rel="alternate" type="application/rss+xml" />
+
+    <style>
+    @media only screen and (max-width: 640px) {
+        .book-header .hidden-mobile {
+            display: none;
+        }
+    }
+    </style>
+    <script>
+        window["gitbook-plugin-github-buttons"] = {"buttons":[{"user":"weedge","repo":"perf-book-cn","type":"star","size":"small"}]};
+    </script>
+
+    
+        <link rel="shortcut icon" href='../../https:/raw.githubusercontent.com/weedge/mypic/master/me.ico' type="image/x-icon">
+    
+    
+        <link rel="bookmark" href='../../https:/raw.githubusercontent.com/weedge/mypic/master/me.ico' type="image/x-icon">
+    
+    
+        <link rel="apple-touch-icon" href='../../https:/raw.githubusercontent.com/weedge/mypic/master/me.ico'>
+    
+    
+
+    </head>
+    <body>
+        
+<div class="book">
+    <div class="book-summary">
+        
+            
+<div id="book-search-input" role="search">
+    <input type="text" placeholder="輸入並搜尋" />
+</div>
+
+            
+                <nav role="navigation">
+                
+
+
+<ul class="summary">
+    
+    
+    
+        
+        <li>
+            <a href="https://weedge.github.io" target="_blank" class="custom-link">首页</a>
+        </li>
+    
+    
+
+    
+    <li class="divider"></li>
+    
+
+    
+        
+        
+    
+        <li class="chapter " data-level="1.1" data-path="../../">
+            
+                <a href="../../">
+            
+                    
+                    README.md
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+        
+        <li class="header">0.前言 Preface</li>
+        
+        
+    
+        <li class="chapter " data-level="2.1" data-path="../0-Preface/0-1_Notices_cn.html">
+            
+                <a href="../0-Preface/0-1_Notices_cn.html">
+            
+                    
+                    0-1.通告
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="2.2" data-path="../0-Preface/0-2_Preface_cn.html">
+            
+                <a href="../0-Preface/0-2_Preface_cn.html">
+            
+                    
+                    0-2.前言
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="2.3" data-path="../0-Preface/0-3_Acknowledgements_cn.html">
+            
+                <a href="../0-Preface/0-3_Acknowledgements_cn.html">
+            
+                    
+                    0-3.致谢
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+        
+        <li class="header">1.介绍 Introduction</li>
+        
+        
+    
+        <li class="chapter " data-level="3.1" data-path="../1-Introduction/1-0_Introduction_cn.html">
+            
+                <a href="../1-Introduction/1-0_Introduction_cn.html">
+            
+                    
+                    1-0.介绍
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="3.2" data-path="../1-Introduction/1-1_Why_do_we_need_perf_analysis_cn.html">
+            
+                <a href="../1-Introduction/1-1_Why_do_we_need_perf_analysis_cn.html">
+            
+                    
+                    1-1.为什么需要性能调优？
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="3.3" data-path="../1-Introduction/1-2_Who_needs_performance_analysis_cn.html">
+            
+                <a href="../1-Introduction/1-2_Who_needs_performance_analysis_cn.html">
+            
+                    
+                    1-2.谁需要性能调优？
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="3.4" data-path="../1-Introduction/1-3_What_is_performance_analysis_cn.html">
+            
+                <a href="../1-Introduction/1-3_What_is_performance_analysis_cn.html">
+            
+                    
+                    1-3.什么是性能分析？
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="3.5" data-path="../1-Introduction/1-4_What_is_in_the_book_cn.html">
+            
+                <a href="../1-Introduction/1-4_What_is_in_the_book_cn.html">
+            
+                    
+                    1-4.本书讨论了什么？
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="3.6" data-path="../1-Introduction/1-5_What_is_not_in_this_book_cn.html">
+            
+                <a href="../1-Introduction/1-5_What_is_not_in_this_book_cn.html">
+            
+                    
+                    1-5.本书未涉及的内容
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="3.7" data-path="../1-Introduction/1-6_Exercises_cn.html">
+            
+                <a href="../1-Introduction/1-6_Exercises_cn.html">
+            
+                    
+                    1-6.练习
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="3.8" data-path="../1-Introduction/1-7_Chapter_Summary_cn.html">
+            
+                <a href="../1-Introduction/1-7_Chapter_Summary_cn.html">
+            
+                    
+                    1-7.章节总结
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+        
+        <li class="header">2.性能测量 Measuring-Performance</li>
+        
+        
+    
+        <li class="chapter " data-level="4.1" data-path="../2-Measuring-Performance/2-0_Measuring_Performance_cn.html">
+            
+                <a href="../2-Measuring-Performance/2-0_Measuring_Performance_cn.html">
+            
+                    
+                    2-0.性能测量
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="4.2" data-path="../2-Measuring-Performance/2-1_Noise_In_Modern_Systems_cn.html">
+            
+                <a href="../2-Measuring-Performance/2-1_Noise_In_Modern_Systems_cn.html">
+            
+                    
+                    2-1.现代系统中的噪声
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="4.3" data-path="../2-Measuring-Performance/2-2_Measuring_Performance_In_Procution_cn.html">
+            
+                <a href="../2-Measuring-Performance/2-2_Measuring_Performance_In_Procution_cn.html">
+            
+                    
+                    2-2.在生产环境中进行性能测量
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="4.4" data-path="../2-Measuring-Performance/2-3_Performance_Regressions_cn.html">
+            
+                <a href="../2-Measuring-Performance/2-3_Performance_Regressions_cn.html">
+            
+                    
+                    2-3.自动检测性能回归
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="4.5" data-path="../2-Measuring-Performance/2-4_Local_Performance_Testing_cn.html">
+            
+                <a href="../2-Measuring-Performance/2-4_Local_Performance_Testing_cn.html">
+            
+                    
+                    2-4.本地性能测量
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="4.6" data-path="../2-Measuring-Performance/2-5_SW_and_HW_Timers_cn.html">
+            
+                <a href="../2-Measuring-Performance/2-5_SW_and_HW_Timers_cn.html">
+            
+                    
+                    2-5.软件和硬件定时器
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="4.7" data-path="../2-Measuring-Performance/2-6_Microbenchmarks_cn.html">
+            
+                <a href="../2-Measuring-Performance/2-6_Microbenchmarks_cn.html">
+            
+                    
+                    2-6.微基准测试
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="4.8" data-path="../2-Measuring-Performance/2-7_Questions-Exercises_cn.html">
+            
+                <a href="../2-Measuring-Performance/2-7_Questions-Exercises_cn.html">
+            
+                    
+                    2-7.问题和练习
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="4.9" data-path="../2-Measuring-Performance/2-8_Chapter_summary_cn.html">
+            
+                <a href="../2-Measuring-Performance/2-8_Chapter_summary_cn.html">
+            
+                    
+                    2-8.章节总结
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+        
+        <li class="header">3.CPU微体系结构 CPU-Microarchitecture</li>
+        
+        
+    
+        <li class="chapter " data-level="5.1" data-path="../3-CPU-Microarchitecture/3-0_CPU_microarchitecture_cn.html">
+            
+                <a href="../3-CPU-Microarchitecture/3-0_CPU_microarchitecture_cn.html">
+            
+                    
+                    3-0.CPU微体系结构
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="5.2" data-path="../3-CPU-Microarchitecture/3-1_ISA_cn.html">
+            
+                <a href="../3-CPU-Microarchitecture/3-1_ISA_cn.html">
+            
+                    
+                    3-1.指令集架构
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="5.3" data-path="../3-CPU-Microarchitecture/3-2_Pipelining_cn.html">
+            
+                <a href="../3-CPU-Microarchitecture/3-2_Pipelining_cn.html">
+            
+                    
+                    3-2.流水线技术
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="5.4" data-path="../3-CPU-Microarchitecture/3-3_Exploiting_ILP_cn.html">
+            
+                <a href="../3-CPU-Microarchitecture/3-3_Exploiting_ILP_cn.html">
+            
+                    
+                    3-3.开发指令级并行性
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="5.5" data-path="../3-CPU-Microarchitecture/3-4_SIMD_cn.html">
+            
+                <a href="../3-CPU-Microarchitecture/3-4_SIMD_cn.html">
+            
+                    
+                    3-4.SIMD
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="5.6" data-path="../3-CPU-Microarchitecture/3-5_Exploiting_TLP_cn.html">
+            
+                <a href="../3-CPU-Microarchitecture/3-5_Exploiting_TLP_cn.html">
+            
+                    
+                    3-5.开发线程级并行性
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="5.7" data-path="../3-CPU-Microarchitecture/3-6_Memory_Hierarchy_cn.html">
+            
+                <a href="../3-CPU-Microarchitecture/3-6_Memory_Hierarchy_cn.html">
+            
+                    
+                    3-6.存储器层次结构
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="5.8" data-path="../3-CPU-Microarchitecture/3-7_Virtual_memory_cn.html">
+            
+                <a href="../3-CPU-Microarchitecture/3-7_Virtual_memory_cn.html">
+            
+                    
+                    3-7.虚拟内存
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="5.9" data-path="../3-CPU-Microarchitecture/3-8_Modern_CPU_design_cn.html">
+            
+                <a href="../3-CPU-Microarchitecture/3-8_Modern_CPU_design_cn.html">
+            
+                    
+                    3-8.现代CPU设计
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="5.10" data-path="../3-CPU-Microarchitecture/3-9_PMU_cn.html">
+            
+                <a href="../3-CPU-Microarchitecture/3-9_PMU_cn.html">
+            
+                    
+                    3-9.性能监控单元
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="5.11" data-path="../3-CPU-Microarchitecture/3-10_Questions-Exercises_cn.html">
+            
+                <a href="../3-CPU-Microarchitecture/3-10_Questions-Exercises_cn.html">
+            
+                    
+                    3-10.问题和练习
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="5.12" data-path="../3-CPU-Microarchitecture/3-11_Chapter_summary_cn.html">
+            
+                <a href="../3-CPU-Microarchitecture/3-11_Chapter_summary_cn.html">
+            
+                    
+                    3-11.章节总结
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+        
+        <li class="header">4.性能分析中的术语和指标 Terminology-And-Metrics</li>
+        
+        
+    
+        <li class="chapter " data-level="6.1" data-path="../4-Terminology-And-Metrics/4-0_Terminology_and_metrics_in_performance_analysis_cn.html">
+            
+                <a href="../4-Terminology-And-Metrics/4-0_Terminology_and_metrics_in_performance_analysis_cn.html">
+            
+                    
+                    4-0.性能分析中的术语和指标
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="6.2" data-path="../4-Terminology-And-Metrics/4-1_Retired_and_Executed_Instruction_cn.html">
+            
+                <a href="../4-Terminology-And-Metrics/4-1_Retired_and_Executed_Instruction_cn.html">
+            
+                    
+                    4-1.已退役和已执行指令
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="6.3" data-path="../4-Terminology-And-Metrics/4-2_CPU_Utilization_cn.html">
+            
+                <a href="../4-Terminology-And-Metrics/4-2_CPU_Utilization_cn.html">
+            
+                    
+                    4-2.CPU利用率
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="6.4" data-path="../4-Terminology-And-Metrics/4-3_CPI_and_IPC_cn.html">
+            
+                <a href="../4-Terminology-And-Metrics/4-3_CPI_and_IPC_cn.html">
+            
+                    
+                    4-3.CPI 和 IPC
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="6.5" data-path="../4-Terminology-And-Metrics/4-4_UOP_cn.html">
+            
+                <a href="../4-Terminology-And-Metrics/4-4_UOP_cn.html">
+            
+                    
+                    4-4.微操作
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="6.6" data-path="../4-Terminology-And-Metrics/4-5_Pipeline_Slot_cn.html">
+            
+                <a href="../4-Terminology-And-Metrics/4-5_Pipeline_Slot_cn.html">
+            
+                    
+                    4-5.管道槽
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="6.7" data-path="../4-Terminology-And-Metrics/4-6_Core_and_Reference_Cycles_cn.html">
+            
+                <a href="../4-Terminology-And-Metrics/4-6_Core_and_Reference_Cycles_cn.html">
+            
+                    
+                    4-6.核心周期与参考周期
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="6.8" data-path="../4-Terminology-And-Metrics/4-7_Cache_miss_cn.html">
+            
+                <a href="../4-Terminology-And-Metrics/4-7_Cache_miss_cn.html">
+            
+                    
+                    4-7.缓存失效
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="6.9" data-path="../4-Terminology-And-Metrics/4-8_Mispredicted_branch_cn.html">
+            
+                <a href="../4-Terminology-And-Metrics/4-8_Mispredicted_branch_cn.html">
+            
+                    
+                    4-8.错误预测的分支
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="6.10" data-path="../4-Terminology-And-Metrics/4-9_Performance_Metrics_cn.html">
+            
+                <a href="../4-Terminology-And-Metrics/4-9_Performance_Metrics_cn.html">
+            
+                    
+                    4-9.性能指标
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="6.11" data-path="../4-Terminology-And-Metrics/4-10_Memory_Latency_and_Bandwidth_cn.html">
+            
+                <a href="../4-Terminology-And-Metrics/4-10_Memory_Latency_and_Bandwidth_cn.html">
+            
+                    
+                    4-10.内存延迟和带宽
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="6.12" data-path="../4-Terminology-And-Metrics/4-11_Case_Study_of_4_Benchmarks_cn.html">
+            
+                <a href="../4-Terminology-And-Metrics/4-11_Case_Study_of_4_Benchmarks_cn.html">
+            
+                    
+                    4-11.案例研究：分析四个基准测试的性能指标 
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="6.13" data-path="../4-Terminology-And-Metrics/4-15_Questions-Exercises_cn.html">
+            
+                <a href="../4-Terminology-And-Metrics/4-15_Questions-Exercises_cn.html">
+            
+                    
+                    4-15.问题和练习
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="6.14" data-path="../4-Terminology-And-Metrics/4-16_Chapter_summary_cn.html">
+            
+                <a href="../4-Terminology-And-Metrics/4-16_Chapter_summary_cn.html">
+            
+                    
+                    4-16.章节总结
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+        
+        <li class="header">5.性能分析方法 Performance-Analysis-Approaches</li>
+        
+        
+    
+        <li class="chapter " data-level="7.1" data-path="../5-Performance-Analysis-Approaches/5-0_Performance_analysis_approaches_cn.html">
+            
+                <a href="../5-Performance-Analysis-Approaches/5-0_Performance_analysis_approaches_cn.html">
+            
+                    
+                    5-0.性能分析方法
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="7.2" data-path="../5-Performance-Analysis-Approaches/5-1_Code_instrumentation_cn.html">
+            
+                <a href="../5-Performance-Analysis-Approaches/5-1_Code_instrumentation_cn.html">
+            
+                    
+                    5-1.代码仪器化
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="7.3" data-path="../5-Performance-Analysis-Approaches/5-2_Tracing_cn.html">
+            
+                <a href="../5-Performance-Analysis-Approaches/5-2_Tracing_cn.html">
+            
+                    
+                    5-2.跟踪
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="7.4" data-path="../5-Performance-Analysis-Approaches/5-3_Characterization_cn.html">
+            
+                <a href="../5-Performance-Analysis-Approaches/5-3_Characterization_cn.html">
+            
+                    
+                    5-3.工作负载特征化
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="7.5" data-path="../5-Performance-Analysis-Approaches/5-4_Marker_APIs_cn.html">
+            
+                <a href="../5-Performance-Analysis-Approaches/5-4_Marker_APIs_cn.html">
+            
+                    
+                    5-4.使用标记器 API
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="7.6" data-path="../5-Performance-Analysis-Approaches/5-5_Sampling_cn.html">
+            
+                <a href="../5-Performance-Analysis-Approaches/5-5_Sampling_cn.html">
+            
+                    
+                    5-5.采样
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="7.7" data-path="../5-Performance-Analysis-Approaches/5-6_Roofline_cn.html">
+            
+                <a href="../5-Performance-Analysis-Approaches/5-6_Roofline_cn.html">
+            
+                    
+                    5-6.Roofline 性能模型
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="7.8" data-path="../5-Performance-Analysis-Approaches/5-7_Static_performance_analysis_cn.html">
+            
+                <a href="../5-Performance-Analysis-Approaches/5-7_Static_performance_analysis_cn.html">
+            
+                    
+                    5-7.静态性能分析
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="7.9" data-path="../5-Performance-Analysis-Approaches/5-8_Compiler_Opt_Reports_cn.html">
+            
+                <a href="../5-Performance-Analysis-Approaches/5-8_Compiler_Opt_Reports_cn.html">
+            
+                    
+                    5-8.编译器优化报告
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="7.10" data-path="../5-Performance-Analysis-Approaches/5-9_Questions-Exercises_cn.html">
+            
+                <a href="../5-Performance-Analysis-Approaches/5-9_Questions-Exercises_cn.html">
+            
+                    
+                    5-9.问题和练习
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="7.11" data-path="../5-Performance-Analysis-Approaches/5-10_Chapter_Summary_cn.html">
+            
+                <a href="../5-Performance-Analysis-Approaches/5-10_Chapter_Summary_cn.html">
+            
+                    
+                    5-10.章节总结
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+        
+        <li class="header">6.CPU特性用于性能分析 CPU-Features-For-Performance-Analysis</li>
+        
+        
+    
+        <li class="chapter " data-level="8.1" data-path="../6-CPU-Features-For-Performance-Analysis/6-0_Intro_cn.html">
+            
+                <a href="../6-CPU-Features-For-Performance-Analysis/6-0_Intro_cn.html">
+            
+                    
+                    6-0.CPU特性用于性能分析
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="8.2" data-path="../6-CPU-Features-For-Performance-Analysis/6-1_Top-Down_Microarchitecture_Analysis_cn.html">
+            
+                <a href="../6-CPU-Features-For-Performance-Analysis/6-1_Top-Down_Microarchitecture_Analysis_cn.html">
+            
+                    
+                    6-1.自顶向下微架构分析 
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="8.3" data-path="../6-CPU-Features-For-Performance-Analysis/6-2_TMA-Intel_cn.html">
+            
+                <a href="../6-CPU-Features-For-Performance-Analysis/6-2_TMA-Intel_cn.html">
+            
+                    
+                    6-2.TMA在英特尔处理器上
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="8.4" data-path="../6-CPU-Features-For-Performance-Analysis/6-3_TMA-AMD_cn.html">
+            
+                <a href="../6-CPU-Features-For-Performance-Analysis/6-3_TMA-AMD_cn.html">
+            
+                    
+                    6-3.TMA在AMD处理器上
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="8.5" data-path="../6-CPU-Features-For-Performance-Analysis/6-4_TMA-ARM_cn.html">
+            
+                <a href="../6-CPU-Features-For-Performance-Analysis/6-4_TMA-ARM_cn.html">
+            
+                    
+                    6-4.TMA 在 ARM 处理器上
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="8.6" data-path="../6-CPU-Features-For-Performance-Analysis/6-5_TMA-summary_cn.html">
+            
+                <a href="../6-CPU-Features-For-Performance-Analysis/6-5_TMA-summary_cn.html">
+            
+                    
+                    6-5.TMA 总结
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="8.7" data-path="../6-CPU-Features-For-Performance-Analysis/6-6_Last_Branch_Record_cn.html">
+            
+                <a href="../6-CPU-Features-For-Performance-Analysis/6-6_Last_Branch_Record_cn.html">
+            
+                    
+                    6-6.分支记录机制
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="8.8" data-path="../6-CPU-Features-For-Performance-Analysis/6-7_Precise_Event_Based_Sampling_(PEBS">
+            
+                <span>
+            
+                    
+                    6-7.基于硬件的采样功能
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="8.9" data-path="../6-CPU-Features-For-Performance-Analysis/6-8_Questions-Exercises_cn.html">
+            
+                <a href="../6-CPU-Features-For-Performance-Analysis/6-8_Questions-Exercises_cn.html">
+            
+                    
+                    6-8.问题和练习
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="8.10" data-path="../6-CPU-Features-For-Performance-Analysis/6-9_Chapter_Summary_cn.html">
+            
+                <a href="../6-CPU-Features-For-Performance-Analysis/6-9_Chapter_Summary_cn.html">
+            
+                    
+                    6-9.章节总结
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+        
+        <li class="header">7.性能分析工具概述 Overview-Of-Performance-Analysis-Tools</li>
+        
+        
+    
+        <li class="chapter " data-level="9.1" data-path="../7-Overview-Of-Performance-Analysis-Tools/7-0_Introduction_cn.html">
+            
+                <a href="../7-Overview-Of-Performance-Analysis-Tools/7-0_Introduction_cn.html">
+            
+                    
+                    7-0.性能分析工具概述
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="9.2" data-path="../7-Overview-Of-Performance-Analysis-Tools/7-1_Intel_Vtune_cn.html">
+            
+                <a href="../7-Overview-Of-Performance-Analysis-Tools/7-1_Intel_Vtune_cn.html">
+            
+                    
+                    7-1.Intel Vtune
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="9.3" data-path="../7-Overview-Of-Performance-Analysis-Tools/7-2_AMD_uprof_cn.html">
+            
+                <a href="../7-Overview-Of-Performance-Analysis-Tools/7-2_AMD_uprof_cn.html">
+            
+                    
+                    7-2.AMD uProf
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="9.4" data-path="../7-Overview-Of-Performance-Analysis-Tools/7-3_Apple_Instruments_cn.html">
+            
+                <a href="../7-Overview-Of-Performance-Analysis-Tools/7-3_Apple_Instruments_cn.html">
+            
+                    
+                    7-3.Apple Xcode Instruments
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="9.5" data-path="../7-Overview-Of-Performance-Analysis-Tools/7-4_Linux_perf_cn.html">
+            
+                <a href="../7-Overview-Of-Performance-Analysis-Tools/7-4_Linux_perf_cn.html">
+            
+                    
+                    7-4.Linux Perf
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="9.6" data-path="../7-Overview-Of-Performance-Analysis-Tools/7-5_Flamegraphs_cn.html">
+            
+                <a href="../7-Overview-Of-Performance-Analysis-Tools/7-5_Flamegraphs_cn.html">
+            
+                    
+                    7-5.火焰图
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="9.7" data-path="../7-Overview-Of-Performance-Analysis-Tools/7-6_Windows_ETW_cn.html">
+            
+                <a href="../7-Overview-Of-Performance-Analysis-Tools/7-6_Windows_ETW_cn.html">
+            
+                    
+                    7-6.Windows 事件跟踪
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="9.8" data-path="../7-Overview-Of-Performance-Analysis-Tools/7-7_Tracy_cn.html">
+            
+                <a href="../7-Overview-Of-Performance-Analysis-Tools/7-7_Tracy_cn.html">
+            
+                    
+                    7-7.专业和混合性能分析器
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="9.9" data-path="../7-Overview-Of-Performance-Analysis-Tools/7-8_Continuous_Profiling_cn.html">
+            
+                <a href="../7-Overview-Of-Performance-Analysis-Tools/7-8_Continuous_Profiling_cn.html">
+            
+                    
+                    7-8.持续性能分析
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="9.10" data-path="../7-Overview-Of-Performance-Analysis-Tools/7-9_Questions-Exercises_cn.html">
+            
+                <a href="../7-Overview-Of-Performance-Analysis-Tools/7-9_Questions-Exercises_cn.html">
+            
+                    
+                    7-9.问题和练习
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="9.11" data-path="../7-Overview-Of-Performance-Analysis-Tools/7-10_Chapter_summary_cn.html">
+            
+                <a href="../7-Overview-Of-Performance-Analysis-Tools/7-10_Chapter_summary_cn.html">
+            
+                    
+                    7-10.章节总结
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+        
+        <li class="header">8.优化内存访问 Optimizing-Memory-Accesses</li>
+        
+        
+    
+        <li class="chapter " data-level="10.1" data-path="../8-Optimizing-Memory-Accesses/8-0_Source_Code_Tuning_For_CPU_cn.html">
+            
+                <a href="../8-Optimizing-Memory-Accesses/8-0_Source_Code_Tuning_For_CPU_cn.html">
+            
+                    
+                    8-0.源代码优化
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="10.2" data-path="../8-Optimizing-Memory-Accesses/8-1_Optimizing_Memory_Accesses_cn.html">
+            
+                <a href="../8-Optimizing-Memory-Accesses/8-1_Optimizing_Memory_Accesses_cn.html">
+            
+                    
+                    8-1.优化内存访问
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="10.3" data-path="../8-Optimizing-Memory-Accesses/8-2_Cache-Friendly_Data_Structures_cn.html">
+            
+                <a href="../8-Optimizing-Memory-Accesses/8-2_Cache-Friendly_Data_Structures_cn.html">
+            
+                    
+                    8-2.缓存友好数据结构
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="10.4" data-path="../8-Optimizing-Memory-Accesses/8-3_Memory_Prefetching_cn.html">
+            
+                <a href="../8-Optimizing-Memory-Accesses/8-3_Memory_Prefetching_cn.html">
+            
+                    
+                    8-3.显式内存预取
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="10.5" data-path="../8-Optimizing-Memory-Accesses/8-3_Memory_Profiling_cn.html">
+            
+                <a href="../8-Optimizing-Memory-Accesses/8-3_Memory_Profiling_cn.html">
+            
+                    
+                    8-3.内存分析
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="10.6" data-path="../8-Optimizing-Memory-Accesses/8-4_Reducing_DTLB_misses_cn.html">
+            
+                <a href="../8-Optimizing-Memory-Accesses/8-4_Reducing_DTLB_misses_cn.html">
+            
+                    
+                    8-4.减少 DTLB 未命中 
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="10.7" data-path="../8-Optimizing-Memory-Accesses/8-5_Questions-Exercises_cn.html">
+            
+                <a href="../8-Optimizing-Memory-Accesses/8-5_Questions-Exercises_cn.html">
+            
+                    
+                    8-5.问题与练习
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="10.8" data-path="../8-Optimizing-Memory-Accesses/8-6_Chapter_Summary_cn.html">
+            
+                <a href="../8-Optimizing-Memory-Accesses/8-6_Chapter_Summary_cn.html">
+            
+                    
+                    8-6.章节总结
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+        
+        <li class="header">9.优化计算 Optimizing-Computations</li>
+        
+        
+    
+        <li class="chapter " data-level="11.1" data-path="../9-Optimizing-Computations/9-0_Core_Bound_cn.html">
+            
+                <a href="../9-Optimizing-Computations/9-0_Core_Bound_cn.html">
+            
+                    
+                    9-0.优化计算
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="11.2" data-path="../9-Optimizing-Computations/9-1_Data_Dependencies_cn.html">
+            
+                <a href="../9-Optimizing-Computations/9-1_Data_Dependencies_cn.html">
+            
+                    
+                    9-1.数据流依赖
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="11.3" data-path="../9-Optimizing-Computations/9-2_Inlining_Functions_cn.html">
+            
+                <a href="../9-Optimizing-Computations/9-2_Inlining_Functions_cn.html">
+            
+                    
+                    9-2.内联函数
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="11.4" data-path="../9-Optimizing-Computations/9-3_Loop_Optimizations_cn.html">
+            
+                <a href="../9-Optimizing-Computations/9-3_Loop_Optimizations_cn.html">
+            
+                    
+                    9-3.循环优化
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="11.5" data-path="../9-Optimizing-Computations/9-4_Vectorization_cn.html">
+            
+                <a href="../9-Optimizing-Computations/9-4_Vectorization_cn.html">
+            
+                    
+                    9-4.向量化
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="11.6" data-path="../9-Optimizing-Computations/9-5_Compiler_Intrinsics_cn.html">
+            
+                <a href="../9-Optimizing-Computations/9-5_Compiler_Intrinsics_cn.html">
+            
+                    
+                    9-5.使用编译器内部函数
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="11.7" data-path="../9-Optimizing-Computations/9-6_Questions-Exercises_cn.html">
+            
+                <a href="../9-Optimizing-Computations/9-6_Questions-Exercises_cn.html">
+            
+                    
+                    9-6.问题和练习
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="11.8" data-path="../9-Optimizing-Computations/9-7_Chapter_Summary_cn.html">
+            
+                <a href="../9-Optimizing-Computations/9-7_Chapter_Summary_cn.html">
+            
+                    
+                    9-7.章节总结
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+        
+        <li class="header">10.优化分支预测 Optimizing-Branch-Prediction</li>
+        
+        
+    
+        <li class="chapter " data-level="12.1" data-path="../10-Optimizing-Branch-Prediction/10-0_Optimizing_bad_speculation_cn.html">
+            
+                <a href="../10-Optimizing-Branch-Prediction/10-0_Optimizing_bad_speculation_cn.html">
+            
+                    
+                    10-0.优化分支预测
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="12.2" data-path="../10-Optimizing-Branch-Prediction/10-0_Optimizing_bad_speculation_cn.html">
+            
+                <a href="../10-Optimizing-Branch-Prediction/10-0_Optimizing_bad_speculation_cn.html">
+            
+                    
+                    10-1.用查找表替换分支
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="12.3" data-path="../10-Optimizing-Branch-Prediction/10-2_Replace_branches_with_arithmetic_cn.html">
+            
+                <a href="../10-Optimizing-Branch-Prediction/10-2_Replace_branches_with_arithmetic_cn.html">
+            
+                    
+                    10-2.用算术替换分支
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="12.4" data-path="../10-Optimizing-Branch-Prediction/10-3_Replace_branches_with_predication_cn.html">
+            
+                <a href="../10-Optimizing-Branch-Prediction/10-3_Replace_branches_with_predication_cn.html">
+            
+                    
+                    10-3.用谓词替换分支
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="12.5" data-path="../10-Optimizing-Branch-Prediction/10-4_Questions-Exercises_cn.html">
+            
+                <a href="../10-Optimizing-Branch-Prediction/10-4_Questions-Exercises_cn.html">
+            
+                    
+                    10-4.问题和练习
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="12.6" data-path="../10-Optimizing-Branch-Prediction/10-5_Chapter_Summary_cn.html">
+            
+                <a href="../10-Optimizing-Branch-Prediction/10-5_Chapter_Summary_cn.html">
+            
+                    
+                    10-5.章节总结
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+        
+        <li class="header">11.机器代码布局优化 Machine-Code-Layout-Optimizations</li>
+        
+        
+    
+        <li class="chapter " data-level="13.1" data-path="../11-Machine-Code-Layout-Optimizations/11-1_Machine_Code_Layout_cn.html">
+            
+                <a href="../11-Machine-Code-Layout-Optimizations/11-1_Machine_Code_Layout_cn.html">
+            
+                    
+                    11-1.机器代码布局优化
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="13.2" data-path="../11-Machine-Code-Layout-Optimizations/11-2_Basic_Block_cn.html">
+            
+                <a href="../11-Machine-Code-Layout-Optimizations/11-2_Basic_Block_cn.html">
+            
+                    
+                    11-2.基本块
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="13.3" data-path="../11-Machine-Code-Layout-Optimizations/11-3_Basic_Block_Placement_cn.html">
+            
+                <a href="../11-Machine-Code-Layout-Optimizations/11-3_Basic_Block_Placement_cn.html">
+            
+                    
+                    11-3.基本块布局
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="13.4" data-path="../11-Machine-Code-Layout-Optimizations/11-4_Basic_Block_Alignment_cn.html">
+            
+                <a href="../11-Machine-Code-Layout-Optimizations/11-4_Basic_Block_Alignment_cn.html">
+            
+                    
+                    11-4.基本块对齐
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="13.5" data-path="../11-Machine-Code-Layout-Optimizations/11-5_Function_Splitting_cn.html">
+            
+                <a href="../11-Machine-Code-Layout-Optimizations/11-5_Function_Splitting_cn.html">
+            
+                    
+                    11-5.函数拆分
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="13.6" data-path="../11-Machine-Code-Layout-Optimizations/11-6_Function_Reordering_cn.html">
+            
+                <a href="../11-Machine-Code-Layout-Optimizations/11-6_Function_Reordering_cn.html">
+            
+                    
+                    11-6.函数重排序
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="13.7" data-path="../11-Machine-Code-Layout-Optimizations/11-7_PGO_cn.html">
+            
+                <a href="../11-Machine-Code-Layout-Optimizations/11-7_PGO_cn.html">
+            
+                    
+                    11-7.使用配置分析文件引导的优化
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="13.8" data-path="../11-Machine-Code-Layout-Optimizations/11-8_Reducing_ITLB_misses_cn.html">
+            
+                <a href="../11-Machine-Code-Layout-Optimizations/11-8_Reducing_ITLB_misses_cn.html">
+            
+                    
+                    11-8.减少 ITLB 未命中
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="13.9" data-path="../11-Machine-Code-Layout-Optimizations/11-9_Code_footprint_cn.html">
+            
+                <a href="../11-Machine-Code-Layout-Optimizations/11-9_Code_footprint_cn.html">
+            
+                    
+                    11-9.案例研究：测量代码足迹
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="13.10" data-path="../11-Machine-Code-Layout-Optimizations/11-10_Questions-Exercises_cn.html">
+            
+                <a href="../11-Machine-Code-Layout-Optimizations/11-10_Questions-Exercises_cn.html">
+            
+                    
+                    11-10.问题和练习
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="13.11" data-path="../11-Machine-Code-Layout-Optimizations/11-11_Chapter_Summary_cn.html">
+            
+                <a href="../11-Machine-Code-Layout-Optimizations/11-11_Chapter_Summary_cn.html">
+            
+                    
+                    11-11.章节总结
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+        
+        <li class="header">12.其他优化领域 Other-Tuning-Areas</li>
+        
+        
+    
+        <li class="chapter " data-level="14.1" data-path="../12-Other-Tuning-Areas/12-0_Other_tuning_areas_cn.html">
+            
+                <a href="../12-Other-Tuning-Areas/12-0_Other_tuning_areas_cn.html">
+            
+                    
+                    12-0.其他优化领域
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="14.2" data-path="../12-Other-Tuning-Areas/12-1_Optimizing_Input-Output_cn.html">
+            
+                <a href="../12-Other-Tuning-Areas/12-1_Optimizing_Input-Output_cn.html">
+            
+                    
+                    12-1.优化输入输出
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="14.3" data-path="../12-Other-Tuning-Areas/12-3_Architecture-Specific_Optimizations_cn.html">
+            
+                <a href="../12-Other-Tuning-Areas/12-3_Architecture-Specific_Optimizations_cn.html">
+            
+                    
+                    12-3.架构特定优化(todo)
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="14.4" data-path="../12-Other-Tuning-Areas/12-4_Low-Latency-Tuning-Techniques_cn.html">
+            
+                <a href="../12-Other-Tuning-Areas/12-4_Low-Latency-Tuning-Techniques_cn.html">
+            
+                    
+                    12-4.低延迟优化技术
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="14.5" data-path="../12-Other-Tuning-Areas/12-5_Detecting_Slow_FP_Arithmetic_cn.html">
+            
+                <a href="../12-Other-Tuning-Areas/12-5_Detecting_Slow_FP_Arithmetic_cn.html">
+            
+                    
+                    12-5.缓慢的浮点运算
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="14.6" data-path="../12-Other-Tuning-Areas/12-6_System_Tuning_cn.html">
+            
+                <a href="../12-Other-Tuning-Areas/12-6_System_Tuning_cn.html">
+            
+                    
+                    12-6.系统调优
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="14.7" data-path="../12-Other-Tuning-Areas/12-7_Case_Study_-_LLC_sensitivity_cn.html">
+            
+                <a href="../12-Other-Tuning-Areas/12-7_Case_Study_-_LLC_sensitivity_cn.html">
+            
+                    
+                    12-7.案例研究：对最后一级缓存大小的敏感性
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="14.8" data-path="../12-Other-Tuning-Areas/12-8_Questions-Exercises_cn.html">
+            
+                <a href="../12-Other-Tuning-Areas/12-8_Questions-Exercises_cn.html">
+            
+                    
+                    12-8.问题和练习
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="14.9" data-path="../12-Other-Tuning-Areas/12-9_Chapter_summary_cn.html">
+            
+                <a href="../12-Other-Tuning-Areas/12-9_Chapter_summary_cn.html">
+            
+                    
+                    12-9.章节总结
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+        
+        <li class="header">13.优化多线程应用 Optimizing-Multithreaded-Applications</li>
+        
+        
+    
+        <li class="chapter " data-level="15.1" data-path="13-0_Optimizing_Multithreaded_Applications_cn.html">
+            
+                <a href="13-0_Optimizing_Multithreaded_Applications_cn.html">
+            
+                    
+                    13-0.优化多线程应用
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="15.2" data-path="13-0_Optimizing_Multithreaded_Applications_cn.html">
+            
+                <a href="13-0_Optimizing_Multithreaded_Applications_cn.html">
+            
+                    
+                    13-1.性能扩展和开销
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="15.3" data-path="13-2_Parallel_Efficiency_Metrics_cn.html">
+            
+                <a href="13-2_Parallel_Efficiency_Metrics_cn.html">
+            
+                    
+                    13-2.并行效率指标
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="15.4" data-path="13-3_Analysis_With_Vtune_cn.html">
+            
+                <a href="13-3_Analysis_With_Vtune_cn.html">
+            
+                    
+                    13-3.使用 Intel VTune Profiler 进行分析
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="15.5" data-path="13-4_Analysis_with_Linux_Perf_cn.html">
+            
+                <a href="13-4_Analysis_with_Linux_Perf_cn.html">
+            
+                    
+                    13-4.使用 Linux Perf 进行分析
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="15.6" data-path="13-5_Analysis_with_Coz_cn.html">
+            
+                <a href="13-5_Analysis_with_Coz_cn.html">
+            
+                    
+                    13-5.使用 Coz 进行分析
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="15.7" data-path="13-6_Analysis_with_eBPF_and_GAPP_cn.html">
+            
+                <a href="13-6_Analysis_with_eBPF_and_GAPP_cn.html">
+            
+                    
+                    13-6.利用 eBPF 和 GAPP 进行分析
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter active" data-level="15.8" data-path="13-7_Cache_Coherence_Issues_cn.html">
+            
+                <a href="13-7_Cache_Coherence_Issues_cn.html">
+            
+                    
+                    13-7.缓存一致性问题
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="15.9" data-path="13-8_Questions-Exercises_cn.html">
+            
+                <a href="13-8_Questions-Exercises_cn.html">
+            
+                    
+                    13-8.问题和练习
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="15.10" data-path="13-9_Chapter_Summary_cn.html">
+            
+                <a href="13-9_Chapter_Summary_cn.html">
+            
+                    
+                    13-9.章节总结
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+        
+        <li class="header">14.软件和硬件性能的当前和未来趋势 Current-And-Future-Trends</li>
+        
+        
+    
+        <li class="chapter " data-level="16.1" data-path="../14-Current-And-Future-Trends/14-0_Introduction_cn.html">
+            
+                <a href="../14-Current-And-Future-Trends/14-0_Introduction_cn.html">
+            
+                    
+                    14-0.软件和硬件性能的当前和未来趋势
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+        
+        <li class="header">15.后记 Epilog</li>
+        
+        
+    
+        <li class="chapter " data-level="17.1" data-path="../15-Epilog/15-0_Epilog_cn.html">
+            
+                <a href="../15-Epilog/15-0_Epilog_cn.html">
+            
+                    
+                    15-0.后记
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+        
+        <li class="header">16.术语表 Glossary</li>
+        
+        
+    
+        <li class="chapter " data-level="18.1" data-path="../16-Glossary/16-0_Glossary_cn.html">
+            
+                <a href="../16-Glossary/16-0_Glossary_cn.html">
+            
+                    
+                    16-0.术语表
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+        
+        <li class="header">17.主要CPU微架构列表 List-of-Uarch-ISA</li>
+        
+        
+    
+        <li class="chapter " data-level="19.1" data-path="../17-List-of-Uarch-ISA/17-0_List_of_uarchs_cn.html">
+            
+                <a href="../17-List-of-Uarch-ISA/17-0_List_of_uarchs_cn.html">
+            
+                    
+                    17-0.主要CPU微架构列表
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+        
+        <li class="header">18.附录 Appendix</li>
+        
+        
+    
+        <li class="chapter " data-level="20.1" data-path="../18-Appendix/Appendix-A_cn.html">
+            
+                <a href="../18-Appendix/Appendix-A_cn.html">
+            
+                    
+                    附录 A
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="20.2" data-path="../18-Appendix/Appendix-B_cn.html">
+            
+                <a href="../18-Appendix/Appendix-B_cn.html">
+            
+                    
+                    附录 B
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="20.3" data-path="../18-Appendix/Appendix-C_cn.html">
+            
+                <a href="../18-Appendix/Appendix-C_cn.html">
+            
+                    
+                    附录 C
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="20.4" data-path="../18-Appendix/Appendix-D_cn.html">
+            
+                <a href="../18-Appendix/Appendix-D_cn.html">
+            
+                    
+                    附录 D
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+
+    <li class="divider"></li>
+
+    <li>
+        <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+            本書使用 GitBook 釋出
+        </a>
+    </li>
+</ul>
+
+
+                </nav>
+            
+        
+    </div>
+
+    <div class="book-body">
+        
+            <div class="body-inner">
+                
+                    
+
+<div class="book-header" role="navigation">
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href="../.." >13-7.缓存一致性问题</a>
+    </h1>
+</div>
+
+
+
+
+                    <div class="page-wrapper" tabindex="-1" role="main">
+                        <div class="page-inner">
+                            
+<div class="search-plus" id="book-search-results">
+    <div class="search-noresults">
+    
+                                <section class="normal markdown-section">
+                                
+                                <div id="anchor-navigation-ex-navbar"><i class="fa fa-navicon"></i><ul><ul><li><span class="title-icon "></span><a href="#sec:TrueFalseSharing"><b></b>&#x7F13;&#x5B58;&#x4E00;&#x81F4;&#x6027;&#x95EE;&#x9898; </a></li><ul><li><span class="title-icon "></span><a href="#&#x7F13;&#x5B58;&#x4E00;&#x81F4;&#x6027;&#x534F;&#x8BAE;"><b></b>&#x7F13;&#x5B58;&#x4E00;&#x81F4;&#x6027;&#x534F;&#x8BAE;</a></li><li><span class="title-icon "></span><a href="#sec:secTrueSharing"><b></b>&#x771F;&#x5171;&#x4EAB; </a></li></ul></ul></ul></div><h2 id="sec:TrueFalseSharing"><a name="sec:TrueFalseSharing" class="anchor-navigation-ex-anchor" href="#sec:TrueFalseSharing"><i class="fa fa-link" aria-hidden="true"></i></a>&#x7F13;&#x5B58;&#x4E00;&#x81F4;&#x6027;&#x95EE;&#x9898; </h2>
+<h3 id="&#x7F13;&#x5B58;&#x4E00;&#x81F4;&#x6027;&#x534F;&#x8BAE;"><a name="&#x7F13;&#x5B58;&#x4E00;&#x81F4;&#x6027;&#x534F;&#x8BAE;" class="anchor-navigation-ex-anchor" href="#&#x7F13;&#x5B58;&#x4E00;&#x81F4;&#x6027;&#x534F;&#x8BAE;"><i class="fa fa-link" aria-hidden="true"></i></a>&#x7F13;&#x5B58;&#x4E00;&#x81F4;&#x6027;&#x534F;&#x8BAE;</h3>
+<p>&#x591A;&#x5904;&#x7406;&#x5668;&#x7CFB;&#x7EDF;&#x91C7;&#x7528;&#x7F13;&#x5B58;&#x4E00;&#x81F4;&#x6027;&#x534F;&#x8BAE;&#x6765;&#x786E;&#x4FDD;&#x6BCF;&#x4E2A;&#x5305;&#x542B;&#x72EC;&#x7ACB;&#x7F13;&#x5B58;&#x7684;&#x72EC;&#x7ACB;&#x5185;&#x6838;&#x5171;&#x4EAB;&#x4F7F;&#x7528;&#x5185;&#x5B58;&#x65F6;&#x7684;&#x6570;&#x636E;&#x4E00;&#x81F4;&#x6027;&#x3002;&#x5982;&#x679C;&#x6CA1;&#x6709;&#x8FD9;&#x6837;&#x7684;&#x534F;&#x8BAE;&#xFF0C;&#x5982;&#x679C;CPU A&#x548C;CPU B&#x90FD;&#x5C06;&#x5185;&#x5B58;&#x4F4D;&#x7F6E;L&#x8BFB;&#x53D6;&#x5230;&#x5404;&#x81EA;&#x7684;&#x7F13;&#x5B58;&#x4E2D;&#xFF0C;&#x7136;&#x540E;&#x5904;&#x7406;&#x5668;B&#x968F;&#x540E;&#x4FEE;&#x6539;&#x5176;&#x7F13;&#x5B58;&#x503C;L&#xFF0C;&#x90A3;&#x4E48;CPU&#x5C06;&#x5177;&#x6709;&#x76F8;&#x540C;&#x5185;&#x5B58;&#x4F4D;&#x7F6E;L&#x7684;&#x4E0D;&#x4E00;&#x81F4;&#x503C;&#x3002;&#x7F13;&#x5B58;&#x4E00;&#x81F4;&#x6027;&#x534F;&#x8BAE;&#x786E;&#x4FDD;&#x5BF9;&#x7F13;&#x5B58;&#x6761;&#x76EE;&#x7684;&#x4EFB;&#x4F55;&#x66F4;&#x65B0;&#x90FD;&#x5FE0;&#x5B9E;&#x5730;&#x66F4;&#x65B0;&#x5728;&#x540C;&#x4E00;&#x4F4D;&#x7F6E;&#x7684;&#x4EFB;&#x4F55;&#x5176;&#x4ED6;&#x7F13;&#x5B58;&#x6761;&#x76EE;&#x4E2D;&#x3002;</p>
+<p>MESI&#xFF08;<strong>M</strong>odified <strong>E</strong>xclusive <strong>S</strong>hared <strong>I</strong>nvalid&#xFF09;&#x662F;&#x6700;&#x8457;&#x540D;&#x7684;&#x7F13;&#x5B58;&#x4E00;&#x81F4;&#x6027;&#x534F;&#x8BAE;&#x4E4B;&#x4E00;&#xFF0C;&#x7528;&#x4E8E;&#x652F;&#x6301;&#x73B0;&#x4EE3; CPU &#x4E2D;&#x4F7F;&#x7528;&#x7684;&#x56DE;&#x5199;&#x7F13;&#x5B58;&#x3002;&#x5176;&#x7F29;&#x5199;&#x8868;&#x793A;&#x7F13;&#x5B58;&#x884C;&#x53EF;&#x4EE5;&#x6807;&#x8BB0;&#x7684;&#x56DB;&#x79CD;&#x72B6;&#x6001;&#xFF08;&#x53C2;&#x89C1;&#x56FE; @fig:MESI&#xFF09;&#xFF1A;</p>
+<ul>
+<li><strong>&#x4FEE;&#x6539;&#xFF08;Modified&#xFF09;&#xFF1A;</strong> &#x7F13;&#x5B58;&#x884C;&#x4EC5;&#x5B58;&#x5728;&#x4E8E;&#x5F53;&#x524D;&#x7F13;&#x5B58;&#x4E2D;&#xFF0C;&#x5E76;&#x4E14;&#x5DF2;&#x4ECE;&#x5176;&#x5728; RAM &#x4E2D;&#x7684;&#x503C;&#x8FDB;&#x884C;&#x4FEE;&#x6539;</li>
+<li><strong>&#x72EC;&#x5360;&#xFF08;Exclusive&#xFF09;&#xFF1A;</strong> &#x7F13;&#x5B58;&#x884C;&#x4EC5;&#x5B58;&#x5728;&#x4E8E;&#x5F53;&#x524D;&#x7F13;&#x5B58;&#x4E2D;&#xFF0C;&#x5E76;&#x4E14;&#x4E0E;&#x5176;&#x5728; RAM &#x4E2D;&#x7684;&#x503C;&#x5339;&#x914D;</li>
+<li><strong>&#x5171;&#x4EAB;&#xFF08;Shared&#xFF09;&#xFF1A;</strong> &#x7F13;&#x5B58;&#x884C;&#x5B58;&#x5728;&#x4E8E;&#x8FD9;&#x91CC;&#x548C;&#x5176;&#x4ED6;&#x7F13;&#x5B58;&#x884C;&#x4E2D;&#xFF0C;&#x5E76;&#x4E14;&#x4E0E;&#x5176;&#x5728; RAM &#x4E2D;&#x7684;&#x503C;&#x5339;&#x914D;</li>
+<li><strong>&#x65E0;&#x6548;&#xFF08;Invalid&#xFF09;&#xFF1A;</strong> &#x7F13;&#x5B58;&#x884C;&#x672A;&#x4F7F;&#x7528;&#xFF08;&#x5373;&#x4E0D;&#x5305;&#x542B;&#x4EFB;&#x4F55; RAM &#x4F4D;&#x7F6E;&#xFF09;</li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/dendibakh/perf-book/main/img/mt-perf/MESI_Cache_Diagram.jpg" alt="MESI &#x72B6;&#x6001;&#x56FE;. *&#xA9; Image by University of Washington via courses.cs.washington.edu.*">{#fig:MESI width=60%}</p>
+<p>&#x4ECE;&#x5185;&#x5B58;&#x4E2D;&#x83B7;&#x53D6;&#x65F6;&#xFF0C;&#x6BCF;&#x4E2A;&#x7F13;&#x5B58;&#x884C;&#x90FD;&#x5C06;&#x4E00;&#x4E2A;&#x72B6;&#x6001;&#x7F16;&#x7801;&#x5230;&#x5176;&#x6807;&#x7B7E;&#x4E2D;&#x3002;&#x7136;&#x540E;&#xFF0C;&#x7F13;&#x5B58;&#x884C;&#x72B6;&#x6001;&#x4F1A;&#x4ECE;&#x4E00;&#x4E2A;&#x72B6;&#x6001;&#x8F6C;&#x6362;&#x5230;&#x53E6;&#x4E00;&#x4E2A;&#x72B6;&#x6001;&#x3002;<sup><a href="#fn_25" id="reffn_25">25</a></sup> &#x73B0;&#x5B9E;&#x4E2D;&#xFF0C;CPU &#x4F9B;&#x5E94;&#x5546;&#x901A;&#x5E38;&#x4F1A;&#x5B9E;&#x73B0;&#x7A0D;&#x4F5C;&#x6539;&#x8FDB;&#x7684; MESI &#x53D8;&#x4F53;&#x3002;&#x4F8B;&#x5982;&#xFF0C;&#x82F1;&#x7279;&#x5C14;&#x4F7F;&#x7528; MESIF: <a href="https://en.wikipedia.org/wiki/MESIF_protocol" target="_blank">https://en.wikipedia.org/wiki/MESIF_protocol</a>&#xFF0C;<sup><a href="#fn_26" id="reffn_26">26</a></sup> &#x5B83;&#x6DFB;&#x52A0;&#x4E86;&#x8F6C;&#x53D1; (F) &#x72B6;&#x6001;&#xFF0C;&#x800C; AMD &#x5219;&#x4F7F;&#x7528; MOESI: <a href="https://en.wikipedia.org/wiki/MOESI_protocol" target="_blank">https://en.wikipedia.org/wiki/MOESI_protocol</a>&#xFF0C;<sup><a href="#fn_27" id="reffn_27">27</a></sup> &#x5B83;&#x6DFB;&#x52A0;&#x4E86;&#x62E5;&#x6709; (O) &#x72B6;&#x6001;&#x3002;&#x4F46;&#x8FD9;&#x4E9B;&#x534F;&#x8BAE;&#x4ECD;&#x7136;&#x4FDD;&#x6301;&#x4E86;&#x57FA;&#x672C; MESI &#x534F;&#x8BAE;&#x7684;&#x672C;&#x8D28;&#x3002;</p>
+<p>&#x6B63;&#x5982;&#x65E9;&#x671F;&#x793A;&#x4F8B;&#x6240;&#x793A;&#xFF0C;&#x7F13;&#x5B58;&#x4E00;&#x81F4;&#x6027;&#x95EE;&#x9898;&#x4F1A;&#x5BFC;&#x81F4;&#x7A0B;&#x5E8F;&#x51FA;&#x73B0;&#x987A;&#x5E8F;&#x4E0D;&#x4E00;&#x81F4;&#x7684;&#x95EE;&#x9898;&#x3002;&#x8FD9;&#x4E2A;&#x95EE;&#x9898;&#x53EF;&#x4EE5;&#x901A;&#x8FC7;&#x4F7F;&#x7528;&#x7AA5;&#x63A2;&#x7F13;&#x5B58;&#x6765;&#x76D1;&#x89C6;&#x6240;&#x6709;&#x5185;&#x5B58;&#x4E8B;&#x52A1;&#x5E76;&#x76F8;&#x4E92;&#x534F;&#x4F5C;&#x4EE5;&#x4FDD;&#x6301;&#x5185;&#x5B58;&#x4E00;&#x81F4;&#x6027;&#x6765;&#x7F13;&#x89E3;&#x3002;&#x4E0D;&#x5E78;&#x7684;&#x662F;&#xFF0C;&#x8FD9;&#x4E5F;&#x4F34;&#x968F;&#x7740;&#x6210;&#x672C;&#xFF0C;&#x56E0;&#x4E3A;&#x4E00;&#x4E2A;&#x5904;&#x7406;&#x5668;&#x7684;&#x4FEE;&#x6539;&#x4F1A;&#x4F7F;&#x53E6;&#x4E00;&#x4E2A;&#x5904;&#x7406;&#x5668;&#x7F13;&#x5B58;&#x4E2D;&#x7684;&#x5BF9;&#x5E94;&#x7F13;&#x5B58;&#x884C;&#x5931;&#x6548;&#x3002;&#x8FD9;&#x4F1A;&#x5BFC;&#x81F4;&#x5185;&#x5B58;&#x505C;&#x987F;&#x5E76;&#x6D6A;&#x8D39;&#x7CFB;&#x7EDF;&#x5E26;&#x5BBD;&#x3002;&#x4E0E;&#x53EA;&#x80FD;&#x4E3A;&#x5E94;&#x7528;&#x7A0B;&#x5E8F;&#x6027;&#x80FD;&#x8BBE;&#x7F6E;&#x4E0A;&#x9650;&#x7684;&#x5E8F;&#x5217;&#x5316;&#x548C;&#x9501;&#x5B9A;&#x95EE;&#x9898;&#x4E0D;&#x540C;&#xFF0C;&#x4E00;&#x81F4;&#x6027;&#x95EE;&#x9898;&#x4F1A;&#x5BFC;&#x81F4;&#x7531; USL &#x5728; [@sec:secAmdahl] &#x4E2D;&#x63CF;&#x8FF0;&#x7684;&#x9006;&#x884C;&#x6548;&#x5E94;&#x3002;&#x4E24;&#x79CD;&#x5E7F;&#x4E3A;&#x4EBA;&#x77E5;&#x7684;&#x7F13;&#x5B58;&#x4E00;&#x81F4;&#x6027;&#x95EE;&#x9898;&#x662F;&#x201C;&#x771F;&#x5171;&#x4EAB;&#x201D;&#x548C;&#x201C;&#x5047;&#x5171;&#x4EAB;&#x201D;&#xFF0C;&#x6211;&#x4EEC;&#x5C06;&#x5728;&#x4E0B;&#x9762;&#x8FDB;&#x4E00;&#x6B65;&#x63A2;&#x8BA8;&#x3002;</p>
+<h3 id="sec:secTrueSharing"><a name="sec:secTrueSharing" class="anchor-navigation-ex-anchor" href="#sec:secTrueSharing"><i class="fa fa-link" aria-hidden="true"></i></a>&#x771F;&#x5171;&#x4EAB; </h3>
+<p>&#x771F;&#x5171;&#x4EAB;&#x6307;&#x7684;&#x662F;&#x4E24;&#x4E2A;&#x4E0D;&#x540C;&#x7684;&#x5904;&#x7406;&#x5668;&#x8BBF;&#x95EE;&#x540C;&#x4E00;&#x4E2A;&#x53D8;&#x91CF;&#xFF08;&#x8BF7;&#x53C2;&#x89C1; [@lst:TrueSharing]&#xFF09;&#x3002;</p>
+<p>&#x4EE3;&#x7801;&#x6E05;&#x5355;:&#x771F;&#x6B63;&#x7684;&#x5171;&#x4EAB;&#x793A;&#x4F8B;&#x3002;
+~~~~ {#lst:TrueSharing .cpp}
+unsigned int sum;
+{ // parallel section
+  for (int i = 0; i &lt; N; i++)
+    sum += a[i]; // sum is shared between all threads
+}</p>
+<pre><code>
+&#x771F;&#x5B9E;&#x5171;&#x4EAB;&#x610F;&#x5473;&#x7740;&#x5B58;&#x5728;&#x6570;&#x636E;&#x7ADE;&#x4E89;&#xFF0C;&#x8FD9;&#x5F88;&#x96BE;&#x88AB;&#x68C0;&#x6D4B;&#x5230;&#x3002;&#x5E78;&#x8FD0;&#x7684;&#x662F;&#xFF0C;&#x6709;&#x4E00;&#x4E9B;&#x5DE5;&#x5177;&#x53EF;&#x4EE5;&#x5E2E;&#x52A9;&#x8BC6;&#x522B;&#x8FD9;&#x7C7B;&#x95EE;&#x9898;&#x3002;Clang &#x7684; Thread sanitizer: [https://clang.llvm.org/docs/ThreadSanitizer.html](https://clang.llvm.org/docs/ThreadSanitizer.html)[^30] &#x548C; helgrind: [https://www.valgrind.org/docs/manual/hg-manual.html](https://www.valgrind.org/docs/manual/hg-manual.html)[^31] &#x5C31;&#x662F;&#x5176;&#x4E2D;&#x7684;&#x4E00;&#x4E9B;&#x5DE5;&#x5177;&#x3002;&#x4E3A;&#x4E86;&#x9632;&#x6B62; [@lst:TrueSharing] &#x4E2D;&#x7684;&#x6570;&#x636E;&#x7ADE;&#x4E89;&#xFF0C;&#x5E94;&#x8BE5;&#x5C06; `sum` &#x53D8;&#x91CF;&#x58F0;&#x660E;&#x4E3A; `std::atomic&lt;unsigned int&gt; sum`&#x3002;
+
+&#x5F53;&#x53D1;&#x751F;&#x771F;&#x5B9E;&#x5171;&#x4EAB;&#x65F6;&#xFF0C;&#x4F7F;&#x7528; C++ &#x539F;&#x5B50;&#x7C7B;&#x578B;&#x53EF;&#x4EE5;&#x5E2E;&#x52A9;&#x89E3;&#x51B3;&#x6570;&#x636E;&#x7ADE;&#x4E89;&#x95EE;&#x9898;&#x3002;&#x7136;&#x800C;&#xFF0C;&#x5B83;&#x5B9E;&#x9645;&#x4E0A;&#x5E8F;&#x5217;&#x5316;&#x4E86;&#x5BF9;&#x539F;&#x5B50;&#x53D8;&#x91CF;&#x7684;&#x8BBF;&#x95EE;&#xFF0C;&#x8FD9;&#x53EF;&#x80FD;&#x4F1A;&#x964D;&#x4F4E;&#x6027;&#x80FD;&#x3002;&#x89E3;&#x51B3;&#x771F;&#x5B9E;&#x5171;&#x4EAB;&#x95EE;&#x9898;&#x7684;&#x53E6;&#x4E00;&#x79CD;&#x65B9;&#x6CD5;&#x662F;&#x4F7F;&#x7528;&#x7EBF;&#x7A0B;&#x5C40;&#x90E8;&#x5B58;&#x50A8; (TLS)&#x3002;TLS &#x662F;&#x4E00;&#x79CD;&#x65B9;&#x6CD5;&#xFF0C;&#x5141;&#x8BB8;&#x7ED9;&#x5B9A;&#x591A;&#x7EBF;&#x7A0B;&#x8FDB;&#x7A0B;&#x4E2D;&#x7684;&#x6BCF;&#x4E2A;&#x7EBF;&#x7A0B;&#x5206;&#x914D;&#x5185;&#x5B58;&#x6765;&#x5B58;&#x50A8;&#x7EBF;&#x7A0B;&#x7279;&#x5B9A;&#x7684;&#x6570;&#x636E;&#x3002;&#x901A;&#x8FC7;&#x8FD9;&#x6837;&#x505A;&#xFF0C;&#x7EBF;&#x7A0B;&#x4FEE;&#x6539;&#x81EA;&#x5DF1;&#x7684;&#x672C;&#x5730;&#x526F;&#x672C;&#xFF0C;&#x800C;&#x4E0D;&#x662F;&#x4E89;&#x7528;&#x5168;&#x5C40;&#x53EF;&#x7528;&#x7684;&#x5185;&#x5B58;&#x4F4D;&#x7F6E;&#x3002;&#x53EF;&#x4EE5;&#x4F7F;&#x7528; TLS &#x7C7B;&#x8BF4;&#x660E;&#x7B26; (`thread_local unsigned int sum`&#xFF0C;&#x81EA; C++11 &#x8D77;) &#x58F0;&#x660E; `sum` &#x6765;&#x4FEE;&#x590D; [@lst:TrueSharing] &#x4E2D;&#x7684;&#x793A;&#x4F8B;&#x3002;&#x7136;&#x540E;&#xFF0C;&#x4E3B;&#x7EBF;&#x7A0B;&#x5E94;&#x8BE5;&#x5408;&#x5E76;&#x6BCF;&#x4E2A;&#x5DE5;&#x4F5C;&#x7EBF;&#x7A0B;&#x6240;&#x6709;&#x672C;&#x5730;&#x526F;&#x672C;&#x7684;&#x7ED3;&#x679C;&#x3002;
+
+## &#x5047;&#x5171;&#x4EAB; {#sec:secFalseSharing}
+
+&#x5047;&#x5171;&#x4EAB;[^29] &#x53D1;&#x751F;&#x5728;&#x4E24;&#x4E2A;&#x4E0D;&#x540C;&#x7684;&#x5904;&#x7406;&#x5668;&#x4FEE;&#x6539;&#x4F4D;&#x4E8E;&#x540C;&#x4E00;&#x7F13;&#x5B58;&#x884C;&#x4E0A;&#x7684;&#x4E0D;&#x540C;&#x53D8;&#x91CF;&#x65F6;&#xFF08;&#x53C2;&#x89C1; [@lst:FalseSharing]&#xFF09;&#x3002;&#x56FE; @fig:FalseSharing &#x5C55;&#x793A;&#x4E86;&#x5047;&#x5171;&#x4EAB;&#x95EE;&#x9898;&#x3002;
+
+&#x4EE3;&#x7801;&#x6E05;&#x5355;: &#x5047;&#x5171;&#x4EAB;&#x793A;&#x4F8B;&#x3002;
+~~~~ {#lst:FalseSharing .cpp}
+struct S {
+  int sumA; // sumA and sumB are likely to
+  int sumB; // reside in the same cache line
+};
+S s;
+
+{ // section executed by thread A
+  for (int i = 0; i &lt; N; i++)
+    s.sumA += a[i];
+}
+
+{ // section executed by thread B
+  for (int i = 0; i &lt; N; i++)
+    s.sumB += b[i];
+}
+</code></pre><p><img src="https://raw.githubusercontent.com/dendibakh/perf-book/main/img/mt-perf/FalseSharing.jpg" alt="False&#x5171;&#x4EAB;:&#x4E24;&#x4E2A;&#x7EBF;&#x7A0B;&#x8BBF;&#x95EE;&#x540C;&#x4E00;&#x4E2A;&#x7F13;&#x5B58;&#x884C;&#x3002; *&#xA9; Image by Intel Developer Zone via software.intel.com.*">{#fig:FalseSharing width=50%}</p>
+<p>&#x5047;&#x5171;&#x4EAB;&#x662F;&#x591A;&#x7EBF;&#x7A0B;&#x5E94;&#x7528;&#x7A0B;&#x5E8F;&#x6027;&#x80FD;&#x95EE;&#x9898;&#x7684;&#x5E38;&#x89C1;&#x6765;&#x6E90;&#x3002;&#x56E0;&#x6B64;&#xFF0C;&#x73B0;&#x4EE3;&#x5206;&#x6790;&#x5DE5;&#x5177;&#x5185;&#x7F6E;&#x4E86;&#x68C0;&#x6D4B;&#x6B64;&#x7C7B;&#x6848;&#x4F8B;&#x7684;&#x652F;&#x6301;&#x3002;TMA &#x5C06;&#x7ECF;&#x5386;&#x771F;/&#x5047;&#x5171;&#x4EAB;&#x7684;&#x5E94;&#x7528;&#x7A0B;&#x5E8F;&#x63CF;&#x8FF0;&#x4E3A;&#x5185;&#x5B58;&#x7ED1;&#x5B9A;&#x3002;&#x901A;&#x5E38;&#xFF0C;&#x5728;&#x8FD9;&#x79CD;&#x60C5;&#x51B5;&#x4E0B;&#xFF0C;&#x60A8;&#x4F1A;&#x770B;&#x5230; &#x4E89;&#x7528;&#x8BBF;&#x95EE;: <a href="https://software.intel.com/en-us/vtune-help-contested-accesses" target="_blank">https://software.intel.com/en-us/vtune-help-contested-accesses</a><sup><a href="#fn_18" id="reffn_18">18</a></sup> &#x6307;&#x6807;&#x7684;&#x9AD8;&#x503C;&#x3002;</p>
+<p>&#x4F7F;&#x7528; Intel VTune Profiler &#x65F6;&#xFF0C;&#x7528;&#x6237;&#x9700;&#x8981;&#x4E24;&#x79CD;&#x7C7B;&#x578B;&#x7684;&#x5206;&#x6790;&#x6765;&#x67E5;&#x627E;&#x548C;&#x6D88;&#x9664;&#x5047;&#x5171;&#x4EAB;&#x95EE;&#x9898;&#x3002;&#x9996;&#x5148;&#xFF0C;&#x8FD0;&#x884C; &#x5FAE;&#x67B6;&#x6784;&#x63A2;&#x7D22;: <a href="https://software.intel.com/en-us/vtune-help-general-exploration-analysis" target="_blank">https://software.intel.com/en-us/vtune-help-general-exploration-analysis</a><sup><a href="#fn_19" id="reffn_19">19</a></sup> &#x5206;&#x6790;&#xFF0C;&#x8BE5;&#x5206;&#x6790;&#x5B9E;&#x65BD; TMA &#x65B9;&#x6CD5;&#x6765;&#x68C0;&#x6D4B;&#x5E94;&#x7528;&#x7A0B;&#x5E8F;&#x4E2D;&#x662F;&#x5426;&#x5B58;&#x5728;&#x5047;&#x5171;&#x4EAB;&#x3002;&#x6B63;&#x5982;&#x4E4B;&#x524D;&#x63D0;&#x5230;&#x7684;&#xFF0C;&#x4E89;&#x7528;&#x8BBF;&#x95EE;&#x6307;&#x6807;&#x7684;&#x9AD8;&#x503C;&#x4FC3;&#x4F7F;&#x6211;&#x4EEC;&#x6DF1;&#x5165;&#x6316;&#x6398;&#x5E76;&#x8FD0;&#x884C;&#x542F;&#x7528;&#x4E86;&#x201C;&#x5206;&#x6790;&#x52A8;&#x6001;&#x5185;&#x5B58;&#x5BF9;&#x8C61;&#x201D;&#x9009;&#x9879;&#x7684; &#x5185;&#x5B58;&#x8BBF;&#x95EE;: <a href="https://software.intel.com/en-us/vtune-help-memory-access-analysis" target="_blank">https://software.intel.com/en-us/vtune-help-memory-access-analysis</a> &#x5206;&#x6790;&#x3002;&#x6B64;&#x5206;&#x6790;&#x6709;&#x52A9;&#x4E8E;&#x627E;&#x51FA;&#x5BFC;&#x81F4;&#x4E89;&#x7528;&#x95EE;&#x9898;&#x7684;&#x5BF9;&#x6570;&#x636E;&#x7ED3;&#x6784;&#x7684;&#x8BBF;&#x95EE;&#x3002;&#x901A;&#x5E38;&#xFF0C;&#x8FD9;&#x4E9B;&#x5185;&#x5B58;&#x8BBF;&#x95EE;&#x5177;&#x6709;&#x9AD8;&#x5EF6;&#x8FDF;&#xFF0C;&#x5206;&#x6790;&#x4F1A;&#x63ED;&#x793A;&#x8FD9;&#x4E00;&#x70B9;&#x3002;&#x6709;&#x5173;&#x4F7F;&#x7528; Intel VTune Profiler &#x4FEE;&#x590D;&#x5047;&#x5171;&#x4EAB;&#x95EE;&#x9898;&#x7684;&#x793A;&#x4F8B;&#xFF0C;&#x8BF7;&#x53C2;&#x89C1; &#x82F1;&#x7279;&#x5C14;&#x5F00;&#x53D1;&#x8005;&#x793E;&#x533A;: <a href="https://software.intel.com/en-us/vtune-cookbook-false-sharing" target="_blank">https://software.intel.com/en-us/vtune-cookbook-false-sharing</a><sup><a href="#fn_20" id="reffn_20">20</a></sup>&#x3002;</p>
+<p>Linux <code>perf</code> &#x4E5F;&#x652F;&#x6301;&#x67E5;&#x627E;&#x5047;&#x5171;&#x4EAB;&#x3002;&#x4E0E; Intel VTune Profiler &#x4E00;&#x6837;&#xFF0C;&#x9996;&#x5148;&#x8FD0;&#x884C; TMA&#xFF08;&#x8BF7;&#x53C2;&#x89C1; [@sec:secTMA_Intel]&#xFF09;&#x4EE5;&#x627E;&#x51FA;&#x7A0B;&#x5E8F;&#x662F;&#x5426;&#x7ECF;&#x5386;&#x5047;/&#x771F;&#x5171;&#x4EAB;&#x95EE;&#x9898;&#x3002;&#x5982;&#x679C;&#x662F;&#x8FD9;&#x79CD;&#x60C5;&#x51B5;&#xFF0C;&#x8BF7;&#x4F7F;&#x7528; <code>perf c2c</code> &#x5DE5;&#x5177;&#x68C0;&#x6D4B;&#x5177;&#x6709;&#x9AD8;&#x7F13;&#x5B58;&#x4E00;&#x81F4;&#x6027;&#x6210;&#x672C;&#x7684;&#x5185;&#x5B58;&#x8BBF;&#x95EE;&#x3002;<code>perf c2c</code> &#x5339;&#x914D;&#x4E0D;&#x540C;&#x7EBF;&#x7A0B;&#x7684;&#x5B58;&#x50A8;/&#x52A0;&#x8F7D;&#x5730;&#x5740;&#xFF0C;&#x5E76;&#x67E5;&#x770B;&#x662F;&#x5426;&#x547D;&#x4E2D;&#x4E86;&#x4FEE;&#x6539;&#x540E;&#x7684;&#x7F13;&#x5B58;&#x884C;&#x3002;&#x8BFB;&#x8005;&#x53EF;&#x4EE5;&#x5728;&#x4E13;&#x95E8;&#x7684; &#x535A;&#x5BA2;&#x6587;&#x7AE0;: <a href="https://joemario.github.io/blog/2016/09/01/c2c-blog/" target="_blank">https://joemario.github.io/blog/2016/09/01/c2c-blog/</a><sup><a href="#fn_21" id="reffn_21">21</a></sup> &#x4E2D;&#x627E;&#x5230;&#x8BE5;&#x8FC7;&#x7A0B;&#x53CA;&#x5176;&#x5982;&#x4F55;&#x4F7F;&#x7528;&#x5DE5;&#x5177;&#x7684;&#x8BE6;&#x7EC6;&#x89E3;&#x91CA;&#x3002;</p>
+<p>&#x53EF;&#x4EE5;&#x901A;&#x8FC7;&#x5BF9;&#x9F50;/&#x586B;&#x5145;&#x5185;&#x5B58;&#x5BF9;&#x8C61;&#x6765;&#x6D88;&#x9664;&#x5047;&#x5171;&#x4EAB;&#x3002;[@sec:secTrueSharing] &#x4E2D;&#x7684;&#x793A;&#x4F8B;&#x53EF;&#x4EE5;&#x901A;&#x8FC7;&#x786E;&#x4FDD; <code>sumA</code> &#x548C; <code>sumB</code> &#x4E0D;&#x5171;&#x4EAB;&#x540C;&#x4E00;&#x7F13;&#x5B58;&#x884C;&#x6765;&#x4FEE;&#x590D;&#xFF08;&#x8BF7;&#x53C2;&#x9605; [@sec:secMemAlign] &#x4E2D;&#x7684;&#x8BE6;&#x7EC6;&#x4FE1;&#x606F;&#xFF09;&#x3002;</p>
+<p>&#x4ECE;&#x4E00;&#x822C;&#x7684;&#x6027;&#x80FD;&#x89D2;&#x5EA6;&#x6765;&#x770B;&#xFF0C;&#x6700;&#x91CD;&#x8981;&#x7684;&#x8003;&#x8651;&#x56E0;&#x7D20;&#x662F;&#x53EF;&#x80FD;&#x72B6;&#x6001;&#x8F6C;&#x6362;&#x7684;&#x6210;&#x672C;&#x3002;&#x5728;&#x6240;&#x6709;&#x7F13;&#x5B58;&#x72B6;&#x6001;&#x4E2D;&#xFF0C;&#x552F;&#x4E00;&#x4E0D;&#x6D89;&#x53CA;&#x6602;&#x8D35;&#x7684;&#x8DE8;&#x7F13;&#x5B58;&#x5B50;&#x7CFB;&#x7EDF;&#x901A;&#x4FE1;&#x548C; CPU &#x8BFB;/&#x5199;&#x64CD;&#x4F5C;&#x671F;&#x95F4;&#x7684;&#x6570;&#x636E;&#x4F20;&#x8F93;&#x7684;&#x662F;&#x4FEE;&#x6539; (M) &#x548C;&#x72EC;&#x5360; (E) &#x72B6;&#x6001;&#x3002;&#x56E0;&#x6B64;&#xFF0C;&#x7F13;&#x5B58;&#x884C;&#x4FDD;&#x6301;&#x201C;M&#x201D;&#x6216;&#x201C;E&#x201D;&#x72B6;&#x6001;&#x7684;&#x65F6;&#x95F4;&#x8D8A;&#x957F;&#xFF08;&#x5373;&#x8DE8;&#x7F13;&#x5B58;&#x7684;&#x6570;&#x636E;&#x5171;&#x4EAB;&#x8D8A;&#x5C11;&#xFF09;&#xFF0C;&#x591A;&#x7EBF;&#x7A0B;&#x5E94;&#x7528;&#x7A0B;&#x5E8F;&#x4EA7;&#x751F;&#x7684;&#x4E00;&#x81F4;&#x6027;&#x6210;&#x672C;&#x5C31;&#x8D8A;&#x4F4E;&#x3002;&#x6709;&#x5173;&#x5982;&#x4F55;&#x5229;&#x7528;&#x6B64;&#x5C5E;&#x6027;&#x7684;&#x793A;&#x4F8B;&#xFF0C;&#x8BF7;&#x53C2;&#x89C1; Nitsan Wakart &#x7684;&#x535A;&#x5BA2;&#x6587;&#x7AE0;&#x201C;&#x6DF1;&#x5165;&#x4E86;&#x89E3;&#x7F13;&#x5B58;&#x4E00;&#x81F4;&#x6027;: <a href="http://psy-lob-saw.blogspot.com/2013/09/diving-deeper-into-cache-coherency.html" target="_blank">http://psy-lob-saw.blogspot.com/2013/09/diving-deeper-into-cache-coherency.html</a>&quot;<sup><a href="#fn_28" id="reffn_28">28</a></sup>&#x3002;</p>
+<blockquote id="fn_18">
+<sup>18</sup>. &#x4E89;&#x7528;&#x8BBF;&#x95EE; - <a href="https://software.intel.com/en-us/vtune-help-contested-accesses" target="_blank">https://software.intel.com/en-us/vtune-help-contested-accesses</a>.<a href="#reffn_18" title="Jump back to footnote [18] in the text."> &#x21A9;</a>
+</blockquote>
+<blockquote id="fn_19">
+<sup>19</sup>. Vtune &#x4E00;&#x822C;&#x63A2;&#x7D22;&#x5206;&#x6790; - <a href="https://software.intel.com/en-us/vtune-help-general-exploration-analysis" target="_blank">https://software.intel.com/en-us/vtune-help-general-exploration-analysis</a>.<a href="#reffn_19" title="Jump back to footnote [19] in the text."> &#x21A9;</a>
+</blockquote>
+<blockquote id="fn_20">
+<sup>20</sup>. Vtune &#x98DF;&#x8C31;&#xFF1A;&#x5047;&#x5171;&#x4EAB; - <a href="https://software.intel.com/en-us/vtune-cookbook-false-sharing" target="_blank">https://software.intel.com/en-us/vtune-cookbook-false-sharing</a>.<a href="#reffn_20" title="Jump back to footnote [20] in the text."> &#x21A9;</a>
+</blockquote>
+<blockquote id="fn_21">
+<sup>21</sup>. &#x5173;&#x4E8E; <code>perf c2c</code> &#x7684;&#x6587;&#x7AE0; - <a href="https://joemario.github.io/blog/2016/09/01/c2c-blog/" target="_blank">https://joemario.github.io/blog/2016/09/01/c2c-blog/</a>.<a href="#reffn_21" title="Jump back to footnote [21] in the text."> &#x21A9;</a>
+</blockquote>
+<blockquote id="fn_25">
+<sup>25</sup>. &#x8BFB;&#x8005;&#x53EF;&#x4EE5;&#x5728;&#x6B64;&#x5904;&#x89C2;&#x770B;&#x548C;&#x6D4B;&#x8BD5;&#x52A8;&#x753B; MESI &#x534F;&#x8BAE;&#xFF1A;<a href="#reffn_25" title="Jump back to footnote [25] in the text."> &#x21A9;</a>
+</blockquote>
+<p><a href="https://www.scss.tcd.ie/Jeremy.Jones/vivio/caches/MESI.htm" target="_blank">https://www.scss.tcd.ie/Jeremy.Jones/vivio/caches/MESI.htm</a>.
+<sup><a href="#fn_26" id="reffn_26">26</a></sup>: MESIF - <a href="https://en.wikipedia.org/wiki/MESIF_protocol" target="_blank">https://en.wikipedia.org/wiki/MESIF_protocol</a>
+<sup><a href="#fn_27" id="reffn_27">27</a></sup>: MOESI - <a href="https://en.wikipedia.org/wiki/MOESI_protocol" target="_blank">https://en.wikipedia.org/wiki/MOESI_protocol</a>
+<sup><a href="#fn_28" id="reffn_28">28</a></sup>: &#x535A;&#x5BA2;&#x6587;&#x7AE0;&#x201C;&#x6DF1;&#x5165;&#x7F13;&#x5B58;&#x4E00;&#x81F4;&#x6027;&#x201D;- <a href="http://psy-lob-saw.blogspot.com/2013/09/diving-deeper-into-cache-coherency.html" target="_blank">http://psy-lob-saw.blogspot.com/2013/09/diving-deeper-into-cache-coherency.html</a></p>
+<blockquote id="fn_29">
+<sup>29</sup>. &#x503C;&#x5F97;&#x6CE8;&#x610F;&#x7684;&#x662F;&#xFF0C;&#x9519;&#x8BEF;&#x5171;&#x4EAB;&#x4E0D;&#x4EC5;&#x5728;C/C++/Ada&#x7B49;&#x4F4E;&#x7EA7;&#x8BED;&#x8A00;&#x4E2D;&#x53EF;&#x4EE5;&#x89C2;&#x5BDF;&#x5230;&#xFF0C;&#x5728;Java/C#&#x7B49;&#x9AD8;&#x7EA7;&#x8BED;&#x8A00;&#x4E2D;&#x4E5F;&#x53EF;&#x4EE5;&#x89C2;&#x5BDF;&#x5230;&#x3002;<a href="#reffn_29" title="Jump back to footnote [29] in the text."> &#x21A9;</a>
+</blockquote>
+<blockquote id="fn_30">
+<sup>30</sup>. Clang&#x7684;&#x7EBF;&#x7A0B;&#x6D88;&#x6BD2;&#x5DE5;&#x5177;:<a href="https://clang.llvm.org/docs/ThreadSanitizer.html" target="_blank">https://clang.llvm.org/docs/ThreadSanitizer.html</a>&#x3002;<a href="#reffn_30" title="Jump back to footnote [30] in the text."> &#x21A9;</a>
+</blockquote>
+<blockquote id="fn_31">
+<sup>31</sup>. Helgrind&#xFF0C;&#x4E00;&#x4E2A;&#x7EBF;&#x7A0B;&#x9519;&#x8BEF;&#x68C0;&#x6D4B;&#x5DE5;&#x5177;:<a href="https://www.valgrind.org/docs/manual/hg-manual.html" target="_blank">https://www.valgrind.org/docs/manual/hg-manual.html</a>&#x3002;<a href="#reffn_31" title="Jump back to footnote [31] in the text."> &#x21A9;</a>
+</blockquote>
+<footer class="page-footer-ex"> <span class="page-footer-ex-copyright"> zh &#xA9; <a href="http://weedge.github.io" target="_blank">weedge</a>&#xFF0C;&#x4F7F;&#x7528;<a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank">&#x77E5;&#x8BC6;&#x5171;&#x4EAB; &#x7F72;&#x540D;-&#x76F8;&#x540C;&#x65B9;&#x5F0F;&#x5171;&#x4EAB; 4.0&#x534F;&#x8BAE;</a>&#x53D1;&#x5E03; </span> &#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0; <span class="page-footer-ex-footer-update"> &#x6B64;&#x9875;&#x9762;&#x4FEE;&#x8BA2;&#x4E8E;&#xFF1A; 2024-02-24 00:17:02 </span> </footer>
+                                
+                                </section>
+                            
+    </div>
+    <div class="search-results">
+        <div class="has-results">
+            
+            <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+            <ul class="search-results-list"></ul>
+            
+        </div>
+        <div class="no-results">
+            
+            <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+            
+        </div>
+    </div>
+</div>
+
+                        </div>
+                    </div>
+                
+            </div>
+
+            
+                
+                <a href="13-6_Analysis_with_eBPF_and_GAPP_cn.html" class="navigation navigation-prev " aria-label="Previous page: 13-6.利用 eBPF 和 GAPP 进行分析">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+                
+                
+                <a href="13-8_Questions-Exercises_cn.html" class="navigation navigation-next " aria-label="Next page: 13-8.问题和练习">
+                    <i class="fa fa-angle-right"></i>
+                </a>
+                
+            
+        
+    </div>
+
+    <script>
+        var gitbook = gitbook || [];
+        gitbook.push(function() {
+            gitbook.page.hasChanged({"page":{"title":"13-7.缓存一致性问题","level":"15.8","depth":1,"next":{"title":"13-8.问题和练习","level":"15.9","depth":1,"path":"chapters/13-Optimizing-Multithreaded-Applications/13-8_Questions-Exercises_cn.md","ref":"./chapters/13-Optimizing-Multithreaded-Applications/13-8_Questions-Exercises_cn.md","articles":[]},"previous":{"title":"13-6.利用 eBPF 和 GAPP 进行分析","level":"15.7","depth":1,"path":"chapters/13-Optimizing-Multithreaded-Applications/13-6_Analysis_with_eBPF_and_GAPP_cn.md","ref":"./chapters/13-Optimizing-Multithreaded-Applications/13-6_Analysis_with_eBPF_and_GAPP_cn.md","articles":[]},"dir":"ltr"},"config":{"plugins":["-sharing","-lunr","-search","-image-captions","-3-ba","versions-select@0.1.1","favicon@0.0.2","splitter@0.0.8","advanced-emoji@0.2.2","anchor-navigation-ex@1.0.14","back-to-top-button@0.1.4","sharing-plus@0.0.2","katex@1.1.4","emphasize@1.1.0","flexible-alerts@1.0.4","code@0.1.0","pandoc@1.0.7","chapter-fold@0.0.4","search-plus@1.0.3","disqus@0.1.0","edit-link@2.0.2","github@2.0.0","github-buttons@3.0.0","donate@1.0.2","my-toolbar@0.6.5","rss@3.0.2","theme-comscore@0.0.3","page-footer-ex@0.1.2"],"root":".","styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"chapter-fold":{},"disqus":{"useIdentifier":false,"shortName":"perf-book-cn"},"emphasize":{},"github":{"url":"https://github.com/weedge"},"livereload":{},"page-footer-ex":{"copyright":"zh &copy; [weedge](http://weedge.github.io)，使用[知识共享 署名-相同方式共享 4.0协议](https://creativecommons.org/licenses/by-sa/4.0/)发布","markdown":true,"update_format":"YYYY-MM-DD HH:mm:ss","update_label":"此页面修订于："},"splitter":{},"sharing-plus":{"qq":false,"all":["facebook","google","twitter","instapaper","linkedin","pocket","stumbleupon"],"douban":false,"facebook":true,"weibo":false,"instapaper":false,"whatsapp":false,"hatenaBookmark":false,"twitter":true,"messenger":false,"line":false,"vk":false,"pocket":true,"google":false,"viber":false,"stumbleupon":false,"qzone":false,"linkedin":false},"code":{"copyButtons":true},"versions-select":{"type":"branches"},"donate":{"alipay":"https://raw.githubusercontent.com/weedge/mypic/master/ali_pay.jpg","alipayText":"支付宝捐赠","button":"打赏","title":"","wechat":"https://raw.githubusercontent.com/weedge/mypic/master/wx_pay.jpg","wechatText":"微信捐赠"},"katex":{},"fontsettings":{"theme":"white","family":"sans","size":2},"rss":{"categories":["gitbook"],"title":"现代CPU上的性能分析与优化","description":"现代CPU上的性能分析与优化","author":"weedge","feed_url":"https://weedge.github.io/index.xml","site_url":"https://weedge.github.io/","managingEditor":"weege007@gmail.com","webMaster":"weege007@gmail.com"},"highlight":{},"anchor-navigation-ex":{"mode":"float","pageTop":{"level1Icon":"","level2Icon":"","level3Icon":"","showLevelIcon":false},"showLevel":false,"tocLevel1Icon":"fa fa-hand-o-right","tocLevel2Icon":"fa fa-hand-o-right","tocLevel3Icon":"fa fa-hand-o-right","showGoTop":false,"isShowTocTitleIcon":true,"printLog":false,"multipleH1":true,"associatedWithSummary":true,"float":{"floatIcon":"fa fa-navicon","level1Icon":"","level2Icon":"","level3Icon":"","showLevelIcon":false}},"favicon":{"shortcut":"https://raw.githubusercontent.com/weedge/mypic/master/me.ico","bookmark":"https://raw.githubusercontent.com/weedge/mypic/master/me.ico","appleTouch":"https://raw.githubusercontent.com/weedge/mypic/master/me.ico"},"theme-comscore":{},"back-to-top-button":{},"github-buttons":{"buttons":[{"user":"weedge","repo":"perf-book-cn","type":"star","size":"small"}]},"flexible-alerts":{"danger":{"className":"danger","icon":"fa fa-ban","label":"Attention"},"note":{"className":"info","icon":"fa fa-info-circle","label":"Note"},"style":"callout","tip":{"className":"tip","icon":"fa fa-lightbulb-o","label":"Tip"},"warning":{"className":"warning","icon":"fa fa-exclamation-triangle","label":"Warning"}},"my-toolbar":{"buttons":[{"label":"下载PDF","icon":"fa fa-file-pdf-o","url":"http://localhost:4000/book.pdf","position":"left","text":"下载PDF","target":"_blank"}]},"versions":{"gitbookConfigURL":"https://raw.githubusercontent.com/weedge/perf-book-cn/main/book.json","options":[{"value":"https://book.easyperf.net/perf_book","text":"原版电子书"},{"value":"https://github.com/dendibakh/perf-book","text":"perf-book","selected":true}]},"advanced-emoji":{"embedEmojis":false},"pandoc":{},"sharing":{"qq":true,"all":["weibo","qq","qzone","douban"],"douban":false,"facebook":false,"weibo":true,"instapaper":false,"whatsapp":false,"hatenaBookmark":false,"twitter":false,"messenger":false,"line":false,"vk":false,"pocket":false,"google":false,"viber":false,"stumbleupon":false,"qzone":true,"linkedin":false},"edit-link":{"label":"编辑本页","base":"https://github.com/weedge/perf-book-cn/blob/main"},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false},"search-plus":{},"image-captions":{"caption":"Image - _CAPTION_"}},"theme":"default","author":"weedge","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{"name":"《现代CPU性能分析与优化》","en_name":"《Performance Analysis and Tuning on Modern CPU》"},"title":"现代CPU上的性能分析与优化","language":"zh","links":{"sidebar":{"首页":"https://weedge.github.io"}},"gitbook":"*"},"file":{"path":"chapters/13-Optimizing-Multithreaded-Applications/13-7_Cache_Coherence_Issues_cn.md","mtime":"2024-02-23T16:17:02.559Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2024-02-23T16:21:32.909Z"},"basePath":"../..","book":{"language":"zh"}});
+        });
+    </script>
+</div>
+
+        
+    <script src="../../../gitbook/gitbook.js"></script>
+    <script src="../../../gitbook/theme.js"></script>
+    
+        
+        <script src="../../../gitbook/gitbook-plugin-versions-select/plugin.js"></script>
+        
+    
+        
+        <script src="../../../gitbook/gitbook-plugin-splitter/splitter.js"></script>
+        
+    
+        
+        <script src="../../../gitbook/gitbook-plugin-back-to-top-button/plugin.js"></script>
+        
+    
+        
+        <script src="../../../gitbook/gitbook-plugin-sharing-plus/buttons.js"></script>
+        
+    
+        
+        <script src="../../../gitbook/gitbook-plugin-flexible-alerts/plugin.js"></script>
+        
+    
+        
+        <script src="../../../gitbook/gitbook-plugin-code/plugin.js"></script>
+        
+    
+        
+        <script src="../../../gitbook/gitbook-plugin-chapter-fold/chapter-fold.js"></script>
+        
+    
+        
+        <script src="../../../gitbook/gitbook-plugin-search-plus/jquery.mark.min.js"></script>
+        
+    
+        
+        <script src="../../../gitbook/gitbook-plugin-search-plus/search.js"></script>
+        
+    
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/URI.js/1.16.1/URI.min.js"></script>
+        
+    
+        
+        <script src="../../../gitbook/gitbook-plugin-disqus/plugin.js"></script>
+        
+    
+        
+        <script src="../../../gitbook/gitbook-plugin-edit-link/plugin.js"></script>
+        
+    
+        
+        <script src="../../../gitbook/gitbook-plugin-github/plugin.js"></script>
+        
+    
+        
+        <script src="../../../gitbook/gitbook-plugin-github-buttons/plugin.js"></script>
+        
+    
+        
+        <script src="../../../gitbook/gitbook-plugin-donate/plugin.js"></script>
+        
+    
+        
+        <script src="../../../gitbook/gitbook-plugin-my-toolbar/buttons.js"></script>
+        
+    
+        
+        <script src="../../../gitbook/gitbook-plugin-rss/plugin.js"></script>
+        
+    
+        
+        <script src="../../../gitbook/gitbook-plugin-livereload/plugin.js"></script>
+        
+    
+        
+        <script src="../../../gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        
+    
+        
+        <script src="../../../gitbook/gitbook-plugin-theme-comscore/test.js"></script>
+        
+    
+
+    </body>
+</html>
+

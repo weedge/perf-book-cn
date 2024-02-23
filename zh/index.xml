@@ -1,0 +1,960 @@
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title><![CDATA[现代CPU上的性能分析与优化]]></title>
+        <description><![CDATA[现代CPU上的性能分析与优化]]></description>
+        <link>https://weedge.github.io/</link>
+        <generator>RSS for Node</generator>
+        <lastBuildDate>Fri, 23 Feb 2024 16:22:09 GMT</lastBuildDate>
+        <atom:link href="https://weedge.github.io/index.xml" rel="self" type="application/rss+xml"/>
+        <author><![CDATA[weedge]]></author>
+        <managingEditor><![CDATA[weege007@gmail.com]]></managingEditor>
+        <webMaster><![CDATA[weege007@gmail.com]]></webMaster>
+        <category><![CDATA[gitbook]]></category>
+        <item>
+            <title><![CDATA[{{ book.name }}]]></title>
+            <description><![CDATA[这是一本名为{{ book.en_name }}书籍的源文件存储库的中文翻译，原版由 Denis Bakhvalov 等人编写。]]></description>
+            <link>https://weedge.github.io/</link>
+            <guid isPermaLink="true">https://weedge.github.io/</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[通告 {.unlisted .unnumbered}]]></title>
+            <description><![CDATA[责任。工程和软件开发领域的知识和最佳实践不断变化。从业者和研究人员必须始终依靠自己的经验和知识来评估和使用此处描述的任何信息、方法、化合物或实验。在使用这些信息或方法时，他们应注意自己的安全和他人的安全，包括对其职业责任的各方。]]></description>
+            <link>https://weedge.github.io/chapters/0-Preface/0-1_Notices_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/0-Preface/0-1_Notices_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[前言 {.unnumbered .unlisted}]]></title>
+            <description><![CDATA[Denis Bakhvalov是Intel的高级开发人员，负责C++编译器项目，旨在为各种不同架构生成优化代码。性能工程和编译器始终是他主要关注的领域之一。Denis于2008年开始作为软件开发人员的职业生涯，并在多个领域工作，包括开发桌面应用程序、嵌入式系统、性能分析和编译器开发。2016年，Denis开始了他的easyperf.net博客，专注于性能分析和调优、C/C++编译器以及CPU微体系结构。Denis是积极生活方式的支持者，在业余时间喜欢踢足球、打网球、跑步和下棋。此外，Denis还是两个美丽女儿的父亲。]]></description>
+            <link>https://weedge.github.io/chapters/0-Preface/0-2_Preface_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/0-Preface/0-2_Preface_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[非常感谢Mark E. Dawson，他在撰写本书的几个部分时提供了帮助：《为DTLB优化》（[@sec:secDTLB]）、《为ITLB优化》（[@sec:FeTLB]）、《缓存预热》（[@sec:CacheWarm]）、系统调优（[@sec:SysTune]）、关于多线程应用程序性能扩展和开销的部分（[@sec:secAmdahl]）、使用COZ性能分析器的部分（[@sec:COZ]）、关于eBPF的部分（[@sec:secEBPF]）、《检测一致性问题》（[@sec:TrueFalseSharing]）。Mark是高频交易行业的知名专家。在撰写本书的不同阶段，Mark非常乐意分享他的专业知识和反馈意见。]]></description>
+            <link>https://weedge.github.io/chapters/0-Preface/0-3_Acknowledgements_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/0-Preface/0-3_Acknowledgements_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[介绍 {#sec .sec1}]]></title>
+            <description><![CDATA[[TODO]: 更新介绍。这是书中最重要的部分。:) 更新说明我们现在正处于一个新时代的开端。PC -> 移动 -> 云 -> AI?]]></description>
+            <link>https://weedge.github.io/chapters/1-Introduction/1-0_Introduction_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/1-Introduction/1-0_Introduction_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[现代CPU每年都在增加越来越多的核心。截至2019年底，您可以购买到一款高端服务器处理器，其逻辑核心数量超过100个。这非常令人印象深刻，但这并不意味着我们不再需要关注性能。很多时候，随着CPU核心数量的增加，应用程序的性能可能并不会提升。典型的通用多线程应用程序的性能并不总是随着我们分配给任务的CPU核心数量线性增长的。了解为什么会发生这种情况以及可能的解决方法对于产品未来的增长至关重要。不能进行适当的性能分析和调优会导致性能和金钱的浪费，并可能毁掉产品。]]></description>
+            <link>https://weedge.github.io/chapters/1-Introduction/1-1_Why_do_we_need_perf_analysis_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/1-Introduction/1-1_Why_do_we_need_perf_analysis_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[在像高性能计算（HPC）、云服务、高频交易（HFT）、游戏开发和其他对性能要求极高的领域，性能工程无需多加辩解。例如，谷歌曾报告说，搜索慢2%导致每位用户搜索减少2%。[^3] 对于Yahoo!来说，页面加载速度快了400毫秒导致流量增加了5-9%。[^4] 在这个数字游戏中，微小的改进可能产生显著影响。这些例子证明，服务工作得越慢，使用的人就越少。]]></description>
+            <link>https://weedge.github.io/chapters/1-Introduction/1-2_Who_needs_performance_analysis_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/1-Introduction/1-2_Who_needs_performance_analysis_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[曾经和同事辩论过某段代码的性能吗？那么你可能知道要预测哪段代码会表现最佳有多么困难。在现代处理器内部有如此多的运作部件，即使对代码进行微小的调整也可能触发显著的性能变化。这就是为什么本书的第一个建议是：始终进行测试。许多人在尝试优化他们的应用程序时依赖直觉。而通常情况下，最终会在各处随意修复，而对应用程序的性能没有产生任何真正的影响。]]></description>
+            <link>https://weedge.github.io/chapters/1-Introduction/1-3_What_is_performance_analysis_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/1-Introduction/1-3_What_is_performance_analysis_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[本书旨在帮助开发人员更好地理解其应用程序的性能，学会发现效率低下的地方，并加以消除。为什么我的手写压缩算法比传统的慢了两倍？为什么我的函数更改导致性能下降了一半？客户抱怨我的应用程序运行缓慢，我应该从哪里开始？我是否已经充分优化了程序？我的平台上有哪些性能分析工具？减少缓存未命中和分支预测失败的技术有哪些？希望通过本书的学习，你能找到这些问题的答案。]]></description>
+            <link>https://weedge.github.io/chapters/1-Introduction/1-4_What_is_in_the_book_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/1-Introduction/1-4_What_is_in_the_book_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[系统性能取决于不同的组件：CPU、操作系统、内存、I/O 设备等。应用程序可以通过调整系统的各个组件来获益。一般来说，工程师应该分析整个系统的性能。然而，系统性能的最大因素是其核心，即CPU。这就是为什么本书主要从CPU的角度进行性能分析，偶尔涉及操作系统和内存子系统。]]></description>
+            <link>https://weedge.github.io/chapters/1-Introduction/1-5_What_is_not_in_this_book_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/1-Introduction/1-5_What_is_not_in_this_book_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[作为本书的补充材料，我们开发了一系列免费的实验任务，可以在https://github.com/dendibakh/perf-ninja上获取。性能忍者是一个在线课程，您可以在其中练习低级性能分析和调优。我们在整本书中都提供了该仓库中的实验任务。例如，当您看到perf-ninja::warmup时，这对应于位于上述仓库的labs/misc/warmup文件夹中的实验任务。]]></description>
+            <link>https://weedge.github.io/chapters/1-Introduction/1-6_Exercises_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/1-Introduction/1-6_Exercises_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[\sectionbreak]]></description>
+            <link>https://weedge.github.io/chapters/1-Introduction/1-7_Chapter_Summary_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/1-Introduction/1-7_Chapter_Summary_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[第一部分：在现代CPU上的性能分析 {.unnumbered}]]></title>
+            <description><![CDATA[了解应用程序性能的第一步是知道如何进行测量。人们将性能视为应用程序的特性之一。[^15] 但与其他特性不同，性能不是一个布尔属性：一个应用程序可以非常慢，飞快，或者介于两者之间。这就是为什么对于是否具有性能的问题，不可能回答“是”或“否”的原因。]]></description>
+            <link>https://weedge.github.io/chapters/2-Measuring-Performance/2-0_Measuring_Performance_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/2-Measuring-Performance/2-0_Measuring_Performance_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[硬件和软件中有许多旨在提高性能的特性。但并非所有特性都具有确定性行为。让我们考虑动态频率调整[^11]（DFS）：这是一种允许CPU在短时间内增加频率的特性，从而使其运行速度显著提高。然而，CPU不能长时间保持在“超频”模式下，因此稍后会将频率降回基础值。DFS通常在很大程度上取决于核心温度，这使得很难预测对我们实验的影响。]]></description>
+            <link>https://weedge.github.io/chapters/2-Measuring-Performance/2-1_Noise_In_Modern_Systems_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/2-Measuring-Performance/2-1_Noise_In_Modern_Systems_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[当一个应用程序在共享基础设施上运行时（在公共云中很常见），通常会有来自其他客户的其他工作负载在同一台服务器上运行。随着虚拟化和容器等技术变得越来越流行，公共云提供商试图充分利用他们服务器的容量。不幸的是，这为在这样的环境中进行性能测量带来了额外的障碍。与相邻进程共享资源可能以不可预测的方式影响性能测量。]]></description>
+            <link>https://weedge.github.io/chapters/2-Measuring-Performance/2-2_Measuring_Performance_In_Procution_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/2-Measuring-Performance/2-2_Measuring_Performance_In_Procution_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[软件供应商试图增加部署频率正在成为一种趋势。公司不断寻求加速产品上市的方式。不幸的是，这并不意味着每次新发布的软件产品都会变得更好。特别是，软件性能缺陷往往以惊人的速度泄漏到生产软件中[@UnderstandingPerfRegress]。在软件的演变过程中，大量的变化给分析所有这些结果和历史数据以检测性能回归带来了挑战。]]></description>
+            <link>https://weedge.github.io/chapters/2-Measuring-Performance/2-3_Performance_Regressions_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/2-Measuring-Performance/2-3_Performance_Regressions_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[当工程师能够在开发过程中利用现有的性能测试基础设施时，这是很棒的。在前一节中，我们讨论了CI系统的一个很好的功能是可以向其提交性能评估作业的可能性。如果支持这一点，那么系统将返回测试开发人员想要提交到代码库的补丁的结果。由于各种原因，这可能并不总是可能的，比如硬件不可用、设置对于测试基础设施来说过于复杂、需要收集额外的指标。在本节中，我们提供了进行本地性能评估的基本建议。]]></description>
+            <link>https://weedge.github.io/chapters/2-Measuring-Performance/2-4_Local_Performance_Testing_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/2-Measuring-Performance/2-4_Local_Performance_Testing_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[为了对执行时间进行基准测试，工程师通常会使用现代平台提供的两种不同的定时器：]]></description>
+            <link>https://weedge.github.io/chapters/2-Measuring-Performance/2-5_SW_and_HW_Timers_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/2-Measuring-Performance/2-5_SW_and_HW_Timers_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[微基准测试是人们编写的小型独立程序，用于快速测试假设。通常，微基准测试用于选择某个相对较小算法或功能的最佳实现。几乎所有现代语言都有基准测试框架。在C++中，可以使用Google的benchmark[^3]库，C#有BenchmarkDotNet[^4]库，Julia有BenchmarkTools[^5]包，Java有JMH[^6]（Java Microbenchmark Harness）等等。]]></description>
+            <link>https://weedge.github.io/chapters/2-Measuring-Performance/2-6_Microbenchmarks_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/2-Measuring-Performance/2-6_Microbenchmarks_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <link>https://weedge.github.io/chapters/2-Measuring-Performance/2-7_Questions-Exercises_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/2-Measuring-Performance/2-7_Questions-Exercises_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[\sectionbreak]]></description>
+            <link>https://weedge.github.io/chapters/2-Measuring-Performance/2-8_Chapter_summary_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/2-Measuring-Performance/2-8_Chapter_summary_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[CPU微体系结构 {#sec:uarch}]]></title>
+            <description><![CDATA[本章简要概述了对软件性能产生直接影响的关键CPU微体系结构特性。本章的目标不是涵盖CPU架构的所有细节和权衡，这些内容已在文献中广泛讨论 [@Hennessy]。相反，本章快速回顾了现代处理器中存在的CPU硬件特性。]]></description>
+            <link>https://weedge.github.io/chapters/3-CPU-Microarchitecture/3-0_CPU_microarchitecture_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/3-CPU-Microarchitecture/3-0_CPU_microarchitecture_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[指令集是软件用来与硬件通信的词汇。指令集架构（ISA）定义了软件与硬件之间的约定。英特尔x86、ARM v8和RISC-V是当前广泛部署的ISA的示例。所有这些都是64位架构，即所有地址计算都使用64位。ISA开发人员和CPU架构师通常确保符合规范的软件或固件将在使用规范构建的任何处理器上执行。广泛部署的ISA特许经营权通常还确保向后兼容性，使为处理器的GenX版本编写的代码将继续在GenX+i上执行。]]></description>
+            <link>https://weedge.github.io/chapters/3-CPU-Microarchitecture/3-1_ISA_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/3-CPU-Microarchitecture/3-1_ISA_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[流水线是使CPU快速运行的基础技术，其中多个指令在它们的执行过程中重叠。CPU中的流水线技术从汽车组装线中汲取灵感。指令的处理被分为多个阶段。这些阶段并行运行，同时处理不同指令的不同部分。DLX是由John L. Hennessy和David A. Patterson于1994年设计的一个相对简单的架构。正如[@Hennessy]中定义的那样，它具有5级流水线，包括：]]></description>
+            <link>https://weedge.github.io/chapters/3-CPU-Microarchitecture/3-2_Pipelining_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/3-CPU-Microarchitecture/3-2_Pipelining_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[程序中的大多数指令都适合进行流水线处理并并行执行，因为它们是独立的。现代CPU实现了大量额外的硬件功能来利用这种指令级并行性（ILP）。与先进的编译器技术配合使用，这些硬件功能可以提供显著的性能改进。]]></description>
+            <link>https://weedge.github.io/chapters/3-CPU-Microarchitecture/3-3_Exploiting_ILP_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/3-CPU-Microarchitecture/3-3_Exploiting_ILP_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[另一种被广泛用于许多工作负载的多处理器变体被称为单指令多数据（SIMD）。顾名思义，在SIMD处理器中，单个指令在单个周期内使用多个独立的功能单元操作许多数据元素。向量和矩阵的操作很适合SIMD架构，因为向量或矩阵的每个元素都可以使用相同的指令进行处理。SIMD架构可以更有效地处理大量数据，最适合涉及向量操作的数据并行应用程序。]]></description>
+            <link>https://weedge.github.io/chapters/3-CPU-Microarchitecture/3-4_SIMD_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/3-CPU-Microarchitecture/3-4_SIMD_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[前面描述的技术依赖于程序中可用的并行性来加速执行。除此之外，CPU还支持利用跨进程和/或线程的并行性的技术。接下来，我们将讨论三种利用线程级并行性（TLP）的技术：多核系统、同时多线程和混合架构。这些技术使得能够充分利用可用的硬件资源，并提高系统的吞吐量。]]></description>
+            <link>https://weedge.github.io/chapters/3-CPU-Microarchitecture/3-5_Exploiting_TLP_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/3-CPU-Microarchitecture/3-5_Exploiting_TLP_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[为了有效地利用CPU中提供的所有硬件资源，需要在正确的时间提供正确的数据。理解存储器层次结构对于充分发挥CPU性能至关重要。大多数程序都表现出局部性的属性：它们不会均匀地访问所有代码或数据。CPU存储器层次结构建立在两个基本属性上：]]></description>
+            <link>https://weedge.github.io/chapters/3-CPU-Microarchitecture/3-6_Memory_Hierarchy_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/3-CPU-Microarchitecture/3-6_Memory_Hierarchy_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[虚拟内存是一种机制，将连接到 CPU 的物理内存与在 CPU 上执行的所有进程共享。虚拟内存提供了一种保护机制，可以防止其他进程访问分配给特定进程的内存。虚拟内存还提供重定位，即能够在物理内存中的任何位置加载程序而不更改程序中的地址。]]></description>
+            <link>https://weedge.github.io/chapters/3-CPU-Microarchitecture/3-7_Virtual_memory_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/3-CPU-Microarchitecture/3-7_Virtual_memory_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[为了看到我们在本章讨论的所有概念如何在实践中使用，让我们来看看英特尔第12代酷睿处理器Goldencove的实现，该处理器于2021年上市。该核心被用作Alderlake和Sapphire Rapids平台中的P核心。图@fig:Goldencove_diag显示了Goldencove核心的模块图。请注意，本节仅描述了单个核心，而不是整个处理器。因此，我们将跳过关于频率、核心数量、L3缓存、核心互连、内存延迟和带宽以及其他内容的讨论。]]></description>
+            <link>https://weedge.github.io/chapters/3-CPU-Microarchitecture/3-8_Modern_CPU_design_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/3-CPU-Microarchitecture/3-8_Modern_CPU_design_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[每个现代CPU都提供了监控性能的设施，这些设施被合并到了性能监控单元（PMU）中。该单元集成了帮助开发人员分析其应用程序性能的功能。一个现代Intel CPU中的PMU示例如图@fig:PMU所示。大多数现代PMU都有一组性能监控计数器（PMC），可用于收集程序执行过程中发生的各种性能事件。稍后在[@sec:counting]中，我们将讨论如何使用PMC进行性能分析。此外，PMU还具有其他增强性能分析的功能，如LBR、PEBS和PT，[@sec:PmuChapter]专门讨论了这个话题。]]></description>
+            <link>https://weedge.github.io/chapters/3-CPU-Microarchitecture/3-9_PMU_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/3-CPU-Microarchitecture/3-9_PMU_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <link>https://weedge.github.io/chapters/3-CPU-Microarchitecture/3-10_Questions-Exercises_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/3-CPU-Microarchitecture/3-10_Questions-Exercises_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[\sectionbreak]]></description>
+            <link>https://weedge.github.io/chapters/3-CPU-Microarchitecture/3-11_Chapter_summary_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/3-CPU-Microarchitecture/3-11_Chapter_summary_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[性能分析中的术语和指标 {#sec:secMetrics}]]></title>
+            <description><![CDATA[像许多工程学科一样，性能分析在使用特殊术语和指标方面非常重要。对于初学者来说，查看由分析工具如Linux perf或Intel VTune Profiler生成的性能分析文件可能会感到非常困难。这些工具涉及许多复杂的术语和指标，但如果您打算进行任何严肃的性能工程工作，这些内容是“必须了解”的。]]></description>
+            <link>https://weedge.github.io/chapters/4-Terminology-And-Metrics/4-0_Terminology_and_metrics_in_performance_analysis_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/4-Terminology-And-Metrics/4-0_Terminology_and_metrics_in_performance_analysis_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[现代处理器通常执行的指令数量比程序流程所需的要多。这是因为一些指令是以推测性的方式执行的，如[@sec:SpeculativeExec]中所讨论的。对于大多数指令，CPU在结果可用时提交，所有先前的指令都已退役。但对于以推测性方式执行的指令，CPU会保留它们的结果，而不立即提交它们的结果。当推测结果被证明是正确时，CPU会解除此类指令的阻塞并正常进行。但当推测结果被证明是错误时，CPU会丢弃推测指令所做的所有更改，并不会退役它们。因此，CPU处理的指令可以被执行但不一定被退役。考虑到这一点，我们通常可以预期执行的指令数量高于已退役的指令数量。]]></description>
+            <link>https://weedge.github.io/chapters/4-Terminology-And-Metrics/4-1_Retired_and_Executed_Instruction_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/4-Terminology-And-Metrics/4-1_Retired_and_Executed_Instruction_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[CPU利用率是在一段时间内CPU处于忙碌状态的百分比。从技术上讲，当CPU不运行内核的idle线程时，CPU被认为是被利用的。]]></description>
+            <link>https://weedge.github.io/chapters/4-Terminology-And-Metrics/4-2_CPU_Utilization_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/4-Terminology-And-Metrics/4-2_CPU_Utilization_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[这两个是两个基本指标，分别代表：]]></description>
+            <link>https://weedge.github.io/chapters/4-Terminology-And-Metrics/4-3_CPI_and_IPC_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/4-Terminology-And-Metrics/4-3_CPI_and_IPC_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[具有 x86 架构的微处理器将复杂的 CISC 类指令转换为简单的 RISC 类微操作，缩写为 $\mu$ops 或 $\mu$ops。例如，像 ADD rax, rbx 这样的简单加法指令只会生成一个 $\mu$op，而更复杂的指令比如 ADD rax, [mem] 可能生成两个：一个用于从 mem 内存位置读取到临时（未命名）寄存器，另一个用于将其添加到 rax 寄存器。指令 ADD [mem], rax 会生成三个 $\mu$ops：一个用于从内存读取，一个用于相加，一个用于将结果写回内存。]]></description>
+            <link>https://weedge.github.io/chapters/4-Terminology-And-Metrics/4-4_UOP_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/4-Terminology-And-Metrics/4-4_UOP_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[另一个一些性能工具使用的重要指标是管道槽 (pipeline slot) 的概念。管道槽代表处理一个微操作所需的硬件资源。图 @fig:PipelineSlot 展示了一个每周期有 4 个分配槽的 CPU 的执行管道。这意味着核心可以在每个周期将执行资源（重命名的源和目标寄存器、执行端口、ROB 条目等）分配给 4 个新的微操作。这样的处理器通常被称为4 宽机器。在图中连续的六个周期中，只利用了一半可用槽位。从微架构的角度来看，执行此类代码的效率只有 50%。]]></description>
+            <link>https://weedge.github.io/chapters/4-Terminology-And-Metrics/4-5_Pipeline_Slot_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/4-Terminology-And-Metrics/4-5_Pipeline_Slot_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[大多数CPU都使用时钟信号来控制它们的顺序操作。时钟信号由外部发生器产生，每秒提供一致数量的脉冲。时钟脉冲的频率决定了CPU执行指令的速率。因此，时钟越快，CPU每秒执行的指令就越多。]]></description>
+            <link>https://weedge.github.io/chapters/4-Terminology-And-Metrics/4-6_Core_and_Reference_Cycles_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/4-Terminology-And-Metrics/4-6_Core_and_Reference_Cycles_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[正如在[@sec:MemHierar]中讨论的那样，任何在特定级别的缓存中缺失的内存请求都必须由更高级别的缓存或DRAM进行服务。这意味着这种内存访问的延迟会显著增加。内存子系统组件的典型延迟如表{@tbl:mem_latency}所示。还有一个交互视图[^1]，可视化了现代系统中不同操作的延迟。性能会受到严重影响，特别是当内存请求在最后一级缓存（LLC）中丢失并一直到达主存时。英特尔® Memory Latency Checker[^2]（MLC）是用于测量内存延迟和带宽以及它们随系统负载增加而变化的工具。MLC对于建立测试系统的基准和进行性能分析非常有用。当我们讨论[@sec:MemLatBw]中的内存延迟和带宽时，我们将使用这个工具。]]></description>
+            <link>https://weedge.github.io/chapters/4-Terminology-And-Metrics/4-7_Cache_miss_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/4-Terminology-And-Metrics/4-7_Cache_miss_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[现代CPU尝试预测分支指令的结果（是否被执行）。例如，当处理器看到这样的代码时：]]></description>
+            <link>https://weedge.github.io/chapters/4-Terminology-And-Metrics/4-8_Mispredicted_branch_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/4-Terminology-And-Metrics/4-8_Mispredicted_branch_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[除了本章前面讨论的性能事件外，性能工程师经常使用基于原始事件的指标。表{@tbl:perf_metrics}显示了针对英特尔第12代Goldencove架构的一系列指标，包括描述和公式。该列表并非详尽无遗，但显示了最重要的指标。有关英特尔CPU及其公式的完整指标列表可在TMA_metrics.xlsx中找到。[@sec:PerfMetricsCaseStudy]展示了如何在实践中使用性能指标。]]></description>
+            <link>https://weedge.github.io/chapters/4-Terminology-And-Metrics/4-9_Performance_Metrics_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/4-Terminology-And-Metrics/4-9_Performance_Metrics_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[在现代环境中，低效的内存访问通常是主要的性能瓶颈。因此，处理器从内存子系统中获取单个字节的速度（延迟）以及每秒可以获取多少字节（带宽）是决定应用程序性能的关键因素之一。这两个方面在各种场景中都很重要，我们稍后将看到一些示例。在本节中，我们将专注于测量内存子系统组件的峰值性能。]]></description>
+            <link>https://weedge.github.io/chapters/4-Terminology-And-Metrics/4-10_Memory_Latency_and_Bandwidth_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/4-Terminology-And-Metrics/4-10_Memory_Latency_and_Bandwidth_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[在本章中讨论的所有内容综合起来，我们运行了来自不同领域的四个基准测试，并计算了它们的性能指标。首先，让我们介绍这些基准测试。]]></description>
+            <link>https://weedge.github.io/chapters/4-Terminology-And-Metrics/4-11_Case_Study_of_4_Benchmarks_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/4-Terminology-And-Metrics/4-11_Case_Study_of_4_Benchmarks_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[假设您是案例研究中基准测试的四个应用程序的所有者。您的公司管理层要求您为每个应用程序构建小型计算集群，主要目标是最大化性能（吞吐量）。给您的预算有限，但足以购买 1 台用于运行每个工作负载的中端服务器系统（Mac Studio、Supermicro/Dell/HPE 服务器机架等）或 1 台高端台式机（带超频 CPU、液体冷却、顶级 GPU、快速 DRAM），共计 4 台机器。它们可以是所有四种不同的系统。此外，您可以用这笔钱购买 3-4 台低端系统，选择权由您决定。管理层希望将每个应用程序的成本控制在 10,000 美元以下，但如果您能证明开支合理，他们可以灵活调整 (10-20%)。假设 Stockfish 仍然是单线程的。再次查看四个应用程序的性能特征，并写下您将为每个工作负载购买哪些计算机部件（CPU、内存、如有必要，还有独立 GPU）。您将优先考虑哪些规格参数？您将在哪里使用最昂贵的部件，您可以在哪里节省资金？请尽可能详细地描述，并在网上搜索确切的组件及其价格。考虑系统的所有组件：主板、磁盘驱动器、冷却解决方案、电源分配单元、机架/机箱/塔式机箱等。您将运行哪些额外的性能实验来指导您的决策？]]></description>
+            <link>https://weedge.github.io/chapters/4-Terminology-And-Metrics/4-15_Questions-Exercises_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/4-Terminology-And-Metrics/4-15_Questions-Exercises_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[\sectionbreak]]></description>
+            <link>https://weedge.github.io/chapters/4-Terminology-And-Metrics/4-16_Chapter_summary_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/4-Terminology-And-Metrics/4-16_Chapter_summary_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[性能分析方法 {#sec:sec_PerfApproaches}]]></title>
+            <description><![CDATA[当你在进行高级优化工作时，比如将更好的算法集成到应用程序中，通常很容易判断性能是否有所提高，因为基准测试结果很明显。大幅提速，如2倍、3倍等，从性能分析的角度来看相对容易。当你从程序中消除了大量计算时，你预期会在运行时间上看到明显的差异。]]></description>
+            <link>https://weedge.github.io/chapters/5-Performance-Analysis-Approaches/5-0_Performance_analysis_approaches_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/5-Performance-Analysis-Approaches/5-0_Performance_analysis_approaches_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[也许有史以来进行性能分析的第一种方法就是代码仪器化。它是一种在程序中插入额外代码以收集特定运行时信息的技术。[@lst:CodeInstrumentation]展示了在函数开头插入printf语句的最简单示例，以指示该函数何时被调用。然后，运行程序并计算输出中看到“foo被调用”的次数。也许，世界上每个程序员在其职业生涯中至少有一次这样做过。]]></description>
+            <link>https://weedge.github.io/chapters/5-Performance-Analysis-Approaches/5-1_Code_instrumentation_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/5-Performance-Analysis-Approaches/5-1_Code_instrumentation_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[跟踪在概念上与仪器化非常相似，但略有不同。代码仪器化假设用户可以编排他们应用程序的代码。另一方面，跟踪依赖于程序的外部依赖项的现有仪器化。例如，strace工具使我们能够跟踪系统调用，并可以被视为对Linux内核的仪器化。英特尔处理器跟踪（见附录D）使您能够记录程序执行的指令，并可以被视为对CPU的仪器化。跟踪可以从事先适当仪器化的组件中获得，并且不受更改的影响。跟踪通常被用作黑匣子方法，其中用户无法修改应用程序的代码，但他们希望了解程序在幕后执行的操作。]]></description>
+            <link>https://weedge.github.io/chapters/5-Performance-Analysis-Approaches/5-2_Tracing_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/5-Performance-Analysis-Approaches/5-2_Tracing_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[工作负载特征化是通过定量参数和函数描述工作负载的过程。简单来说，它意味着计算某些性能事件的绝对数量。特征化的目标是定义工作负载的行为并提取其最重要的特征。在高层次上，一个应用程序可以属于以下一种或多种类型：交互式、数据库、实时、基于网络的、大规模并行等。不同的工作负载可以使用不同的指标和参数来解决特定的应用程序领域。]]></description>
+            <link>https://weedge.github.io/chapters/5-Performance-Analysis-Approaches/5-3_Characterization_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/5-Performance-Analysis-Approaches/5-3_Characterization_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[在某些情况下，我们可能对分析特定代码区域的性能感兴趣，而不是整个应用程序。例如，当您开发一段新代码并只想关注该代码时，就会遇到这种情况。自然地，您会希望跟踪优化进度并捕获其他性能数据，以帮助您一路前进。大多数性能分析工具都提供特定的 标记器 API，可以让您做到这一点。这里有一些例子：]]></description>
+            <link>https://weedge.github.io/chapters/5-Performance-Analysis-Approaches/5-4_Marker_APIs_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/5-Performance-Analysis-Approaches/5-4_Marker_APIs_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[采样是最常用的性能分析方法。人们通常将其与程序中的热点识别联系起来。广义而言之，采样有助于找到代码中对特定性能事件贡献最多的位置。如果我们考虑发现热点，那么这个问题可以重新表述为程序中的哪个地方消耗了最多的 CPU 周期。人们通常将技术上称为采样的操作称为“性能分析”。根据维基百科https://en.wikipedia.org/wiki/Profiling_(computer_programming[^1]的说法，性能分析是一个更广泛的术语，包括各种收集数据的技术，例如中断、代码检测和 PMC。]]></description>
+            <link>https://weedge.github.io/chapters/5-Performance-Analysis-Approaches/5-5_Sampling_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/5-Performance-Analysis-Approaches/5-5_Sampling_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[Roofline 性能模型是一个以吞吐量为导向的性能模型，在 HPC 领域广泛使用。它于 2009 年在加州大学伯克利分校开发。模型中的“roofline”表示应用程序的性能不能超过机器的能力。程序中的每个函数和每个循环都受到机器的计算或内存容量的限制。这个概念在图 @fig:RooflineIntro 中有所体现。应用程序的性能始终会受到某条“roofline”函数的限制。]]></description>
+            <link>https://weedge.github.io/chapters/5-Performance-Analysis-Approaches/5-6_Roofline_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/5-Performance-Analysis-Approaches/5-6_Roofline_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[如今，我们拥有广泛的静态代码分析工具。对于 C 和 C++ 语言，我们有一些著名的工具，例如 Clang 静态分析器: https://clang-analyzer.llvm.org/、Klocwork: https://www.perforce.com/products/klocwork、Cppcheck: http://cppcheck.sourceforge.net/ 等。它们旨在检查代码的正确性和语义。同样，也有一些工具试图解决代码的性能方面的问题。静态性能分析器不会执行或分析程序，而是模拟代码，就好像它在真实硬件上执行一样。静态预测性能几乎是不可能的，因此这种类型的分析有很多限制。]]></description>
+            <link>https://weedge.github.io/chapters/5-Performance-Analysis-Approaches/5-7_Static_performance_analysis_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/5-Performance-Analysis-Approaches/5-7_Static_performance_analysis_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[如今，软件开发在很大程度上依赖编译器进行性能优化。编译器在加速软件方面扮演着关键角色。大多数开发人员将优化代码的工作留给编译器，只有当他们发现编译器无法完成的优化机会时才会干预。可以说，这是一个好的默认策略。但是，当您追求最佳性能时，它就不太管用了。如果编译器没有执行关键优化，例如矢量化循环，怎么办？您将如何知道这一点？幸运的是，所有主流编译器都提供优化报告，我们现在将讨论这些报告。]]></description>
+            <link>https://weedge.github.io/chapters/5-Performance-Analysis-Approaches/5-8_Compiler_Opt_Reports_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/5-Performance-Analysis-Approaches/5-8_Compiler_Opt_Reports_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <link>https://weedge.github.io/chapters/5-Performance-Analysis-Approaches/5-9_Questions-Exercises_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/5-Performance-Analysis-Approaches/5-9_Questions-Exercises_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[\sectionbreak]]></description>
+            <link>https://weedge.github.io/chapters/5-Performance-Analysis-Approaches/5-10_Chapter_Summary_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/5-Performance-Analysis-Approaches/5-10_Chapter_Summary_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[性能分析的最终目标是识别性能瓶颈并定位与之相关的代码部分。不幸的是，没有预定的步骤可供遵循，因此可以采用多种不同的方法。]]></description>
+            <link>https://weedge.github.io/chapters/6-CPU-Features-For-Performance-Analysis/6-0_Intro_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/6-CPU-Features-For-Performance-Analysis/6-0_Intro_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[自顶向下微架构分析 (TMA) 方法是一种非常强大的技术，用于识别程序中的 CPU 瓶颈。它是一种健壮、正式的方法，即使是经验不足的开发人员也易于使用。该方法最棒的一点是，它不需要开发人员深入了解系统中的微架构和 PMCs，即可高效找到 CPU 瓶颈。]]></description>
+            <link>https://weedge.github.io/chapters/6-CPU-Features-For-Performance-Analysis/6-1_Top-Down_Microarchitecture_Analysis_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/6-CPU-Features-For-Performance-Analysis/6-1_Top-Down_Microarchitecture_Analysis_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[TMA 方法最早由英特尔在 2014 年推出，并从 SandyBridge 家族的处理器开始提供 Fourth。英特尔的实施为每个高级类别提供了多个子类别，可以更好地帮助您更好地识别和定位应用程序中出现的处理器性能瓶塞 (见图 @fig:TMA)。]]></description>
+            <link>https://weedge.github.io/chapters/6-CPU-Features-For-Performance-Analysis/6-2_TMA-Intel_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/6-CPU-Features-For-Performance-Analysis/6-2_TMA-Intel_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[[TODO]: TMA 从哪个内核版本开始在 Linux perf 中支持？]]></description>
+            <link>https://weedge.github.io/chapters/6-CPU-Features-For-Performance-Analysis/6-3_TMA-AMD_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/6-CPU-Features-For-Performance-Analysis/6-3_TMA-AMD_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[ARM CPU 架构师也为他们的处理器开发了一种 TMA 性能分析方法，我们接下来将讨论。ARM 在其文档中将其称为“Topdown” [@ARMNeoverseV1TopDown]，因此我们将使用他们的命名。在撰写本章节时（2023 年底），Topdown 仅支持 ARM 设计的内核，例如 Neoverse N1 和 Neoverse V1 及其衍生产品，例如 Ampere Altra 和 AWS Graviton3。如果您需要刷新有关 ARM 芯片系列的记忆，请参考本书末尾的主要 CPU 微架构列表。Apple 设计的处理器目前还不支持 ARM Topdown 性能分析方法。]]></description>
+            <link>https://weedge.github.io/chapters/6-CPU-Features-For-Performance-Analysis/6-4_TMA-ARM_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/6-CPU-Features-For-Performance-Analysis/6-4_TMA-ARM_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[TMA 非常适合识别 CPU 性能瓶颈。理想情况下，当我们在应用程序上运行它时，我们希望看到“Retiring”指标达到 100%。尽管存在例外。“Retiring”指标达到 100% 意味着 CPU 已满负荷工作，并且以全速处理指令。但这并不能说明这些指令的质量。程序可以在紧密循环中等待锁，这将显示高“Retiring”指标，但不会做任何有用的工作。]]></description>
+            <link>https://weedge.github.io/chapters/6-CPU-Features-For-Performance-Analysis/6-5_TMA-summary_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/6-CPU-Features-For-Performance-Analysis/6-5_TMA-summary_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[现代高性能 CPU 提供分支记录机制，使处理器能够连续记录一组先前执行的分支。但在进入细节之前，你可能会问：为什么我们对分支如此感兴趣？ 嗯，因为这是我们如何确定程序控制流的方式。我们基本上忽略基本块（参见 [@sec:BasicBlock]）中的其他指令，因为分支总是基本块中的最后一个指令。由于基本块中的所有指令都保证执行一次，因此我们只能关注将“代表”整个基本块的分支。因此，如果我们跟踪每个分支的结果，就可以重建程序的整个逐行执行路径。事实上，这就是英特尔处理器跟踪 (PT) 功能可以做到的，它在附录 D 中讨论。我们将在这里讨论的分支记录机制基于采样而不是跟踪，因此具有不同的用例和功能。]]></description>
+            <link>https://weedge.github.io/chapters/6-CPU-Features-For-Performance-Analysis/6-6_Last_Branch_Record_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/6-CPU-Features-For-Performance-Analysis/6-6_Last_Branch_Record_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <link>https://weedge.github.io/chapters/6-CPU-Features-For-Performance-Analysis/6-8_Questions-Exercises_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/6-CPU-Features-For-Performance-Analysis/6-8_Questions-Exercises_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[性能分析器利用本章介绍的硬件功能来实现许多不同类型的分析。]]></description>
+            <link>https://weedge.github.io/chapters/6-CPU-Features-For-Performance-Analysis/6-9_Chapter_Summary_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/6-CPU-Features-For-Performance-Analysis/6-9_Chapter_Summary_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[性能分析工具概述 {#sec:secOverviewPerfTools}]]></title>
+            <description><![CDATA[在上一章中，我们探讨了现代处理器中实现的用于辅助性能分析的功能。然而，如果你直接开始使用这些功能，很快就会变得非常微妙，因为需要大量的低级编程才能利用它们。幸运的是，性能分析工具处理了所有必要的复杂性，以有效地使用这些硬件性能监控功能。它使分析变得顺利，但了解工具如何获取和解释数据是至关重要的。这就是为什么我们在讨论 CPU 性能监控功能之后再讨论分析工具的原因。]]></description>
+            <link>https://weedge.github.io/chapters/7-Overview-Of-Performance-Analysis-Tools/7-0_Introduction_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/7-Overview-Of-Performance-Analysis-Tools/7-0_Introduction_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[VTune Profiler（之前称为VTune Amplifier）是一款适用于基于x86架构的机器的性能分析工具，具有丰富的图形用户界面。它可以在Linux或Windows操作系统上运行。我们跳过了关于 VTune 对 MacOS 的支持的讨论，因为它不适用于苹果芯片（例如，M1 和 M2），而且基于英特尔的 MacBook 很快就会过时。]]></description>
+            <link>https://weedge.github.io/chapters/7-Overview-Of-Performance-Analysis-Tools/7-1_Intel_Vtune_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/7-Overview-Of-Performance-Analysis-Tools/7-1_Intel_Vtune_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[AMD uProf 是由 AMD 开发的一款用于监视在 AMD 处理器上运行的应用程序性能的工具。虽然 uProf 也可以用于 Intel 处理器，但你只能使用 CPU 无关的功能。该分析器可以免费下载，并可在 Windows、Linux 和 FreeBSD 上使用。AMD uProf 可用于在多个虚拟机（VM）上进行分析，包括 Microsoft Hyper-V、KVM、VMware ESXi、Citrix Xen，但并非所有 VM 上的所有功能都可用。此外，uProf 还支持分析使用各种语言编写的应用程序，包括 C、C++、Java、.NET/CLR。]]></description>
+            <link>https://weedge.github.io/chapters/7-Overview-Of-Performance-Analysis-Tools/7-2_AMD_uprof_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/7-Overview-Of-Performance-Analysis-Tools/7-2_AMD_uprof_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[在 MacOS 上进行初始性能分析最方便的方法是使用 Instruments。它是一个应用程序性能分析器和可视化工具，与 Xcode 一起免费提供。Instruments 建立在从 Solaris 移植到 MacOS 的 DTrace 追踪框架之上。Instruments 拥有许多工具，可用于检查应用程序的性能，并允许我们执行大多数其他性能分析器（如 Intel Vtune）可以执行的基本操作。获取分析器的最简单方法是从 Apple AppStore 安装 Xcode。该工具无需配置，安装后即可立即使用。]]></description>
+            <link>https://weedge.github.io/chapters/7-Overview-Of-Performance-Analysis-Tools/7-3_Apple_Instruments_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/7-Overview-Of-Performance-Analysis-Tools/7-3_Apple_Instruments_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[Linux Perf 是世界上使用最广泛的性能分析器之一，因为它可以在大多数 Linux发行版上使用，这使其适用于广泛的用户。Perf 在许多流行的 Linux 发行版中都原生支持，包括 Ubuntu、Red Hat、Debian 等。它包含在内核中，因此您可以在任何运行 Linux 的系统上获取操作系统级别的统计信息（页面错误、cpu 迁移等）。截至 2023年中期，该分析器支持 x86、ARM、PowerPC64、UltraSPARC 和其他一些架构。[^2] 这允许访问硬件性能监控功能，例如性能计数器。有关 Linux perf 的更多信息，请访问其维基页面 [^1]。]]></description>
+            <link>https://weedge.github.io/chapters/7-Overview-Of-Performance-Analysis-Tools/7-4_Linux_perf_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/7-Overview-Of-Performance-Analysis-Tools/7-4_Linux_perf_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[火焰图是一种流行的性能数据可视化方式，可以直观地呈现程序中最频繁的代码路径。它允许我们看到哪些函数调用占用了最大部分的执行时间。图 @fig:FlameGraph 展示了使用 Brendan Gregg 开发的开源脚本 [^1] 生成的 x264: https://openbenchmarking.org/test/pts/x264 视频编码基准测试的火焰图示例。如今，几乎所有性能分析器都可以在配置文件会话期间收集调用堆栈的情况下自动生成火焰图。]]></description>
+            <link>https://weedge.github.io/chapters/7-Overview-Of-Performance-Analysis-Tools/7-5_Flamegraphs_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/7-Overview-Of-Performance-Analysis-Tools/7-5_Flamegraphs_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[微软开发了一项名为 Windows 事件跟踪 (ETW) 的系统级跟踪功能。它最初旨在帮助设备驱动程序开发人员，但后来也发现它可以用于分析通用应用程序。ETW 在所有受支持的 Windows 平台（x86、x64 和 ARM）上可用，并提供相应的平台相关安装包。ETW 以结构化事件的形式记录用户和内核代码，并支持完整的调用堆栈跟踪，允许观察运行系统中的软件动态并解决许多棘手的性能问题。]]></description>
+            <link>https://weedge.github.io/chapters/7-Overview-Of-Performance-Analysis-Tools/7-6_Windows_ETW_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/7-Overview-Of-Performance-Analysis-Tools/7-6_Windows_ETW_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[到目前为止，我们探索的大部分工具都属于采样性能分析器。当你想识别代码中的热点时，它们非常有用，但在某些情况下，它们可能无法提供足够的粒度进行分析。根据性能分析器的采样频率和程序的行为，大多数函数可能足够快，不会出现在性能分析器中。在某些情况下，您可能想要手动定义程序哪些部分需要始终测量。例如，视频游戏渲染帧（显示在屏幕上的最终图像）平均每秒 60 帧 (FPS); 一些显示器允许高达 144 FPS。在 60 FPS 时，每个帧只有不到 16 毫秒的时间完成工作，然后才能继续下一个帧。开发人员特别关注超过此阈值的帧，因为这会导致游戏中出现明显的卡顿，从而破坏玩家体验。这种情况很难用采样性能分析器捕捉，因为它们通常只提供给定函数所花费的总时间。]]></description>
+            <link>https://weedge.github.io/chapters/7-Overview-Of-Performance-Analysis-Tools/7-7_Tracy_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/7-Overview-Of-Performance-Analysis-Tools/7-7_Tracy_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[在第 6 章中，我们介绍了进行性能分析的各种方法，包括但不限于代码注入、跟踪和采样。在这三种方法中，采样会带来相对较小的运行时开销，并且需要最少的预先工作，同时仍然可以提供宝贵的应用程序热点洞察。但这种洞察仅限于收集样本时的特定时间点 - 如果我们能为这种采样添加时间维度呢？与其只知道函数 A 在特定时间点消耗了 30% 的 CPU 周期，不如跟踪函数 A 在几天、几周甚至几个月内的 CPU 使用率变化？或者在同一时间段内检测其堆栈跟踪的变化，所有这些都在生产环境中进行？持续性能分析应运而生，将这些想法变成了现实。]]></description>
+            <link>https://weedge.github.io/chapters/7-Overview-Of-Performance-Analysis-Tools/7-8_Continuous_Profiling_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/7-Overview-Of-Performance-Analysis-Tools/7-8_Continuous_Profiling_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <link>https://weedge.github.io/chapters/7-Overview-Of-Performance-Analysis-Tools/7-9_Questions-Exercises_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/7-Overview-Of-Performance-Analysis-Tools/7-9_Questions-Exercises_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[[^1]: KUtrace - https://github.com/dicksites/KUtrace]]></description>
+            <link>https://weedge.github.io/chapters/7-Overview-Of-Performance-Analysis-Tools/7-10_Chapter_summary_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/7-Overview-Of-Performance-Analysis-Tools/7-10_Chapter_summary_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[\markright{Part2. Source Code Tuning}]]></description>
+            <link>https://weedge.github.io/chapters/8-Optimizing-Memory-Accesses/8-0_Source_Code_Tuning_For_CPU_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/8-Optimizing-Memory-Accesses/8-0_Source_Code_Tuning_For_CPU_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[优化内存访问 {#sec:MemBound}]]></title>
+            <description><![CDATA[现代计算机仍然基于经典的冯·诺伊曼体系结构构建，其中包括 CPU、内存和输入/输出单元。内存操作（加载和存储）占据了性能瓶颈和功耗的最大部分。毫无疑问，我们首先从这个类别开始。]]></description>
+            <link>https://weedge.github.io/chapters/8-Optimizing-Memory-Accesses/8-1_Optimizing_Memory_Accesses_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/8-Optimizing-Memory-Accesses/8-1_Optimizing_Memory_Accesses_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[编写缓存友好的算法和数据结构是打造高性能应用程序的重要因素之一。缓存友好代码的关键支柱是我们之前在 [@sec:MemHierar] 描述的局部性原理，包括时间局部性和空间局部性。这里的目标是允许高效地从缓存中获取所需数据。在设计缓存友好代码时，考虑缓存行而不只是单个变量及其在内存中的位置会很有帮助。]]></description>
+            <link>https://weedge.github.io/chapters/8-Optimizing-Memory-Accesses/8-2_Cache-Friendly_Data_Structures_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/8-Optimizing-Memory-Accesses/8-2_Cache-Friendly_Data_Structures_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[到现在为止，您应该已经知道未能在缓存中解析的内存访问通常代价高昂。现代 CPU 非常努力地降低预取请求提前足够发出时的缓存未命中惩罚。如果请求的内存位置不在缓存中，我们将无论如何遭受缓存未命中，因为我们必须访问 DRAM 并提取数据。但是，如果我们在程序需要数据时将该内存位置引入缓存，那么我们实际上可以将缓存未命中惩罚降为零。]]></description>
+            <link>https://weedge.github.io/chapters/8-Optimizing-Memory-Accesses/8-3_Memory_Prefetching_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/8-Optimizing-Memory-Accesses/8-3_Memory_Prefetching_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[内存分析是识别程序内存使用情况并优化其内存分配和释放行为的过程。它对于提高应用程序性能和稳定性至关重要，尤其是在资源受限的环境中。]]></description>
+            <link>https://weedge.github.io/chapters/8-Optimizing-Memory-Accesses/8-3_Memory_Profiling_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/8-Optimizing-Memory-Accesses/8-3_Memory_Profiling_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[正如本书前面所述，TLB 是一个快速但有限的每个内核缓存，用于将内存地址的虚拟到物理地址转换。如果没有它，应用程序每次内存访问都需要耗时的内核页表遍历来计算每个引用虚拟地址的正确物理地址。在具有 5 级页表的系统中，它将需要访问至少 5 个不同的内存位置才能获得地址转换。在 [@sec:FeTLB] 部分，我们将讨论如何将大页面用于代码。在这里，我们将看到它们如何用于数据。]]></description>
+            <link>https://weedge.github.io/chapters/8-Optimizing-Memory-Accesses/8-4_Reducing_DTLB_misses_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/8-Optimizing-Memory-Accesses/8-4_Reducing_DTLB_misses_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <link>https://weedge.github.io/chapters/8-Optimizing-Memory-Accesses/8-5_Questions-Exercises_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/8-Optimizing-Memory-Accesses/8-5_Questions-Exercises_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[\sectionbreak]]></description>
+            <link>https://weedge.github.io/chapters/8-Optimizing-Memory-Accesses/8-6_Chapter_Summary_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/8-Optimizing-Memory-Accesses/8-6_Chapter_Summary_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[优化计算]]></title>
+            <description><![CDATA[在上章节中，我们讨论了如何清除路径以实现高效的内存访问。完成后，是时候研究 CPU 如何使用从内存中获取的数据。现代应用程序需要大量的 CPU 计算，尤其是涉及复杂图形、人工智能、加密货币挖掘和大数据处理的应用程序。在本章中，我们将重点关注优化计算，可以减少 CPU 需要做的工作量并提高程序的整体性能。]]></description>
+            <link>https://weedge.github.io/chapters/9-Optimizing-Computations/9-0_Core_Bound_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/9-Optimizing-Computations/9-0_Core_Bound_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[当程序语句引用前面语句的数据时，我们称这两个语句之间存在数据依赖性。有时人们也使用“依赖链”或“数据流依赖”等术语。我们最熟悉的例子如图 @fig:LinkedListChasing 所示。要访问节点 N+1，我们应该首先取消引用指针 N->next 的引用。对于右边的循环，这是一个递归的数据依赖性，这意味着它跨越了循环的多个迭代。基本上，遍历一个链表是一个非常长的依赖链。]]></description>
+            <link>https://weedge.github.io/chapters/9-Optimizing-Computations/9-1_Data_Dependencies_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/9-Optimizing-Computations/9-1_Data_Dependencies_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[如果你是那种经常查看汇编代码的开发人员，你可能见过 CALL、PUSH、POP 和 RET 指令。在 x86 指令集中，CALL 和 RET 指令用于调用和返回函数。PUSH 和 POP 指令用于将寄存器值保存到堆栈上并恢复它。]]></description>
+            <link>https://weedge.github.io/chapters/9-Optimizing-Computations/9-2_Inlining_Functions_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/9-Optimizing-Computations/9-2_Inlining_Functions_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[循环是几乎所有高性能程序的核心。由于循环代表了执行大量次的代码片段，因此它们是执行时间花费最多的部分。在这样一个关键代码段进行微小的更改可能会对程序的性能产生重大影响。这就是为什么仔细分析程序中热点循环的性能并了解改进它们的可能方法非常重要。]]></description>
+            <link>https://weedge.github.io/chapters/9-Optimizing-Computations/9-3_Loop_Optimizations_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/9-Optimizing-Computations/9-3_Loop_Optimizations_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[在现代处理器上，使用 SIMD 指令可以比普通非向量化 (标量) 代码获得更大的速度提升。在进行性能分析时，软件工程师的首要任务之一是确保代码的热点部分被向量化。本节将指导工程师发现向量化机会。有关现代 CPU 的 SIMD 功能的回顾，读者可以参考 [@sec:SIMD]。]]></description>
+            <link>https://weedge.github.io/chapters/9-Optimizing-Computations/9-4_Vectorization_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/9-Optimizing-Computations/9-4_Vectorization_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[某些类型的应用程序具有值得重点调整的热点。但是，对于这些热点生成的代码，编译器并不总是按照我们想要的去做。例如，程序在循环中进行一些计算，而编译器以次优方式对其进行矢量化。这通常涉及一些棘手的或专门的算法，我们可以为其设计更好的指令序列。使用 C 和 C++ 语言的标准结构来让编译器生成所需的汇编代码可能非常困难甚至不可能。]]></description>
+            <link>https://weedge.github.io/chapters/9-Optimizing-Computations/9-5_Compiler_Intrinsics_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/9-Optimizing-Computations/9-5_Compiler_Intrinsics_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <link>https://weedge.github.io/chapters/9-Optimizing-Computations/9-6_Questions-Exercises_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/9-Optimizing-Computations/9-6_Questions-Exercises_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[\sectionbreak]]></description>
+            <link>https://weedge.github.io/chapters/9-Optimizing-Computations/9-7_Chapter_Summary_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/9-Optimizing-Computations/9-7_Chapter_Summary_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[优化分支预测]]></title>
+            <description><![CDATA[到目前为止，我们一直在讨论优化内存访问和计算。然而，还有另一个重要的性能瓶颈类别，我们尚未讨论。它与推测执行有关，这是现代高性能 CPU 核心中普遍存在的一项功能。为了提醒你，可以参考 [@sec:SpeculativeExec] 中我们讨论了如何利用推测执行来提高性能。在本章中，我们将探讨减少分支预测错误次数的技术。]]></description>
+            <link>https://weedge.github.io/chapters/10-Optimizing-Branch-Prediction/10-0_Optimizing_bad_speculation_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/10-Optimizing-Branch-Prediction/10-0_Optimizing_bad_speculation_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[在某些情况下，可以用算术来替换分支。如[@lst:LookupBranches]中的代码，也可以使用简单的算术公式重写，如[@lst:ArithmeticBranches]所示。对于这段代码，Clang-17 编译器用更便宜的乘法运算替换了昂贵的除法运算。]]></description>
+            <link>https://weedge.github.io/chapters/10-Optimizing-Branch-Prediction/10-2_Replace_branches_with_arithmetic_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/10-Optimizing-Branch-Prediction/10-2_Replace_branches_with_arithmetic_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[某些分支可以通过执行分支的两部分，然后选择正确的结果（谓词）来有效地消除。当这种转换可能有利可图时，代码示例显示在 [@lst:PredicatingBranchesCode] 中。如果 TMA 提示 if (cond) 分支具有非常高的误判率，您可以尝试通过执行右侧显示的转换来消除分支。]]></description>
+            <link>https://weedge.github.io/chapters/10-Optimizing-Branch-Prediction/10-3_Replace_branches_with_predication_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/10-Optimizing-Branch-Prediction/10-3_Replace_branches_with_predication_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[编码练习：编写一个微基准，使其经历 50% 的预测错误率或尽可能接近 50%。您的目标是用代码编写，使其所有分支指令中有一半被预测错误。这并不像您想象的那么简单。一些提示和想法：
+- 分支预测错误率计算为 BR_MISP_RETIRED.ALL_BRANCHES / BR_INST_RETIRED.ALL_BRANCHES。
+- 如果使用 C++ 编码，您可以 1) 使用类似于 perf-ninja 的 google benchmark，或 2) 编写常规控制台程序并使用 Linux perf 收集 CPU 计数器，或 3) 将 libpfm 集成到微基准中（参见 [@sec:MarkerAPI])。
+- 无需发明复杂的算法。一种简单的方法是在范围 [0;100) 中生成一个伪随机数，并检查它是否小于 50。随机数可以提前预生成。
+- 请记住，现代 CPU 可以记住较长（但仍然有限）的分支结果序列。]]></description>
+            <link>https://weedge.github.io/chapters/10-Optimizing-Branch-Prediction/10-4_Questions-Exercises_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/10-Optimizing-Branch-Prediction/10-4_Questions-Exercises_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[\sectionbreak]]></description>
+            <link>https://weedge.github.io/chapters/10-Optimizing-Branch-Prediction/10-5_Chapter_Summary_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/10-Optimizing-Branch-Prediction/10-5_Chapter_Summary_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[机器代码布局优化]]></title>
+            <description><![CDATA[中央处理器的前端 (FE) 负责提取和解码指令，并将它们传递给无序后端 (BE)。随着新一代处理器执行“马力”的提升，CPU FE 也需要变得更加强大，以保持机器的平衡。如果 FE 无法跟上提供指令的速度，BE 将无法充分利用，整体性能将会下降。这就是为什么 FE 设计为始终超前于实际执行，以平滑可能发生的任何 hiccup 并始终准备好要执行的指令。例如，2016 年发布的 Intel Skylake 每周期可以提取最多 16 条指令。]]></description>
+            <link>https://weedge.github.io/chapters/11-Machine-Code-Layout-Optimizations/11-1_Machine_Code_Layout_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/11-Machine-Code-Layout-Optimizations/11-1_Machine_Code_Layout_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[基本块是一系列具有单个入口和单个出口的指令。图@fig:BasicBlock 显示了一个基本块的简单示例，其中 MOV 指令是一个入口，而 JA 是一个退出指令。虽然一个基本块可以有一个或多个前驱和后继，但中间的指令不能进入或退出基本块。]]></description>
+            <link>https://weedge.github.io/chapters/11-Machine-Code-Layout-Optimizations/11-2_Basic_Block_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/11-Machine-Code-Layout-Optimizations/11-2_Basic_Block_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[假设我们在程序中有一个热路径，其中有一些错误处理代码（coldFunc）：]]></description>
+            <link>https://weedge.github.io/chapters/11-Machine-Code-Layout-Optimizations/11-3_Basic_Block_Placement_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/11-Machine-Code-Layout-Optimizations/11-3_Basic_Block_Placement_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[有时，性能会根据指令在内存中的偏移量而发生显着变化。考虑 [@lst:LoopAlignment] 中提供的简单函数以及使用 -O3 -march=core-avx2 -fno-unroll-loops 编译时对应的机器码。为了说明这个想法，循环展开被禁用了。]]></description>
+            <link>https://weedge.github.io/chapters/11-Machine-Code-Layout-Optimizations/11-4_Basic_Block_Alignment_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/11-Machine-Code-Layout-Optimizations/11-4_Basic_Block_Alignment_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[函数拆分的思想是将热点代码与冷代码分开。这种转换通常也被称为函数轮廓化。这种优化对于具有复杂控制流图和热路径中存在大量冷代码块的相对较大函数非常有益。[@lst:FunctionSplitting1] 中显示了这种转换可能会有益处的代码示例。为了将热路径中的冷基本块移除，我们将它们剪切并粘贴到一个新函数中，并创建一个调用它们的调用。]]></description>
+            <link>https://weedge.github.io/chapters/11-Machine-Code-Layout-Optimizations/11-5_Function_Splitting_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/11-Machine-Code-Layout-Optimizations/11-5_Function_Splitting_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[根据前面各节描述的原则，可以将热点函数分组，进一步提高 CPU 前端缓存的利用率。当热点函数被分组在一起时，它们开始共享缓存行，这减少了代码占用空间，即 CPU 需要获取的缓存行总数。]]></description>
+            <link>https://weedge.github.io/chapters/11-Machine-Code-Layout-Optimizations/11-6_Function_Reordering_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/11-Machine-Code-Layout-Optimizations/11-6_Function_Reordering_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[编译程序和生成最佳汇编代码都是关于启发式的。代码转换算法有很多特殊情况，旨在在特定情况下实现最佳性能。对于编译器做出的许多决策，它会尝试根据一些典型案例猜测最佳选择。例如，当决定是否内联特定函数时，编译器可能会考虑该函数被调用的次数。问题是编译器事先并不知道这一点。它首先需要运行程序才能找出答案。如果没有运行时信息，编译器就必须猜测。]]></description>
+            <link>https://weedge.github.io/chapters/11-Machine-Code-Layout-Optimizations/11-7_PGO_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/11-Machine-Code-Layout-Optimizations/11-7_PGO_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[调整前端效率的另一个重要领域是内存地址的虚拟到物理地址转换。这些转换主要由 TLB（参见 [@sec:TLBs]）提供服务，TLB 在专用条目中缓存最近使用的内存页转换。当 TLB 无法处理翻译请求时，将进行耗时的内核页表页面遍历，为每个引用的虚拟地址计算正确的物理地址。每当您在 TMA 摘要中看到高比例的 ITLB 开销时，本节中的建议可能派上用场。]]></description>
+            <link>https://weedge.github.io/chapters/11-Machine-Code-Layout-Optimizations/11-8_Reducing_ITLB_misses_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/11-Machine-Code-Layout-Optimizations/11-8_Reducing_ITLB_misses_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[正如我们在本章中多次提到的，代码布局优化对具有大量代码的应用程序影响最大。阐明程序中热代码大小不确定的最佳方法是测量其 代码足迹，我们将其定义为程序执行期间触及的机器指令的字节/缓存行/页面数量。]]></description>
+            <link>https://weedge.github.io/chapters/11-Machine-Code-Layout-Optimizations/11-9_Code_footprint_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/11-Machine-Code-Layout-Optimizations/11-9_Code_footprint_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[不幸的是，我没有关于 perf-ninja::pgo 实验作业的具体细节。如果你能提供更多上下文或分享涉及的指令/任务，我将很高兴指导你完成该过程或提供关于基于 PGO 的优化的通用建议。]]></description>
+            <link>https://weedge.github.io/chapters/11-Machine-Code-Layout-Optimizations/11-10_Questions-Exercises_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/11-Machine-Code-Layout-Optimizations/11-10_Questions-Exercises_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[CPU 前端优化总结见表 {@tbl:CPU_FE_OPT}。]]></description>
+            <link>https://weedge.github.io/chapters/11-Machine-Code-Layout-Optimizations/11-11_Chapter_Summary_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/11-Machine-Code-Layout-Optimizations/11-11_Chapter_Summary_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[在本章中，我们将探讨一些优化主题，它们与前三章中涵盖的任何类别没有特别关联，但仍然足够重要，可以在本书中占有一席之地。]]></description>
+            <link>https://weedge.github.io/chapters/12-Other-Tuning-Areas/12-0_Other_tuning_areas_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/12-Other-Tuning-Areas/12-0_Other_tuning_areas_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[待写]]></description>
+            <link>https://weedge.github.io/chapters/12-Other-Tuning-Areas/12-1_Optimizing_Input-Output_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/12-Other-Tuning-Areas/12-1_Optimizing_Input-Output_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <link>https://weedge.github.io/chapters/12-Other-Tuning-Areas/12-3_Architecture-Specific_Optimizations_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/12-Other-Tuning-Areas/12-3_Architecture-Specific_Optimizations_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[到目前为止，我们已经讨论了各种旨在改进应用程序整体性能的软件优化。在这一节中，我们将讨论在低延迟系统（例如实时处理和高频交易 (HFT)）中使用的额外优化技术。在这样的环境中，主要的优化目标是使程序的特定部分尽可能快地运行。当您在 HFT 行业工作时，每个微秒和纳秒都至关重要，因为它直接影响利润。通常，低延迟部分会实现实时或 HFT 系统的关键循环，例如移动机械臂或向交易所发送订单。优化关键路径的延迟有时会以牺牲程序其他部分为代价。一些技术甚至会牺牲整个系统的整体吞吐量。]]></description>
+            <link>https://weedge.github.io/chapters/12-Other-Tuning-Areas/12-4_Low-Latency-Tuning-Techniques_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/12-Other-Tuning-Areas/12-4_Low-Latency-Tuning-Techniques_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[一些进行大量浮点值计算的应用程序容易出现一个非常微妙的问题，从而导致性能下降。这个问题出现在应用程序遇到“次规格”浮点值时，我们将在本节讨论。您还可以找到术语“去规格”浮点值，它是指同一个东西。根据 IEEE 标准 754，[^2] 次规格值是一个非零数字，其指数小于最小规格数。[^1] [@lst:Subnormals] 展示了一个非常简单的次规格值的实例。]]></description>
+            <link>https://weedge.github.io/chapters/12-Other-Tuning-Areas/12-5_Detecting_Slow_FP_Arithmetic_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/12-Other-Tuning-Areas/12-5_Detecting_Slow_FP_Arithmetic_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[在成功完成了利用 CPU 微架构所有复杂设施调整应用程序的所有艰苦工作之后，我们最不想看到的是系统固件、操作系统或内核破坏我们所有的努力。即使是最精细调整的应用程序，如果被系统管理中断 (SMI)（一种 BIOS 中断，用于停止整个操作系统以执行固件代码）间歇性地中断，也毫无意义。这样的中断每次可能会运行 10 到 100 毫秒。]]></description>
+            <link>https://weedge.github.io/chapters/12-Other-Tuning-Areas/12-6_System_Tuning_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/12-Other-Tuning-Areas/12-6_System_Tuning_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[本案例研究的目的是展示如何确定应用程序是否对最后一级缓存 (LLC) 的大小敏感。利用这些信息，您可以在购买计算系统硬件组件时做出明智的决策。同样，您以后可以确定对其他因素（例如内存带宽、核心数量、处理器频率等）的敏感性，并可能购买更便宜的计算机，同时保持相同的性能水平。]]></description>
+            <link>https://weedge.github.io/chapters/12-Other-Tuning-Areas/12-7_Case_Study_-_LLC_sensitivity_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/12-Other-Tuning-Areas/12-7_Case_Study_-_LLC_sensitivity_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <link>https://weedge.github.io/chapters/12-Other-Tuning-Areas/12-8_Questions-Exercises_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/12-Other-Tuning-Areas/12-8_Questions-Exercises_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[\sectionbreak]]></description>
+            <link>https://weedge.github.io/chapters/12-Other-Tuning-Areas/12-9_Chapter_summary_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/12-Other-Tuning-Areas/12-9_Chapter_summary_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[优化多线程应用 {#sec:secOptMTApps}]]></title>
+            <description><![CDATA[现代 CPU 每年都在增加越来越多的核心。截至 2020 年，你可以购买到一款 x86 服务器处理器，其核心数量超过 50 个！而拥有 8 个执行线程的中档台式机也是相当常见的配置。由于每个 CPU 中有如此强大的处理能力，如何高效利用所有的硬件线程成为了挑战。为了确保应用的未来成功，准备软件以便与不断增长的 CPU 核心数量良好地扩展非常重要。]]></description>
+            <link>https://weedge.github.io/chapters/13-Optimizing-Multithreaded-Applications/13-0_Optimizing_Multithreaded_Applications_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/13-Optimizing-Multithreaded-Applications/13-0_Optimizing_Multithreaded_Applications_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[在处理多线程应用程序时，工程师们应该谨慎分析诸如 CPU 利用率和 IPC（见 [@sec:secMetrics]）等基本指标。某个线程可能表现出高 CPU 利用率和高 IPC，但实际上可能只是在一个锁上旋转。这就是为什么在评估应用程序的并行效率时，建议使用有效 CPU 利用率，该指标仅基于有效时间。[^12]]]></description>
+            <link>https://weedge.github.io/chapters/13-Optimizing-Multithreaded-Applications/13-2_Parallel_Efficiency_Metrics_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/13-Optimizing-Multithreaded-Applications/13-2_Parallel_Efficiency_Metrics_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[Intel VTune Profiler 有一种专门针对多线程应用程序的分析类型，称为线程分析。其摘要窗口（见图 @fig:MT_VtuneThreadSummary）显示了有关整个应用程序执行的统计信息，识别了我们在 [@sec:secMT_metrics] 中描述的所有指标。从有效 CPU 利用率直方图中，我们可以了解到有关捕获的应用程序行为的几个有趣事实。首先，平均而言，同时仅利用了 5 个硬件线程（图表中的逻辑核心）。其次，所有 8 个硬件线程同时活跃的情况非常罕见。]]></description>
+            <link>https://weedge.github.io/chapters/13-Optimizing-Multithreaded-Applications/13-3_Analysis_With_Vtune_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/13-Optimizing-Multithreaded-Applications/13-3_Analysis_With_Vtune_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[Linux 的 perf 工具可以对应用程序可能产生的所有线程进行性能分析。它有 -s 选项，可以记录每个线程的事件计数。使用此选项，在报告的末尾，perf 列出了所有线程 ID 以及每个线程收集的样本数：]]></description>
+            <link>https://weedge.github.io/chapters/13-Optimizing-Multithreaded-Applications/13-4_Analysis_with_Linux_Perf_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/13-Optimizing-Multithreaded-Applications/13-4_Analysis_with_Linux_Perf_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[在 [@sec:secAmdahl] 中，我们定义了识别影响多线程程序整体性能的代码部分的挑战。由于各种原因，优化多线程程序的一部分并不总是能带来明显效果。Coz: https://github.com/plasma-umass/coz[^16] 是一种新型的性能分析器，解决了这个问题，填补了传统软件性能分析器留下的空白。它使用一种称为“因果性能分析”的新技术，通过在应用程序运行期间虚拟地加速代码段来预测某些优化的整体效果，从而进行实验。它通过插入减慢所有其他同时运行代码的暂停来实现这些“虚拟加速”。[@CozPaper]]]></description>
+            <link>https://weedge.github.io/chapters/13-Optimizing-Multithreaded-Applications/13-5_Analysis_with_Coz_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/13-Optimizing-Multithreaded-Applications/13-5_Analysis_with_Coz_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[Linux 支持各种线程同步原语 - 互斥锁、信号量、条件变量等。内核通过 futex 系统调用支持这些线程原语。因此，通过追踪内核中 futex 系统调用的执行，同时从涉及的线程中收集有用的元数据，可以更轻松地识别争用瓶颈。Linux 提供了内核跟踪/分析工具，使之成为可能，其中 eBPF (Extended Berkley Packet Filter[^22]) 的功能最为强大。]]></description>
+            <link>https://weedge.github.io/chapters/13-Optimizing-Multithreaded-Applications/13-6_Analysis_with_eBPF_and_GAPP_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/13-Optimizing-Multithreaded-Applications/13-6_Analysis_with_eBPF_and_GAPP_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[多处理器系统采用缓存一致性协议来确保每个包含独立缓存的独立内核共享使用内存时的数据一致性。如果没有这样的协议，如果CPU A和CPU B都将内存位置L读取到各自的缓存中，然后处理器B随后修改其缓存值L，那么CPU将具有相同内存位置L的不一致值。缓存一致性协议确保对缓存条目的任何更新都忠实地更新在同一位置的任何其他缓存条目中。]]></description>
+            <link>https://weedge.github.io/chapters/13-Optimizing-Multithreaded-Applications/13-7_Cache_Coherence_Issues_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/13-Optimizing-Multithreaded-Applications/13-7_Cache_Coherence_Issues_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <link>https://weedge.github.io/chapters/13-Optimizing-Multithreaded-Applications/13-8_Questions-Exercises_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/13-Optimizing-Multithreaded-Applications/13-8_Questions-Exercises_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[\sectionbreak]]></description>
+            <link>https://weedge.github.io/chapters/13-Optimizing-Multithreaded-Applications/13-9_Chapter_Summary_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/13-Optimizing-Multithreaded-Applications/13-9_Chapter_Summary_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[软件性能]]></description>
+            <link>https://weedge.github.io/chapters/14-Current-And-Future-Trends/14-0_Introduction_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/14-Current-And-Future-Trends/14-0_Introduction_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[\markright{Epilog}]]></description>
+            <link>https://weedge.github.io/chapters/15-Epilog/15-0_Epilog_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/15-Epilog/15-0_Epilog_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[术语表 {.unnumbered}]]></title>
+            <description><![CDATA[\markright{Glossary}]]></description>
+            <link>https://weedge.github.io/chapters/16-Glossary/16-0_Glossary_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/16-Glossary/16-0_Glossary_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[\markright{List of the Major CPU Microarchitectures}]]></description>
+            <link>https://weedge.github.io/chapters/17-List-of-Uarch-ISA/17-0_List_of_uarchs_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/17-List-of-Uarch-ISA/17-0_List_of_uarchs_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[\markright{附录 A}]]></description>
+            <link>https://weedge.github.io/chapters/18-Appendix/Appendix-A_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/18-Appendix/Appendix-A_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[\markright{附录 B}]]></description>
+            <link>https://weedge.github.io/chapters/18-Appendix/Appendix-B_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/18-Appendix/Appendix-B_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[附录 C. 启用大页面 (.unnumbered)]]></title>
+            <description><![CDATA[\markright{附录 C}]]></description>
+            <link>https://weedge.github.io/chapters/18-Appendix/Appendix-C_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/18-Appendix/Appendix-C_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[附录 D. Intel 处理器跟踪 {.unnumbered}]]></title>
+            <description><![CDATA[\markright{附录 D}]]></description>
+            <link>https://weedge.github.io/chapters/18-Appendix/Appendix-D_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/18-Appendix/Appendix-D_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+    </channel>
+</rss>
