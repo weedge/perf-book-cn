@@ -150,7 +150,7 @@
 
 ## 13.优化多线程应用 Optimizing-Multithreaded-Applications
 * [13-0.优化多线程应用](./chapters/13-Optimizing-Multithreaded-Applications/13-0_Optimizing_Multithreaded_Applications_cn.md)
-* [13-1.性能扩展和开销](./chapters/13-Optimizing-Multithreaded-Applications/13-0_Optimizing_Multithreaded_Applications_cn.md)
+* [13-1.性能扩展和开销](./chapters/13-Optimizing-Multithreaded-Applications/13-1_Performance_scaling_and_overhead_cn.md)
 * [13-2.并行效率指标](./chapters/13-Optimizing-Multithreaded-Applications/13-2_Parallel_Efficiency_Metrics_cn.md)
 * [13-3.使用 Intel VTune Profiler 进行分析](./chapters/13-Optimizing-Multithreaded-Applications/13-3_Analysis_With_Vtune_cn.md)
 * [13-4.使用 Linux Perf 进行分析](./chapters/13-Optimizing-Multithreaded-Applications/13-4_Analysis_with_Linux_Perf_cn.md)
