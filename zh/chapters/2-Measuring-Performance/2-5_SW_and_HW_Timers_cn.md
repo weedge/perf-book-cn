@@ -23,7 +23,7 @@
 
 - **时间戳计数器（TSC）**：这是一种硬件定时器，实现为硬件寄存器。TSC是单调的，并且具有恒定的速率，即不考虑频率变化。每个CPU都有自己的TSC，它只是已经过去的参考周期数（参见[@sec:secRefCycles]）。适用于持续时间从纳秒到一分钟的短事件的测量。可以使用编译器内置函数`__rdtsc`来获取TSC的值，如[@lst:TSC]所示，该函数在底层使用`RDTSC`汇编指令。有关使用`RDTSC`汇编指令对代码进行基准测试的更低级别的详细信息，可以参考白皮书[[@IntelRDTSC](../References.md#IntelRDTSC)]。
 
-  代码清单：使用__rdtsc编译器内置函数访问TSC {#lst:TSC .cpp}
+  代码清单：使用__rdtsc编译器内置函数访问TSC {#lst:TSC}
   ```cpp
   #include <x86intrin.h>
   #include <cstdint>

@@ -22,9 +22,8 @@
 
 让我们看一下 [@lst:FMAthroughput] 中的代码。我们有意使示例尽可能简单。当然，现实世界中的代码通常比这更复杂。该代码将数组 `a` 的每个元素乘以常数 `B`，并将缩放后的值累积到 `sum` 中。在右侧，我们展示了使用 `-O3 -ffast-math -march=core-avx2` 编译时 Clang-16 生成的循环的机器代码。汇编代码看起来非常紧凑，让我们更好地理解它。
 
-清单：FMA 吞吐量
-
-~~~~ {#lst:FMAthroughput .cpp .numberLines}
+代码清单：FMA 吞吐量 {#lst:FMAthroughput .cpp .numberLines}
+```cpp
 float foo(float * a, float B, int N){  │ .loop:
   float sum = 0;                       │  vfmadd231ps ymm2, ymm1, ymmword [rdi + rsi]
   for (int i = 0; i < N; i++)          │  vfmadd231ps ymm3, ymm1, ymmword [rdi + rsi + 32]
@@ -33,7 +32,7 @@ float foo(float * a, float B, int N){  │ .loop:
 }                                      │  sub rsi, -128
                                        │  cmp rdx, rsi
                                        │  jne .loop
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```
 
 这段代码是一个归约循环，即我们需要对所有乘积求和，最终返回一个浮点数。按照目前代码的写法，`sum` 上存在循环传递依赖性。您无法覆盖 `sum`，直到累积上一个乘积。一种并行化的巧妙方法是使用多个累加器并在最后将它们汇总。因此，我们可以用多个累加器代替单个 `sum`，例如 `sum1` 用于累积偶数次迭代的结果，`sum2` 用于累积奇数次迭代的结果。这就是 Clang-16 所做的：它使用了 4 个向量寄存器（`ymm2`-`ymm5`），每个都包含 8 个浮点累加器，并使用 FMA 将乘法和加法融合成单个指令。常量 `B` 被广播到 `ymm1` 寄存器中。`-ffast-math` 选项允许编译器重新关联浮点运算，我们将在 [@sec:Vectorization] 中讨论这个选项如何帮助优化。顺便说一句，乘法在循环后只需要做一次。这肯定是程序员的疏忽，但希望编译器将来能够处理它。
 

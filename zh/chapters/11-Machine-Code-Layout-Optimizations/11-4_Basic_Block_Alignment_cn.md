@@ -3,8 +3,8 @@
 有时，性能会根据指令在内存中的偏移量而发生显着变化。考虑 [@lst:LoopAlignment] 中提供的简单函数以及使用 `-O3 -march=core-avx2 -fno-unroll-loops` 编译时对应的机器码。为了说明这个想法，循环展开被禁用了。
 
 
-代码清单:基本的块对齐
-~~~~ {#lst:LoopAlignment .cpp}
+代码清单:基本的块对齐 {#lst:LoopAlignment .cpp}
+```cpp
 void benchmark_func(int* a) {    │ 00000000004046a0 <_Z14benchmark_funcPi>:
   for (int i = 0; i < 32; ++i)   │ 4046a0: mov rax,0xffffffffffffff80
     a[i] += 1;                   │ 4046a7: vpcmpeqd ymm0,ymm0,ymm0
@@ -16,7 +16,7 @@ void benchmark_func(int* a) {    │ 00000000004046a0 <_Z14benchmark_funcPi>:
                                  │ 4046ca: jne 4046b0                          # loop ends
                                  │ 4046cc: vzeroupper 
                                  │ 4046cf: ret 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```
 
 代码本身相当合理，但布局并不完美（见图 @fig:Loop_default）。对应于循环的指令用黄色斜线突出显示。与数据缓存一样，指令缓存行长度为 64 字节。在图 @fig:LoopLayout 中，粗框表示缓存行边界。请注意，循环跨越多个缓存行：它从缓存行 `0x80-0xBF` 开始，并在缓存行 `0xC0-0xFF` 结束。为了获取在循环中执行的指令，处理器需要读取两个缓存行。这些情况通常会导致 CPU 前端的性能问题，尤其是对于上面呈现的小循环。
 

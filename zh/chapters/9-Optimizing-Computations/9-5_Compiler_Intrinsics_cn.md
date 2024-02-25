@@ -4,8 +4,8 @@
 
 希望我们可以强制编译器生成特定的汇编指令，而无需编写低级汇编语言。为了实现这一点，可以使用编译器内部函数，编译器内部函数会转换成特定的汇编指令。内部函数与内联汇编具有同样的好处，而且还提高了代码的可读性，允许编译器进行类型检查，辅助指令调度，并有助于减少调试。[@lst:Intrinsics] 中的示例展示了如何通过编译器内部函数（函数 `bar`）对函数 `foo` 中的相同循环进行编码。
 
-代码清单:编译器内部函数
-~~~~ {#lst:Intrinsics .cpp .numberLines}
+代码清单:编译器内部函数 {#lst:Intrinsics .cpp .numberLines}
+```cpp
 void foo(float *a, float *b, float *c, unsigned N) {
   for (unsigned i = 0; i < N; i++)
     c[i] = a[i] + b[i]; 
@@ -25,7 +25,7 @@ void bar(float *a, float *b, float *c, unsigned N) {
   for (; i < N; i++) // remainder
     c[i] = a[i] + b[i];
 }
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```
 
 当编译为 SSE 目标时，`foo` 和 `bar` 都将生成类似的汇编指令。但是，有几个注意事项。首先，当依赖自动矢量化时，编译器会插入所有必要的运行时检查。例如，它将确保有足够的元素来填充向量执行单元。其次，函数 `foo` 将有一个处理循环剩余部分的标量版本作为备用。最后，大多数向量内部函数假设数据是对齐的，因此为 `bar` 生成 `movaps`（对齐加载），而为 `foo` 生成 `movups`（未对齐加载）。考虑到这一点，开发人员使用编译器内部函数时必须自己注意安全方面。
 
@@ -41,8 +41,8 @@ ISPC 的一次编写，多目标运行模式很有吸引力。然而，我们可
 
 与内部函数不同，代码保持可读性（每个函数没有前缀/后缀）和可移植性。
 
-代码清单:对数组元素求和的高速版本。
-~~~~ {#lst:HWY_code .cpp}
+代码清单:对数组元素求和的高速版本。 {#lst:HWY_code .cpp}
+```cpp
 #include <hwy/highway.h>
 
 float calcSum(const float* HWY_RESTRICT array, size_t count) {
@@ -55,7 +55,7 @@ float calcSum(const float* HWY_RESTRICT array, size_t count) {
   sum = Add(sum, MaskedLoad(FirstN(d, count - i), d, array + i));
   return ReduceSum(d, sum);
 }
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```
 注意在循环处理向量大小 `Lanes(d)` 的倍数之后的显式余数处理。虽然这更加冗长，但它使实际发生的事情变得清晰可见，并允许进行优化，例如覆盖最后一个向量而不是依赖于 `MaskedLoad’，甚至当已知 `count` 是向量大小的倍数时完全跳过余数。
 
 Highway 支持超过 200 个操作，可以分为以下类别：

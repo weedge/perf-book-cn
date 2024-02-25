@@ -122,9 +122,8 @@ $ perf report -n --stdio
 
 为了避免编译器优化，函数 `foo` 是用汇编语言实现的，如 [@lst:TMA_asm] 所示。基准测试的“驱动”部分在 `main` 函数中实现，如 [@lst:TMA_cpp] 所示。我们分配了一个足够大的数组 `a` 以使其不适合 6MB 的 L3 缓存。基准测试生成一个指向数组 `a` 的随机索引，并将此索引与数组 `a` 的地址一起传递给 `foo` 函数。稍后，`foo` 函数会读取此随机内存位置。[^11]
 
-列表：函数 foo 的汇编代码。
-
-~~~~ {#lst:TMA_asm .bash}
+代码清单：函数 foo 的汇编代码。 {#lst:TMA_asm}
+```bash
 $ perf annotate --stdio -M intel foo
 Percent |  Disassembly of benchmark.exe for MEM_LOAD_RETIRED.L3_MISS
 ------------------------------------------------------------
@@ -139,11 +138,11 @@ Percent |  Disassembly of benchmark.exe for MEM_LOAD_RETIRED.L3_MISS
                  ...
    0.00 :    400e13:  xor  rax,rax
    0.00 :    400e16:  ret 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```
 
-Listing: Source code of function main.
+Listing: Source code of function main. {#lst:TMA_cpp}
 
-~~~~ {#lst:TMA_cpp .cpp}
+```cpp
 extern "C" { void foo(char* a, int n); }
 const int _200MB = 1024*1024*200;
 int main() {
@@ -155,7 +154,7 @@ int main() {
   }
   ...
 }
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```
 
 通过查看 [@lst:TMA_asm]，我们可以看到函数 `foo` 中的所有 L3 缓存未命中都被标记为单个指令。现在我们知道是哪条指令导致了这么多 L3 未命中，让我们来修复它。
 
@@ -163,15 +162,15 @@ int main() {
 
 请记住，在 `foo` 函数的开头有用 NOP 模拟的虚拟工作。这会在我们获得将要访问的下一个地址的那一刻与实际加载指令之间创建一个时间窗口。这个时间窗口的存在使我们有机会在虚拟工作的同时开始预取内存位置。[@lst:TMA_prefetch] 展示了这个想法。有关显式内存预取技术的更多信息，请参阅 [@sec:memPrefetch]。
 
-列表：在 main 中插入内存预取。
+列表：在 main 中插入内存预取。 {#lst:TMA_prefetch}
 
-~~~~ {#lst:TMA_prefetch .cpp}
+```cpp
   for (int i = 0; i < 100000000; i++) {
     int random_int = distribution(generator);
 +   __builtin_prefetch ( a + random_int, 0, 1);
     foo(a, random_int);
   }
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```
 
 通过这个显式的内存预取提示，执行时间从 8.5 秒减少到 6.5 秒。此外，`CYCLE_ACTIVITY.STALLS_L3_MISS` 事件的数量几乎减少了十倍：从 19B 减少到 2B。
 

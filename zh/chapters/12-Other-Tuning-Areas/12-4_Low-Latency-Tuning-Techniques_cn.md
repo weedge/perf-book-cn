@@ -14,8 +14,8 @@
 
 如何检测应用程序中运行时的轻微页面错误？一种简单的方法是使用 `top` 实用程序（添加 `-H` 选项以查看线程级别视图）。将 `vMn` 字段添加到默认的显示列选择中，以查看每次显示刷新间隔发生的轻微页面错误数量。[@lst:DumpTopWithMinorFaults] 显示了在编译大型 C++ 项目时使用 `top` 命令查看排名前 10 的进程的转储。附加的 `vMn` 列显示了过去 3 秒内发生的轻微页面错误数量。
 
-代码清单:编译大型c++项目时，带有附加vMn字段的Linux top命令的转储。
-~~~~ {#lst:DumpTopWithMinorFaults .cpp}
+代码清单:编译大型c++项目时，带有附加vMn字段的Linux top命令的转储。 {#lst:DumpTopWithMinorFaults}
+```shell
    PID USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND  vMn
 341763 dendiba+  20   0  303332 165396  83200 R  99.3   1.0   0:05.09 c++      13k
 341705 dendiba+  20   0  285768 153872  87808 R  99.0   1.0   0:07.18 c++       5k
@@ -27,7 +27,7 @@
 341765 dendiba+  20   0  351036 205268  76288 R  87.1   1.3   0:04.75 c++      18k
 341771 dendiba+  20   0  341148 194668  75776 R  86.4   1.2   0:03.43 c++      20k
 341776 dendiba+  20   0  286496 147460  82432 R  76.2   0.9   0:02.64 c++      25k
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```
 
 另一种检测运行时轻微页面错误的方法是使用 `perf stat -e page-faults` 附加到正在运行的进程。
 
@@ -46,8 +46,8 @@ for (int i = 0; i < size; i += pageSize)
 
 请看 [@lst:LockPagesAndNoRelease] 中更全面的方法，它结合了 `mlock/mlockall` 系统调用对 glibc 分配器进行调整（摘自“实时 Linux Wiki” [^1])。
 
-代码清单:调整glibc分配器以锁定内存中的页，并防止将它们释放到操作系统。
-~~~~ {#lst:LockPagesAndNoRelease .cpp}
+代码清单:调整glibc分配器以锁定内存中的页，并防止将它们释放到操作系统。 {#lst:LockPagesAndNoRelease}
+```cpp
 #include <malloc.h>
 #include <sys/mman.h>
 
@@ -62,7 +62,7 @@ for (int i = 0; i < size; i += sysconf(_SC_PAGESIZE))
     mem[i] = 0;
 //...
 free(mem);
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```
 
 代码 [@lst:LockPagesAndNoRelease] 调整了三个 glibc malloc 设置：`M_MMAP_MAX`、`M_TRIM_THRESHOLD` 和 `M_ARENA_MAX`。
 
@@ -102,8 +102,8 @@ TLB 驱逐是实现多线程应用程序低延迟时最容易忽视的陷阱之�
 
 [@lst:ProcInterrupts] 显示了在运行延迟关键线程的 `CPU2` 处理器上出现大量 TLB 驱逐的 `/proc/interrupts` 转储。注意其他内核数量级上的差异。在这种情况下，这种行为的罪魁祸首是 Linux 内核的一个名为自动 NUMA 平衡的功能，可以通过 `sysctl -w numa_balancing=0` 轻松禁用。
 
-代码清单:一个/proc/interrupts的转储文件，其中显示了CPU2上大量TLB被击落的情况
-~~~~ {#lst:ProcInterrupts .bash}
+代码清单:一个/proc/interrupts的转储文件，其中显示了CPU2上大量TLB被击落的情况 {#lst:ProcInterrupts}
+```bash
            CPU0       CPU1       CPU2       CPU3       
 ...
 NMI:          0          0          0          0   Non-maskable interrupts
@@ -115,7 +115,7 @@ RTR:          7          0          0          0   APIC ICR read retries
 RES:      18708       9550        771        528   Rescheduling interrupts
 CAL:        711        934       1312       1261   Function call interrupts
 TLB:       4493       6108      73789       5014   TLB shootdowns
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```
 
 但这不是导致 TLB 驱逐的唯一来源。其他来源还包括透明大页、内存压缩、页面迁移和页面缓存回写。垃圾回收器也可以启动 TLB 驱逐。这些特性在履行其职责的过程中会重新定位页面和/或更改页面权限，这需要更新页表，从而导致 TLB 驱逐。
 

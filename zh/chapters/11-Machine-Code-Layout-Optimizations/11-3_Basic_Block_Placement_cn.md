@@ -46,8 +46,8 @@ if (UNLIKELY(cond)) // NOT
 优化编译器不仅会在遇到“likely/unlikely”提示时改进代码布局。他们还会在其他地方利用这些信息。例如，当应用 `[[unlikely]]` 属性时，编译器将阻止内联 `coldFunc`，因为它现在知道它不太可能经常被执行，并且优化它的大小更有利，即只留下一个 `CALL` 到这个函数。插入 `[[likely]]` 属性对于 switch 语句也是可能的，如 [@lst:BuiltinSwitch] 所示。
 
 
-代码清单:switch语句中可能使用的属性
-~~~~ {#lst:BuiltinSwitch .cpp}
+代码清单:switch语句中可能使用的属性 {#lst:BuiltinSwitch .cpp}
+```cpp
 for (;;) {
   switch (instruction) {
                case NOP: handleNOP(); break;
@@ -56,7 +56,7 @@ for (;;) {
     // handle other instructions
   }
 }
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```
 
 使用此提示，编译器将能够稍微重新排序代码并优化热交换以更快地处理 `ADD` 指令。
 

@@ -18,16 +18,15 @@ Windows 和 Linux 都允许应用程序建立大页面内存区域。有关如�
 
 在应用程序中使用 EHP 的最简单方法是在 `mmap` 中调用 `MAP_HUGETLB`，如 [@lst:ExplicitHugepages1] 所示。在此代码中，指针 `ptr` 将指向一个 2MB 的内存区域，该区域是显式预留给 EHP 的。请注意，由于 EHP 没有预先保留，分配可能会失败。应用程序中使用 EHP 的另一种不太流行的方法可以在附录 C 中找到。此外，开发人员可以编写自己的基于 arena 的分配器，利用 EHP 进行分配。
 
-代码清单:从显式分配的巨大页面映射内存区域。
-
-~~~~ {#lst:ExplicitHugepages1 .cpp}
+代码清单:从显式分配的巨大页面映射内存区域。 {#lst:ExplicitHugepages1 .cpp}
+```cpp
 void ptr = mmap(nullptr, size, PROT_READ | PROT_WRITE,
                 MAP_PRIVATE | MAP_ANONYMOUS | MAP_HUGETLB, -1, 0);
 if (ptr == MAP_FAILED)
   throw std::bad_alloc{};                
 ...
 munmap(ptr, size);
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```
 
 过去，可以使用 libhugetlbfs: [https://github.com/libhugetlbfs/libhugetlbfs](https://github.com/libhugetlbfs/libhugetlbfs)[^1] 库，该库允许覆盖现有动态链接的可执行文件使用的 `malloc` 调用，从而在大页面 (EHP) 之上分配内存。不幸的是，此项目已不再维护。它不需要用户修改代码或重新链接二进制文件。他们只需用 `LD_PRELOAD=libhugetlbfs.so HUGETLB_MORECORE=yes <your app command line>` 预先填充命令行即可使用它。但幸运的是，还有其他库允许使用大页面（非 EHP）和 `malloc`，我们稍后会看到。
 
@@ -52,9 +51,8 @@ always [madvise] never
 
 使用 `madvise`（每个进程）选项时，THP 仅在通过 `madvise` 系统调用并带有 `MADV_HUGEPAGE` 标志的内存区域内启用。如 [@lst:TransparentHugepages1] 所示，指针 `ptr` 将指向一个 2MB 的匿名（透明）内存区域，该区域由内核动态分配。如果内核找不到 2MB 的连续内存块，`mmap` 调用可能会失败。
 
-代码清单:将内存区域映射到一个透明的巨大页面。
-
-~~~~ {#lst:TransparentHugepages1 .cpp}
+代码清单:将内存区域映射到一个透明的巨大页面。{#lst:TransparentHugepages1 .cpp}
+```cpp
 void ptr = mmap(nullptr, size, PROT_READ | PROT_WRITE | PROT_EXEC,
                 MAP_PRIVATE | MAP_ANONYMOUS, -1 , 0);
 if (ptr == MAP_FAILED)
@@ -62,7 +60,7 @@ if (ptr == MAP_FAILED)
 madvise(ptr, size, MADV_HUGEPAGE);
 // use the memory region `ptr`
 munmap(ptr, size);
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```
 
 开发人员可以根据 [@lst:TransparentHugepages1] 中的代码构建自定义 THP 分配器。但是，他们还可以将 THP 用于应用程序进行的 `malloc` 调用中。许多内存分配库通过覆盖 `libc` 的 `malloc` 实现来提供此功能。以下是最流行的此类库之一 `jemalloc` 的示例。
 

@@ -35,4 +35,4 @@ TLB 层次结构为相对较大的内存空间保留翻译。但是，TLB 未命
 
 ![指向 2MB 页面中数据的虚拟地址](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/uarch/HugePageVirtualAddress.png){#fig:L2PageTables width=70%}
 
-使用 Huge Pages 可以大大减少对 TLB 层次结构的压力，因为需要的 TLB 条目更少。它大大增加了 TLB 命中率。我们将在 [@sec:secDTLB] 和 [@sec:FeTLB] 中讨论如何使用 Huge Pages 减少 TLB 未命中率。使用 Huge Pages 的缺点是内存碎片化，并且在某些情况下，由于操作系统更难管理大量内存块并确保有效利用可用内存，非确定性页面分配延迟会增加。要在运行时满足 2MB Huge Page 分配请求，操作系统需要找到 2MB 的连续块。如果找不到，操作系统需要重组页面，从而导致更长的分配延迟。
+使用 Huge Pages 可以大大减少对 TLB 层次结构的压力，因为需要的 TLB 条目更少。它大大增加了 TLB 命中率。我们将在 [[sec:secDTLB](../8-Optimizing-Memory-Accesses/8-4_Reducing_DTLB_misses_cn.md#sec:secDTLB)] 和 [@sec:FeTLB] 中讨论如何使用 Huge Pages 减少 TLB 未命中率。使用 Huge Pages 的缺点是内存碎片化，并且在某些情况下，由于操作系统更难管理大量内存块并确保有效利用可用内存，非确定性页面分配延迟会增加。要在运行时满足 2MB Huge Page 分配请求，操作系统需要找到 2MB 的连续块。如果找不到，操作系统需要重组页面，从而导致更长的分配延迟。

@@ -46,20 +46,20 @@
 
 在某些情况下，遍历数组元素的代码根本不可矢量化。向量化备注非常有效地解释了出了什么问题以及为什么编译器无法矢量化代码。[@lst:VectDep] 显示了一个循环内部的依赖关系，该依赖关系阻止了向量化[^31]。
 
-代码清单:向量化:读写后写依赖。
-~~~~ {#lst:VectDep .cpp}
+代码清单:向量化:读写后写依赖。 {#lst:VectDep .cpp}
+```cpp
 void vectorDependence(int *A, int n) {
   for (int i = 1; i < n; i++)
     A[i] = A[i-1] * 2;
 }
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```
 
 一些循环由于上述硬件限制无法矢量化，但另一些循环在放松特定约束时可以矢量化。有时，编译器无法矢量化循环仅仅是因为它无法证明这样做是合法的。编译器通常非常保守，只会确信不会破坏代码时才进行转换。此类软限制可以通过向编译器提供额外的提示来放松。
 
 例如，当转换执行浮点运算的代码时，矢量化可能会改变程序的行为。浮点加法和乘法是交换的，这意味着您可以交换左手侧和右手侧而不改变结果：`(a + b == b + a)`。但是，这些操作不是关联的，因为舍入发生在不同的时间：`((a + b) + c) != (a + (b + c))`。[@lst:VectIllegal] 中的代码无法由编译器自动矢量化。原因是矢量化会将变量 `sum` 更改为矢量累加器，这将改变运算顺序，并可能导致不同的舍入决策和不同的结果。
 
-代码清单:向量化:浮点运算。
-~~~~ {#lst:VectIllegal .cpp .numberLines}
+代码清单:向量化:浮点运算。 {#lst:VectIllegal .cpp .numberLines}
+```cpp
 // a.cpp
 float calcSum(float* a, unsigned N) {
   float sum = 0.0f;
@@ -68,7 +68,7 @@ float calcSum(float* a, unsigned N) {
   }
   return sum;
 }
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```
 
 然而，如果程序可以容忍最终结果有一点轻微的不准确（通常情况下是这样），我们可以将此信息传达给编译器以启用矢量化。Clang 和 GCC 编译器都有一个标志 `-ffast-math`[^29]，它允许这种转换：
 
@@ -87,15 +87,15 @@ a.cpp:4:3: remark: vectorized loop (vectorization width: 4, interleaved count: 2
 
 让我们看另一个典型情况，编译器可能需要开发人员的支持才能执行矢量化。当编译器无法证明循环操作的是具有非重叠内存区域的数组时，它们通常会选择更安全的选项。让我们重新审视 [@sec:compilerOptReports] 中 [@lst:optReport] 提供的示例。当编译器尝试矢量化 [@lst:OverlappingMemRefions] 中呈现的代码时，它通常无法做到这一点，因为数组 `a`、`b` 和 `c` 的内存区域可能重叠。
 
-代码清单: a.c
-~~~~ {#lst:OverlappingMemRefions .cpp .numberLines}
+代码清单: a.c {#lst:OverlappingMemRefions .cpp .numberLines}
+```cpp
 void foo(float* a, float* b, float* c, unsigned N) {
   for (unsigned i = 1; i < N; i++) {
     c[i] = b[i];
     a[i] = c[i-1];
   }
 }
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```
 
 这是由 GCC 10.2 提供的优化报告（使用 `-fopt-info` 启用）：
 
@@ -115,14 +115,14 @@ GCC 识别到数组 `a`、`b` 和 `c` 的内存区域可能存在重叠，并创
 
 在某些情况下，编译器可以矢量化循环，但认为这样做没有好处。在 [@lst:VectNotProfit] 中呈现的代码中，编译器可以矢量化对数组 `A` 的内存访问，但需要将对数组 `B` 的访问拆分为多个标量加载。这种分散/收集模式相对昂贵，并且能够模拟操作成本的编译器经常会决定避免矢量化具有这种模式的代码。
 
-代码清单:向量化:没有好处。
-~~~~ {#lst:VectNotProfit .cpp .numberLines}
+代码清单:向量化:没有好处。 {#lst:VectNotProfit .cpp .numberLines}
+```cpp
 // a.cpp
 void stridedLoads(int *A, int *B, int n) {
   for (int i = 0; i < n; i++)
     A[i] += B[i * 3];
 }
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```
 
 下面是[@lst:VectNotProfit]中的代码的编译器优化报告:
 
@@ -135,15 +135,15 @@ a.cpp:3:3: remark: the cost-model indicates that vectorization is not beneficial
 
 用户可以使用 `#pragma` 提示强制 Clang 编译器矢量化循环，如 [@lst:VectNotProfitOverriden] 所示。但是，请记住，矢量化是否真正有利很大程度上取决于运行时数据，例如循环的迭代次数。编译器无法获得这些信息，[^1] 因此它们往往保守行事。开发人员可以在寻找性能提升空间时使用此类提示。
 
-代码清单:向量化:没有好处。
-~~~~ {#lst:VectNotProfitOverriden .cpp .numberLines}
+代码清单:向量化:没有好处。 {#lst:VectNotProfitOverriden .cpp .numberLines}
+```cpp
 // a.cpp
 void stridedLoads(int *A, int *B, int n) {
 #pragma clang loop vectorize(enable)
   for (int i = 0; i < n; i++)
     A[i] += B[i * 3];
 }
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```
 
 开发人员应注意使用矢量化代码的隐藏成本。使用 AVX 和特别是 AVX-512 向量指令可能会导致频率降频或启动开销，在某些 CPU 上还会影响后续代码数微秒。矢量化部分的代码应该足够热门，以证明使用 AVX-512 的合理性。[^38] 例如，排序 80 KiB 的数据被发现足以摊销这种开销，使矢量化变得有价值。[^39]
 
@@ -181,8 +181,8 @@ ISPC 的另一个优点是其互操作性和易用性。ISPC 编译器生成标�
 
 * `foreach` 与经典的 `for` 循环相同，除了它会将工作分配到不同的程序实例。
 
-代码清单:ISPC版本的数组元素求和。
-~~~~ {#lst:ISPC_code .cpp}
+代码清单:ISPC版本的数组元素求和。 {#lst:ISPC_code .cpp}
+```cpp
 export uniform float calcSum(const uniform float array[], 
                              uniform ptrdiff_t count)
 {
@@ -191,7 +191,7 @@ export uniform float calcSum(const uniform float array[],
         sum += array[i];
     return reduce_add(sum);
 }
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```
 
 由于函数 `calcSum` 必须返回单个值（一个 `uniform` 变量），而我们的 `sum` 变量是一个 `varying`，因此我们需要使用 `reduce_add` 函数来 *收集* 每个程序实例的值。ISPC 还负责生成剥离和剩余循环，以考虑未正确对齐或不是向量宽度倍数的数据。
 

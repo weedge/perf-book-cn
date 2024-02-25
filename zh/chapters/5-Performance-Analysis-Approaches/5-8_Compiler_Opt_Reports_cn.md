@@ -6,8 +6,8 @@
 
 让我们看一下 [@lst:optReport]，它展示了一个由 clang 16.0 未矢量化的循环示例。
 
-清单：a.c
-~~~~ {#lst:optReport .cpp .numberLines}
+代码清单：a.c {#lst:optReport}
+```cpp
 void foo(float* __restrict__ a, 
          float* __restrict__ b, 
          float* __restrict__ c,
@@ -17,7 +17,7 @@ void foo(float* __restrict__ a,
     c[i] = b[i];
   }
 }
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```
 
 在 clang 中生成优化报告，您需要使用 -Rpass*: https://llvm.org/docs/Vectorizers.html#diagnostics 标志：
 
@@ -55,8 +55,8 @@ a.c:5:3: remark: unrolled loop by a factor of 8 with run-time trip count [-Rpass
 
 [@lst:optReport] 中的代码无法矢量化，因为循环内部的操作顺序很重要。如 [@lst:optReport2] 所示，通过交换第 6 行和第 7 行可以修复此示例。这不会改变代码的语义，所以这是一个完全合法的更改。另外，可以通过将循环拆分成两个单独的循环来改善代码。
 
-清单：a.c
-~~~~ {#lst:optReport2 .cpp .numberLines}
+代码清单：a.c  {#lst:optReport2}
+```cpp
 void foo(float* __restrict__ a, 
          float* __restrict__ b, 
          float* __restrict__ c,
@@ -66,7 +66,7 @@ void foo(float* __restrict__ a,
     a[i] = c[i-1];
   }
 }
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```
 
 在优化报告中，我们可以看到循环成功向量化了:
 

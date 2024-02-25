@@ -10,9 +10,9 @@
 
 下面我们提供了一个非常基本的示例，展示了如何使用  [libpfm4](https://sourceforge.net/p/perfmon2/libpfm4/ci/master/tree/)[^1]，这是一个流行的用于收集性能监控事件的 Linux 库。它构建在 Linux `perf_events` 子系统之上，该子系统允许您直接访问性能事件计数器。`perf_events` 子系统相当底层，因此 `libfm4` 包在这里很有用，因为它增加了用于识别 CPU 上可用事件的发现工具以及围绕原始 `perf_event_open` 系统调用的包装库。[@lst:LibpfmMarkerAPI] 展示了如何使用 `libpfm4` 为 [C-Ray](https://openbenchmarking.org/test/pts/c-ray)[^2] benchmark 的 `render` 函数进行检测。
 
-清单：在 C-Ray benchmark 上使用 libpfm4 标记器 API
+代码清单：在 C-Ray benchmark 上使用 libpfm4 标记器 API {#lst:LibpfmMarkerAPI}
 
-~~~~ {#lst:LibpfmMarkerAPI .cpp}
+```cpp 
 +#include <perfmon/pfmlib.h>
 +#include <perfmon/pfmlib_perf_event.h>
 ...
@@ -72,7 +72,7 @@ void render(int xsz, int ysz, uint32_t *fb, int samples) {
 + // aggregate statistics and print it
   ...
 }
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```
 
 在这个代码示例中，我们首先初始化`libpfm`库并配置性能事件以及我们将用于读取它们的格式。在C-Ray基准测试中，`render`函数只被调用一次。在您自己的代码中，务必小心不要多次进行`libpfm`初始化。然后，我们选择要分析的代码区域，在我们的案例中，它是一个带有`trace`函数调用的循环。我们用两个`read`系统调用包围这个代码区域，它们将在循环之前和之后捕获性能计数器的值。接下来，我们保存这些增量以供以后处理，例如，在这种情况下，我们通过计算平均值、90th百分位数和最大值对其进行了聚合（代码未显示）。在基于Intel Alderlake的机器上运行它，我们得到了下面显示的输出。不需要root权限，但`/proc/sys/kernel/perf_event_paranoid`应该设置为小于1。当在一个线程内读取计数器时，这些值仅适用于该线程。它可以选择性地包括运行并归因于该线程的内核代码。
 

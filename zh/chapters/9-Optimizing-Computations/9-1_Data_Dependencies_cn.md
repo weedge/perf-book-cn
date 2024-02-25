@@ -27,8 +27,8 @@
 
 使用 Clang-17 C++ 编译器编译了代码并在 Mac mini (Apple M1, 2020) 上运行。期望这段代码“飞起来”，但是有一个非常讨厌的性能问题使程序变慢。不提前阅读文本，你能在代码中找到一个递归依赖链吗？
 
-代码清单:二维表面上的随机粒子运动
-~~~~ {#lst:DepChain .cpp .numberLines}
+代码清单:二维表面上的随机粒子运动 {#lst:DepChain}
+```cpp
 struct Particle {                                    │
   float x; float y; float velocity;                  │
 };                                                   │
@@ -68,7 +68,7 @@ void particleMotion(vector<Particle> &particles,     │   fmadd  s3, s3, s4, s5
    p.y += sine(angle_rad) * p.velocity;              │   b.ne   .loop
   }                                                  │
 }                                                    │
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```
 
 恭喜您找到了它！存在一个关于 `XorShift32::val` 的循环依赖。要生成下一个随机数，生成器必须首先生成前一个数字。`gen()` 方法的下一个调用将基于前一个数字生成数字。图 @fig:DepChain 直观地显示了有问题的循环进位依赖。请注意，计算粒子坐标的代码（将角度转换为弧度，正弦，余弦，乘以速度）会在相应的随机数准备好后立即开始执行，但不会更早。
 
@@ -80,8 +80,8 @@ void particleMotion(vector<Particle> &particles,     │   fmadd  s3, s3, s4, s5
 
 解决这个问题的一种方法是使用额外的 RNG 对象，使其一个为循环的偶数迭代提供数据，另一个为奇数迭代提供数据，如 [@lst:DepChainFixed] 所示。请注意，我们还手动展开循环。现在我们有两个独立的依赖链，可以并行执行。有人可能会说这改变了程序的功能，但用户无法分辨，因为粒子的运动是随机的。另一种解决方案是选择一个内部依赖链更少的 RNG。
 
-代码清单:二维表面上的随机粒子运动
-~~~~ {#lst:DepChainFixed .cpp}
+代码清单:二维表面上的随机粒子运动 {#lst:DepChainFixed}
+```cpp
 void particleMotion(vector<Particle> &particles, 
                     uint32_t seed1, uint32_t seed2) {
   XorShift32 rng1(seed1);
@@ -100,7 +100,7 @@ void particleMotion(vector<Particle> &particles,
     // remainder (not shown)
   }
 }
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```
 
 完成此转换后，编译器开始自动矢量化循环主体，即它将两个链粘合在一起并使用 SIMD 指令并行处理它们。为了隔离打破依赖链的影响，我们禁用了编译器矢量化。
 

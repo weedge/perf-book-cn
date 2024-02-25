@@ -2,20 +2,20 @@
 
 某些分支可以通过执行分支的两部分，然后选择正确的结果（*谓词*）来有效地消除。当这种转换可能有利可图时，代码示例显示在 [@lst:PredicatingBranchesCode] 中。如果 TMA 提示 `if (cond)` 分支具有非常高的误判率，您可以尝试通过执行右侧显示的转换来消除分支。
 
-代码清单：谓词分支。
-~~~~ {#lst:PredicatingBranchesCode .cpp}
+代码清单：谓词分支。 {#lst:PredicatingBranchesCode}
+```cpp
 int a;                                             int x = computeX();
 if (cond) { /* frequently mispredicted */   =>     int y = computeY();
   a = computeX();                                  int a = cond ? x : y;
 } else {
   a = computeY();
 }
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```
 
 对于右侧的代码，编译器可以替换来自三元运算符的分支，并生成 `CMOV` x86 指令。`CMOVcc` 指令检查 `EFLAGS` 寄存器（`CF、OF、PF、SF` 和 `ZF`）中一个或多个状态标志的状态，并在标志处于特定状态或条件下执行移动操作。可以使用 `FCMOVcc,VMAXSS/VMINSS` 指令对浮点数字进行类似的转换。[@lst:PredicatingBranchesAsm] 显示了原始版本和无分支版本的汇编列表。
 
-代码清单：谓词分支 - x86 汇编代码。
-~~~~ {#lst:PredicatingBranchesAsm .bash}
+代码清单：谓词分支 - x86 汇编代码。 {#lst:PredicatingBranchesAsm}
+```asm
 # original version                  # branchless version
 400504: test edi,edi                400537: mov eax,0x0
 400506: je 400514                   40053c: call <computeX> # compute x; a = x
@@ -25,7 +25,7 @@ if (cond) { /* frequently mispredicted */   =>     int y = computeY();
 400514: mov eax,0x0                 40054d: test ebx,ebx    # test cond
 400519: call <computeY>             40054f: cmovne eax,ebp  # override a with x if needed
 40051e: mov edi,eax
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```
 
 与原始版本相比，无分支版本没有跳转指令。然而，无分支版本独立计算 `x` 和 `y`，然后选择其中一个值并丢弃另一个值。虽然这种转换消除了分支预测错误的惩罚，但它可能比原始代码做了更多的工作。在这种情况下，性能改进在很大程度上取决于 `computeX` 和 `computeY` 函数的特性。如果函数很小，编译器能够内联它们，那么它可能会带来明显的性能提升。如果函数很大，执行这两个函数的成本可能比承担分支预测错误的成本更低。
 

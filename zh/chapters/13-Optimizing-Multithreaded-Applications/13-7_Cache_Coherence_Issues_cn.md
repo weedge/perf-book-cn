@@ -22,14 +22,14 @@ MESI（**M**odified **E**xclusive **S**hared **I**nvalid）是最著名的缓存
 
 真共享指的是两个不同的处理器访问同一个变量（请参见 [@lst:TrueSharing]）。
 
-代码清单:真正的共享示例。
-~~~~ {#lst:TrueSharing .cpp}
+代码清单:真正的共享示例。 {#lst:TrueSharing}
+```cpp
 unsigned int sum;
 { // parallel section
   for (int i = 0; i < N; i++)
     sum += a[i]; // sum is shared between all threads
 }
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```
 
 真实共享意味着存在数据竞争，这很难被检测到。幸运的是，有一些工具可以帮助识别这类问题。Clang 的 Thread sanitizer: [https://clang.llvm.org/docs/ThreadSanitizer.html](https://clang.llvm.org/docs/ThreadSanitizer.html)[^30] 和 helgrind: [https://www.valgrind.org/docs/manual/hg-manual.html](https://www.valgrind.org/docs/manual/hg-manual.html)[^31] 就是其中的一些工具。为了防止 [@lst:TrueSharing] 中的数据竞争，应该将 `sum` 变量声明为 `std::atomic<unsigned int> sum`。
 
@@ -39,8 +39,8 @@ unsigned int sum;
 
 假共享[^29] 发生在两个不同的处理器修改位于同一缓存行上的不同变量时（参见 [@lst:FalseSharing]）。图 @fig:FalseSharing 展示了假共享问题。
 
-代码清单: 假共享示例。
-~~~~ {#lst:FalseSharing .cpp}
+代码清单: 假共享示例。 {#lst:FalseSharing}
+```
 struct S {
   int sumA; // sumA and sumB are likely to
   int sumB; // reside in the same cache line
@@ -56,7 +56,7 @@ S s;
   for (int i = 0; i < N; i++)
     s.sumB += b[i];
 }
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```
 
 ![False共享:两个线程访问同一个缓存行。 *© Image by Intel Developer Zone via software.intel.com.*](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/mt-perf/FalseSharing.jpg){#fig:FalseSharing width=50%}
 

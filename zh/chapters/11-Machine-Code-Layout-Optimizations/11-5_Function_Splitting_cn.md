@@ -2,9 +2,8 @@
 
 函数拆分的思想是将热点代码与冷代码分开。这种转换通常也被称为*函数轮廓化*。这种优化对于具有复杂控制流图和热路径中存在大量冷代码块的相对较大函数非常有益。[@lst:FunctionSplitting1] 中显示了这种转换可能会有益处的代码示例。为了将热路径中的冷基本块移除，我们将它们剪切并粘贴到一个新函数中，并创建一个调用它们的调用。
 
-代码清单：函数拆分：将冷代码轮廓化到新函数。
-
-~~~~ {#lst:FunctionSplitting1 .cpp}
+代码清单：函数拆分：将冷代码轮廓化到新函数。 {#lst:FunctionSplitting1}
+```cpp
 void foo(bool cond1, bool cond2) {              void foo(bool cond1, bool cond2) {
   // 热路径                                        // 热路径
   if (cond1) {                                    if (cond1) {
@@ -19,7 +18,7 @@ void foo(bool cond1, bool cond2) {              void foo(bool cond1, bool cond2)
                                                   { /* 大量的冷代码 (1) */ }
                                                 void cold2() __attribute__((noinline))
                                                   { /* 大量的冷代码 (2) */ }
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```
 
 请注意，我们通过使用 `noinline` 属性禁用了冷函数的内联。因为如果没有这个属性，编译器可能会决定内联它，这实际上会撤销我们的转换。或者，我们可以在 `cond1` 和 `cond2` 分支上都应用 `[[unlikely]]` 宏（参见[@sec:secLIKELY]），以传达给编译器不希望内联 `cold1` 和 `cold2` 函数。
 

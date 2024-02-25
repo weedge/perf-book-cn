@@ -6,12 +6,12 @@
 
 利用缓存空间局部性的最佳方式是进行顺序内存访问。通过这样做，我们可以让硬件预取器（参见 [@sec:HwPrefetch]）识别内存访问模式并提前引入下一块数据。[@lst:CacheFriend] 中展示了 C 代码示例，它执行了此类缓存友好访问。该代码之所以“缓存友好”，是因为它按照矩阵在内存中的布局顺序访问矩阵元素（行优先遍历: [https://en.wikipedia.org/wiki/Row-_and_column-major_order](https://en.wikipedia.org/wiki/Row-_and_column-major_order)[^6]）。交换数组中索引的顺序（即 `matrix[column][row]`）将导致以列为主的矩阵遍历，这不会利用空间局部性并会损害性能。
 
-代码清单:缓存友好的内存访问。
-~~~~ {#lst:CacheFriend .cpp}
+代码清单:缓存友好的内存访问。 {#lst:CacheFriend .cpp}
+```cpp
 for (row = 0; row < NUMROWS; row++)
   for (column = 0; column < NUMCOLUMNS; column++)
     matrix[row][column] = row + column;
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```
 
 [@lst:CacheFriend] 中展示的例子是一个经典例子，但现实世界中的应用程序通常要复杂得多。有时您需要付出更多努力才能编写缓存友好的代码。例如，在已排序的大数组中进行二分搜索的标准实现并没有利用空间局部性，因为它测试的是彼此相距甚远、不共享同一缓存行的不同位置的元素。解决这个问题最著名的方式是使用 Eytzinger 布局存储数组元素[[@EytzingerArray](../References.md#EytzingerArray)]。它的想法是使用类似 BFS 的布局（通常在二进制堆中看到）将一个隐式的二叉搜索树打包到数组中。如果代码在数组中执行大量二分搜索，将其转换为 Eytzinger 布局可能会有益处。
 
@@ -25,30 +25,30 @@ for (row = 0; row < NUMROWS; row++)
 
 通过使数据更紧凑可以改善内存层次结构的利用率。有许多方法可以压缩数据。经典示例之一是使用位字段。[@lst:PackingData1] 展示了在数据打包时代码可能获益的例子。如果我们知道 `a`, `b` 和 `c` 代表需要一定数量位才能编码的枚举值，我们就可以减少结构体 `S` 的存储空间（参见 [@lst:PackingData2]）。
 
-代码清单:打包数据:基线结构体。
-~~~~ {#lst:PackingData1 .cpp}
+代码清单:打包数据:基线结构体。 {#lst:PackingData1 .cpp}
+```cpp
 struct S {
   unsigned a;
   unsigned b;
   unsigned c;
 }; // S is `sizeof(unsigned int) * 3` bytes
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```
 
-代码清单:打包数据:打包的结构体。
-~~~~ {#lst:PackingData2 .cpp}
+代码清单:打包数据:打包的结构体。 {#lst:PackingData2 .cpp}
+```cpp
 struct S {
   unsigned a:4;
   unsigned b:2;
   unsigned c:2;
 }; // S is only 1 byte
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```
 
 这大大减少了来回传输的内存量并节省了缓存空间。请记住，这会带来访问每个打包元素的成本。由于 `b` 的位与 `a` 和 `c` 共享同一个机器字，编译器需要执行 `>>` (右移) 和 `&` (AND) 操作来加载它。类似地，需要 `<<` (左移) 和 `|` (OR) 操作将值存储回去。在额外计算比低效内存传输引起的延迟更便宜的地方，数据打包是有益的。
 
 此外，当避免编译器添加的填充（参见 [@lst:PackingData3] 中的示例）时，程序员可以通过重新排列结构或类中的字段来减少内存使用。编译器插入未使用的内存字节（填充）的原因是为了允许高效地存储和获取结构的单个成员。在该示例中，如果将 `S1` 的成员按其大小递减的顺序声明，则可以减小其大小。
 
-代码清单:避免编译填充。
-~~~~ {#lst:PackingData3 .cpp}
+代码清单:避免编译填充。 {#lst:PackingData3 .cpp}
+```cpp
 struct S1 {
   bool b;
   int i;
@@ -60,14 +60,14 @@ struct S2 {
   short s;  
   bool b;
 }; // S2 is `sizeof(int) * 2` bytes
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```
 
 ### 对齐和填充 {#sec:secMemAlign}
 
 改善内存子系统利用率的另一个技术是对齐数据。可能出现这种情况，即一个大小为 16 字节的对象占用两个缓存行，即它从一个缓存行开始并结束于下一个缓存行。获取这样一个对象需要两个缓存行读取，如果对象正确对齐，可以避免这种情况。[@lst:AligningData] 展示了如何使用 C++11 的 `alignas` 关键字对齐内存对象。
 
-代码清单:使用"alignas"关键字对齐数据。
-~~~~ {#lst:AligningData .cpp}
+代码清单:使用"alignas"关键字对齐数据。 {#lst:AligningData .cpp}
+```cpp
 // Make an aligned array
 alignas(16) int16_t a[N];
 
@@ -76,7 +76,7 @@ alignas(16) int16_t a[N];
 struct CACHELINE_ALIGN S {
   //...
 };
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```
 
 如果变量存储在可被其自身大小整除的内存地址上，则访问它的效率最高。例如，一个 double 类型变量占用 8 个字节的存储空间，因此最好将其存储在一个可被 8 整除的地址上。这个大小通常是 2 的幂次方。大于 16 个字节的对象应该存储在一个可被 16 整除的地址上。[[@fogOptimizeCpp](../References.md#fogOptimizeCpp)]
 
@@ -84,22 +84,22 @@ struct CACHELINE_ALIGN S {
 
 有时需要填充数据结构成员以避免一些极端情况，例如缓存争用 [[@fogOptimizeCpp](../References.md#fogOptimizeCpp), 第 9.10 章 缓存争用] 和伪共享 (参见 [@sec:secFalseSharing])。例如，在多线程应用程序中，当两个线程 A 和 B 访问同一结构的不同字段时，可能会出现伪共享问题。[@lst:PadFalseSharing1] 展示了可能发生这种情况的代码示例。由于结构体 `S` 的成员 `a` 和 `b` 可能占据同一个缓存行，因此缓存一致性问题可能会显著减慢程序运行速度。为了解决这个问题，可以填充 `S` 使得成员 `a` 和 `b` 不共享同一个缓存行，如 [@lst:PadFalseSharing2] 所示。
 
-代码清单:填充数据:基线版本。
-~~~~ {#lst:PadFalseSharing1 .cpp}
+代码清单:填充数据:基线版本。 {#lst:PadFalseSharing1 .cpp}
+```cpp
 struct S {
   int a; // written by thread A
   int b; // written by thread B
 };
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```
 
-代码清单:填充数据:改进版本。
-~~~~ {#lst:PadFalseSharing2 .cpp}
+代码清单:填充数据:改进版本。 {#lst:PadFalseSharing2 .cpp}
+```cpp
 #define CACHELINE_ALIGN alignas(64) 
 struct S {
   int a; // written by thread A
   CACHELINE_ALIGN int b; // written by thread B
 };
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+```
 
 使用 `malloc` 进行动态分配时，保证返回的内存地址满足目标平台的最小对齐要求。一些应用程序可能受益于更严格的对齐。例如，以 64 字节对齐而不是默认的 16 字节对齐动态分配 16 字节。POSIX 系统的用户可以利用 `memalign`: [https://linux.die.net/man/3/memalign](https://linux.die.net/man/3/memalign)[^13] API 来实现这一目的。其他人可以像 这里: [https://embeddedartistry.com/blog/2017/02/22/generating-aligned-memory/](https://embeddedartistry.com/blog/2017/02/22/generating-aligned-memory/)[^14] 所描述的那样自己实现。
 

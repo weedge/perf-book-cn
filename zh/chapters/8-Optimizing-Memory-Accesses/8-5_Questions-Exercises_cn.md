@@ -2,6 +2,6 @@
 
 1. 完成 `perf-ninja::data_packing` 实验作业，其中你需要使数据结构更紧凑。
 2. 通过为未来循环迭代实现显式内存预取，解决 `perf-ninja::swmem_prefetch_1` 实验作业。
-3. 使用我们在 [@sec:secDTLB] 中讨论的方法解决 `perf-ninja::huge_pages_1` 实验作业。观察性能、`/proc/meminfo` 中的大页面分配以及测量 DTLB 加载和未命中次数的 CPU 性能计数器的任何变化。
+3. 使用我们在 [[sec:secDTLB](../8-Optimizing-Memory-Accesses/8-4_Reducing_DTLB_misses_cn.md#sec:secDTLB)] 中讨论的方法解决 `perf-ninja::huge_pages_1` 实验作业。观察性能、`/proc/meminfo` 中的大页面分配以及测量 DTLB 加载和未命中次数的 CPU 性能计数器的任何变化。
 4. 描述一段代码成为缓存友好的需要哪些条件？
 5. 运行您每天使用的应用程序。测量其内存占用情况，分析并识别热点内存访问。它们是缓存友好的吗？有没有办法改进它们？
