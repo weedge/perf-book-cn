@@ -1,3 +1,4 @@
 *.sh
+*.py
 .bookignore
 .gitignore

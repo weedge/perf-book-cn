@@ -21,6 +21,8 @@
     "-search",
     "-image-captions",
     "-3-ba",
+    "-ga",
+    "-autocover@2.0.1",
     "favicon@0.0.2",
     "versions-select@0.1.1",
     "splitter@0.0.8",
@@ -50,6 +52,20 @@
       "shortcut": "../assets/imgs/me.ico",
       "bookmark": "../assets/imgs/me.ico",
       "appleTouch": "../assets/imgs/me.ico"
+    },
+    "autocover": {
+      "font": {
+        "size": null,
+        "family": "Impact",
+        "color": "#FFF"
+      },
+      "size": {
+        "w": 1800,
+        "h": 2360
+      },
+      "background": {
+        "color": "#09F"
+      }
     },
     "sharing": {
       "douban": false,
@@ -147,7 +163,7 @@
       ]
     },
     "page-footer-ex": {
-      "copyright": "zh &copy; [weedge](http://weedge.github.io)，使用[知识共享 署名-相同方式共享 4.0协议](https://creativecommons.org/licenses/by-sa/4.0/)发布",
+      "copyright": "zh Copyright &copy; [weedge](http://weedge.github.io)，使用[知识共享 署名-相同方式共享 4.0协议](https://creativecommons.org/licenses/by-sa/4.0/)发布",
       "markdown": true,
       "update_label": "此页面修订于：",
       "update_format": "YYYY-MM-DD HH:mm:ss"

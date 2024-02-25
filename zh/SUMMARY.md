@@ -172,10 +172,14 @@
 ## 17.主要CPU微架构列表 List-of-Uarch-ISA
 * [17-0.主要CPU微架构列表](./chapters/17-List-of-Uarch-ISA/17-0_List_of_uarchs_cn.md)
 
-----
 
 ## 18.附录 Appendix
+----
 * [附录 A](./chapters/18-Appendix/Appendix-A_cn.md)
 * [附录 B](./chapters/18-Appendix/Appendix-B_cn.md)
 * [附录 C](./chapters/18-Appendix/Appendix-C_cn.md)
 * [附录 D](./chapters/18-Appendix/Appendix-D_cn.md)
+
+----
+## 引用
+* [References](./chapters/References.md)
