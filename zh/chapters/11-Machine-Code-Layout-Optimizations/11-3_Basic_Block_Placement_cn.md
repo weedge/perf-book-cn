@@ -21,7 +21,7 @@ if (cond)
 
 哪种布局更好？这取决于 `cond` 通常是真还是假。如果 `cond` 通常为真，那么我们最好选择默认布局，因为否则我们会执行两次跳转而不是一次。另外，在一般情况下，如果 `coldFunc` 是一个相对较小的函数，我们希望它被内联。但是，在这个特定的例子中，我们知道 coldFunc 是一个错误处理函数，可能不会经常执行。通过选择布局 @fig:BB_better，我们在代码的热部分之间保持 fall through，并将 taken branch 转换为 not taken branch。
 
-图 @fig:BB_better 中呈现的布局性能更好，原因有几个。首先，图 @fig:BB_better 中的布局更好地利用了指令和 $\mu$op-cache（DSB，参见 [@sec:uarchFE]）。所有热代码都连续，没有缓存行碎片：L1I-cache 中的所有缓存行都被热代码使用。$\mu$op-cache 也是如此，因为它也是基于底层代码布局进行缓存的。其次，taken branch 对于 fetch 单元来说也更昂贵。CPU 前端会连续获取字节块，因此每次 taken jump 都意味着 jump 之后的字节是无用的。这会降低最大有效提取吞吐量。最后，在某些架构上，not taken branch 比 taken branch 便宜。例如，Intel Skylake CPU 每周期可以执行两个 untaken branch，但每两周期只能执行一个 taken branch。[^2]
+图 @fig:BB_better 中呈现的布局性能更好，原因有几个。首先，图 @fig:BB_better 中的布局更好地利用了指令和 $$\mu$$op-cache（DSB，参见 [@sec:uarchFE]）。所有热代码都连续，没有缓存行碎片：L1I-cache 中的所有缓存行都被热代码使用。$$\mu$$op-cache 也是如此，因为它也是基于底层代码布局进行缓存的。其次，taken branch 对于 fetch 单元来说也更昂贵。CPU 前端会连续获取字节块，因此每次 taken jump 都意味着 jump 之后的字节是无用的。这会降低最大有效提取吞吐量。最后，在某些架构上，not taken branch 比 taken branch 便宜。例如，Intel Skylake CPU 每周期可以执行两个 untaken branch，但每两周期只能执行一个 taken branch。[^2]
 
 为了建议编译器生成改进版本的机器代码布局，可以使用 `[[likely]]`[^10] 和 `[[unlikely]]` 属性提供提示，该属性从 C++20 开始可用。使用此提示的代码如下所示：
 
