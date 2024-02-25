@@ -4,7 +4,7 @@
         <description><![CDATA[现代CPU上的性能分析与优化]]></description>
         <link>https://weedge.github.io/</link>
         <generator>RSS for Node</generator>
-        <lastBuildDate>Sun, 25 Feb 2024 16:17:59 GMT</lastBuildDate>
+        <lastBuildDate>Sun, 25 Feb 2024 16:22:55 GMT</lastBuildDate>
         <atom:link href="https://weedge.github.io/index.xml" rel="self" type="application/rss+xml"/>
         <author><![CDATA[weedge]]></author>
         <managingEditor><![CDATA[weege007@gmail.com]]></managingEditor>
@@ -839,6 +839,13 @@
             <description><![CDATA[现代 CPU 每年都在增加越来越多的核心。截至 2020 年，你可以购买到一款 x86 服务器处理器，其核心数量超过 50 个！而拥有 8 个执行线程的中档台式机也是相当常见的配置。由于每个 CPU 中有如此强大的处理能力，如何高效利用所有的硬件线程成为了挑战。为了确保应用的未来成功，准备软件以便与不断增长的 CPU 核心数量良好地扩展非常重要。]]></description>
             <link>https://weedge.github.io/chapters/13-Optimizing-Multithreaded-Applications/13-0_Optimizing_Multithreaded_Applications_cn.html</link>
             <guid isPermaLink="true">https://weedge.github.io/chapters/13-Optimizing-Multithreaded-Applications/13-0_Optimizing_Multithreaded_Applications_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[当处理单线程应用程序时，优化程序的某个部分通常会对性能产生积极的影响。然而，对于多线程应用程序来说，情况并非总是如此。有些应用程序中，线程 A 执行一个长时间运行的操作，而线程 B 则早早地完成了其任务，只是等待线程 A 完成。无论我们如何改进线程 B，应用程序的延迟都不会减少，因为它将受到运行时间较长的线程 A 的限制^4。]]></description>
+            <link>https://weedge.github.io/chapters/13-Optimizing-Multithreaded-Applications/13-1_Performance_scaling_and_overhead_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/13-Optimizing-Multithreaded-Applications/13-1_Performance_scaling_and_overhead_cn.html</guid>
             <dc:creator><![CDATA[weedge]]></dc:creator>
         </item>
         <item>
