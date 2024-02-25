@@ -4,7 +4,7 @@
         <description><![CDATA[现代CPU上的性能分析与优化]]></description>
         <link>https://weedge.github.io/</link>
         <generator>RSS for Node</generator>
-        <lastBuildDate>Fri, 23 Feb 2024 17:22:29 GMT</lastBuildDate>
+        <lastBuildDate>Sun, 25 Feb 2024 14:11:48 GMT</lastBuildDate>
         <atom:link href="https://weedge.github.io/index.xml" rel="self" type="application/rss+xml"/>
         <author><![CDATA[weedge]]></author>
         <managingEditor><![CDATA[weege007@gmail.com]]></managingEditor>
@@ -954,6 +954,15 @@
             <description><![CDATA[\markright{附录 D}]]></description>
             <link>https://weedge.github.io/chapters/18-Appendix/Appendix-D_cn.html</link>
             <guid isPermaLink="true">https://weedge.github.io/chapters/18-Appendix/Appendix-D_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[References]]></title>
+            <description><![CDATA[Advanced Micro Devices. 2021. “Processor Programming Reference (PPR) for
+AMD Family 19h Model 01h (55898).” B1 Rev 0.50.
+https://www.amd.com/content/dam/amd/en/documents/epyc-technical-docs/programmer-references/55898_B1_pub_0_50.zip.]]></description>
+            <link>https://weedge.github.io/chapters/References.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/References.html</guid>
             <dc:creator><![CDATA[weedge]]></dc:creator>
         </item>
     </channel>

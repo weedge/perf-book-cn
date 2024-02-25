@@ -2,3 +2,6 @@
 _book
 node_modules
 *.sh
+references.bib
+pandoc-bib-ref.md
+references.md
