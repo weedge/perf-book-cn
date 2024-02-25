@@ -2,9 +2,9 @@
 
 现代计算机仍然基于经典的冯·诺伊曼体系结构构建，其中包括 CPU、内存和输入/输出单元。内存操作（加载和存储）占据了性能瓶颈和功耗的最大部分。毫无疑问，我们首先从这个类别开始。
 
-关于内存层次结构性能非常重要的说法得到了图 @fig:CpuMemGap 的支持。它显示了内存和处理器之间性能差距的增长。垂直轴是对数刻度，显示了 CPU-DRAM 性能差距的增长。内存基线是来自 1980 年的 64 KB DRAM 芯片的内存访问延迟。典型的 DRAM 性能改进为每年 7%，而 CPU 每年享受 20-50% 的改进。[@Hennessy]
+关于内存层次结构性能非常重要的说法得到了图 @fig:CpuMemGap 的支持。它显示了内存和处理器之间性能差距的增长。垂直轴是对数刻度，显示了 CPU-DRAM 性能差距的增长。内存基线是来自 1980 年的 64 KB DRAM 芯片的内存访问延迟。典型的 DRAM 性能改进为每年 7%，而 CPU 每年享受 20-50% 的改进。[[@Hennessy](../References.md#Hennessy)]
 
-![内存和处理器之间性能差距。*© 图片来自 [@Hennessy]。*](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/memory-access-opts/ProcessorMemoryGap.png){#fig:CpuMemGap width=90%}
+![内存和处理器之间性能差距。*© 图片来自 [[@Hennessy](../References.md#Hennessy)]。*](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/memory-access-opts/ProcessorMemoryGap.png){#fig:CpuMemGap width=90%}
 
 确实，一个变量可以在最小的 L1 缓存中在几个时钟周期内获取，但如果不在 CPU 缓存中，则从 DRAM 获取该变量可能需要超过三百个时钟周期。从 CPU 的角度来看，最后一级缓存未命中感觉就像是一个*非常*长的时间，特别是如果处理器在此期间没有执行任何有用的工作。当系统高度加载线程，并且没有可用的内存带宽及时满足所有加载和存储时，执行线程也可能会饿死。
 

@@ -6,7 +6,7 @@ TMA 非常适合识别 CPU 性能瓶颈。理想情况下，当我们在应用�
 
 虽然在玩具程序上实现“Retiring”接近 100% 是可能的，但现实世界的应用程序远不能达到。图 @fig:TMA_google 展示了 Google 数据中心工作负载的顶级 TMA 指标以及在 Intel 的 IvyBridge 服务器处理器上运行的几个 SPEC CPU2006: [http://spec.org/cpu2006/](http://spec.org/cpu2006/)[^13] 基准测试。我们可以看到，大多数数据中心工作负载在“Retiring”桶中所占的比例非常小。这意味着大多数数据中心工作负载都会花时间停滞在各种瓶颈上。“BackendBound”是性能问题的首要来源。“FrontendBound”类别对于数据中心工作负载来说比 SPEC2006 更重要，因为这些应用程序通常具有庞大的代码库。最后，一些工作负载比其他工作负载更易受分支预测错误的影响，例如“search2”和“445.gobmk”。
 
-![谷歌数据中心工作负载的TMA分解以及几个SPEC CPU2006基准, *© Image from [@GoogleProfiling]*](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/pmu-features/TMA_google.jpg){#fig:TMA_google width=80%}
+![谷歌数据中心工作负载的TMA分解以及几个SPEC CPU2006基准, *© Image from [[@GoogleProfiling](../References.md#GoogleProfiling)]*](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/pmu-features/TMA_google.jpg){#fig:TMA_google width=80%}
 
 请记住，随着架构师不断尝试改进 CPU 设计，这些数字可能会随着其 CPU 而改变。这些数字也可能会随着其他指令集架构 (ISA) 和编译器版本的改变而改变。
 

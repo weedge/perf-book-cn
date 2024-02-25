@@ -18,7 +18,7 @@
 
 链接器负责将程序的所有函数布局在生成的二进制输出中。虽然开发人员可以尝试自己重新排列程序中的函数，但不能保证所需的物理布局。几十年来，人们一直使用链接器脚本来实现这个目标。如果你使用的是 GNU 链接器，这仍然是一种行之有效的方法。Gold 链接器 (`ld.gold`) 对这个问题有了更简单的解决方案。要在 Gold 链接器中获得二进制文件中函数的所需顺序，可以首先使用 `-ffunction-sections` 标志编译代码，这会将每个函数放入一个单独的节中。然后使用 [`--section-ordering-file=order.txt`](https://manpages.debian.org/unstable/binutils/x86_64-linux-gnu-ld.gold.1.en.html) 选项提供一个带有按所需最终布局排序的函数名称列表的文件。LLD 链接器也具有相同的特性，它是 LLVM 编译器基础设施的一部分，并通过 `--symbol-ordering-file` 选项访问。
 
-解决将热点函数分组在一起的问题的一个有趣方法是由 Meta 的工程师在 2017 年引入的。他们实现了一个名为 [HFSort](https://github.com/facebook/hhvm/tree/master/hphp/tools/hfsort) 的工具[^1]，它根据分析数据自动生成节顺序文件 [@HfSort]。使用这个工具，他们观察到大型分布式云应用程序，如 Facebook、百度和维基百科的性能提高了 2\%。HFSort 已经集成到了 Meta 的 HHVM、LLVM BOLT 和 LLD 链接器中[^2]。从那时起，该算法首先被 HFSort+ 取代，最近又被 Cache-Directed Sort (CDSort[^3]) 所取代，对于具有大型代码占用空间的工作负载带来了更多改进。
+解决将热点函数分组在一起的问题的一个有趣方法是由 Meta 的工程师在 2017 年引入的。他们实现了一个名为 [HFSort](https://github.com/facebook/hhvm/tree/master/hphp/tools/hfsort) 的工具[^1]，它根据分析数据自动生成节顺序文件 [[@HfSort](../References.md#HfSort)]。使用这个工具，他们观察到大型分布式云应用程序，如 Facebook、百度和维基百科的性能提高了 2\%。HFSort 已经集成到了 Meta 的 HHVM、LLVM BOLT 和 LLD 链接器中[^2]。从那时起，该算法首先被 HFSort+ 取代，最近又被 Cache-Directed Sort (CDSort[^3]) 所取代，对于具有大型代码占用空间的工作负载带来了更多改进。
 
 [^1]: HFSort - [https://github.com/facebook/hhvm/tree/master/hphp/tools/hfsort](https://github.com/facebook/hhvm/tree/master/hphp/tools/hfsort)
 

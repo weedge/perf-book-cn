@@ -179,7 +179,7 @@ TMA 是一个迭代过程，因此一旦我们修复了一个问题，我们就�
 
 #### 其他资源和链接 {.unlisted .unnumbered}
 
-- Ahmad Yasin 的论文“用于性能分析和计数器架构的顶向下方法” [@TMA_ISPASS]。
+- Ahmad Yasin 的论文“用于性能分析和计数器架构的顶向下方法” [[@TMA_ISPASS](../References.md#TMA_ISPASS)]。
 - Ahmad Yasin 在 IDF'15 上的演讲“使用英特尔 Skylake 的顶向下分析使软件优化变得简单”，网址： [https://youtu.be/kjufVhyuV_A](https://youtu.be/kjufVhyuV_A)。
 - Andi Kleen 的博客：pmu-tools，第二部分：toplev，网址： [http://halobates.de/blog/p/262](http://halobates.de/blog/p/262)。
 - Toplev 手册，网址： [https://github.com/andikleen/pmu-tools/wiki/toplev-manual](https://github.com/andikleen/pmu-tools/wiki/toplev-manual)。

@@ -56,7 +56,7 @@ $ perf list
 $ perf stat -e cpu/event=0xc4,umask=0x0,name=BR_INST_RETIRED.ALL_BRANCHES/ -- ./a.exe
 ```
 
-由于访问PMCs需要root访问权限，因此并非每个环境都可以使用性能计数器。在虚拟化环境中运行的应用程序通常没有root访问权限。对于在公共云中执行的程序，如果虚拟机（VM）管理器未正确向客户端公开PMU编程接口，则在客户端容器中直接运行基于PMU的分析器将不会产生有用的输出。因此，基于CPU性能计数器的分析器在虚拟化和云环境中效果不佳[@PMC_virtual]。尽管情况正在改善。VmWare®是第一个启用[^4]虚拟CPU性能计数器（vPMC）的VM管理器之一。AWS EC2云[^5]为专用主机启用了PMCs。
+由于访问PMCs需要root访问权限，因此并非每个环境都可以使用性能计数器。在虚拟化环境中运行的应用程序通常没有root访问权限。对于在公共云中执行的程序，如果虚拟机（VM）管理器未正确向客户端公开PMU编程接口，则在客户端容器中直接运行基于PMU的分析器将不会产生有用的输出。因此，基于CPU性能计数器的分析器在虚拟化和云环境中效果不佳[[@PMC_virtual](../References.md#PMC_virtual)]。尽管情况正在改善。VmWare®是第一个启用[^4]虚拟CPU性能计数器（vPMC）的VM管理器之一。AWS EC2云[^5]为专用主机启用了PMCs。
 
 ### 多路复用和事件缩放 {#sec:secMultiplex}
 

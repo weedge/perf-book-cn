@@ -8,7 +8,7 @@ typora-root-url: ..\..\img
 
 从概念层面来看，TMA 识别导致程序执行停滞的原因。图 @fig:TMA_concept 展示了 TMA 的核心思想。这不是实际分析的运作方式，因为分析每个微操作 (μop) 会非常慢。尽管如此，该图有助于理解该方法。
 
-![TMA 顶级细分的概念。(*© 图像来自 [@TMA_ISPASS]*)](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/pmu-features/TMAM_diag.png){#fig:TMA_concept width=80%}
+![TMA 顶级细分的概念。(*© 图像来自 [[@TMA_ISPASS](../References.md#TMA_ISPASS)]*)](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/pmu-features/TMAM_diag.png){#fig:TMA_concept width=80%}
 
 下面是如何阅读此图的简短指南。正如我们从 [@sec:uarch] 中所知，CPU 内部有缓冲区来跟踪正在执行的 μop 的信息。每当获取和解码新指令时，都会在这些缓冲区中分配新条目。如果指令的 μop 在特定执行周期内未分配，可能是两个原因之一：我们无法获取和解码它（“前端受限”）；或者后端工作超载，无法为新的 μop 分配资源（“后端受限”）。如果 μop 已分配并安排执行但从未退休，则意味着它来自预测错误的路径（“错误猜测”）。最后，“退休”代表正常执行。它是我们希望所有 μop 都处的桶，尽管有一些例外情况，我们稍后会讨论。
 

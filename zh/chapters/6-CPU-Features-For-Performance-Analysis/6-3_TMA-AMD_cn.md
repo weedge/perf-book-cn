@@ -28,7 +28,7 @@ $ perf stat -M PipelineL1,PipelineL2 -- ./cryptest.exe b1 10
 
 在输出中，括号中的数字表示运行时持续时间的百分比，当时正在监控指标。正如我们看到的，由于多路复用，所有指标只被监控了 20% 的时间。在我们的案例中，这可能不是问题，因为 SHA256 具有一致的行为，但并非总是如此。为了最小化多路复用的影响，您可以在单个运行中收集一组有限的指标，例如 `perf stat -M frontend_bound,backend_bound`。
 
-上面显示的管道利用率指标的描述可以在 [@AMDUprofManual, 第 2.8 章 管道利用率] 中找到。通过查看这些指标，我们可以看到分支预测不会在 SHA256 中发生（`bad_speculation` 为 0%）。仅使用了可用调度槽位的 26.3%（`retiring`），这意味着其余 73.7% 由于前端和后端停顿而浪费。
+上面显示的管道利用率指标的描述可以在 [[@AMDUprofManual](../References.md#AMDUprofManual), 第 2.8 章 管道利用率] 中找到。通过查看这些指标，我们可以看到分支预测不会在 SHA256 中发生（`bad_speculation` 为 0%）。仅使用了可用调度槽位的 26.3%（`retiring`），这意味着其余 73.7% 由于前端和后端停顿而浪费。
 
 加密指令并非简单，因此在内部被分解成更小的片段（μops）。一旦处理器遇到这样的指令，它就会从微码中检索它的 μops。微操作是从微码排序器获取的，带宽低于常规指令解码器，使其成为性能瓶颈的潜在来源。Crypto++ SHA256 实现大量使用诸如 `SHA256MSG2`, `SHA256RNDS2` 等指令，这些指令根据 uops.info: [https://uops.info/table.html](https://uops.info/table.html)[^2] 网站由多个 μops 组成。`retiring_microcode` 指标表明 6.1% 的调度槽位被微码操作使用。由于前端的带宽瓶颈，相同数量的调度槽位未使用（`frontend_bound_bandwidth`）。这两个指标共同表明，这 6.1% 的调度槽位被浪费，因为微码排序器没有提供 μops，而后端本可以消耗它们。
 
@@ -36,7 +36,7 @@ $ perf stat -M PipelineL1,PipelineL2 -- ./cryptest.exe b1 10
 
 大多数周期都停滞在 CPU 后端（`backend_bound`），但只有 1.7% 的周期由于等待内存访问而停滞（`backend_bound_memory`）。因此，我们知道基准测试主要受机器的计算能力限制。正如您将在本书第二部分中了解到的，这可能与数据流依赖性或某些加密操作的执行吞吐量有关。它们比传统的 `ADD`, `SUB`, `CMP` 等指令不那么频繁，因此通常只能在单个执行单元上执行。大量这样的操作可能会使该特定单元的执行吞吐量饱和。进一步的分析应该更仔细地观察源代码和生成的汇编代码，检查执行端口利用率，查找数据依赖性等；我们将在此停止。
 
-就 Windows 而言，在撰写本文时，TMA 方法仅在服务器平台（代号 Genoa）上受支持，而不支持客户端系统（代号 Raphael）。TMA 支持在 AMD uProf 版本 4.1 中添加，但仅在命令行工具 `AMDuProfPcm` 工具中，它是 AMD uProf 安装的一部分。您可以参考 [@AMDUprofManual, 第 2.8 章 管道利用率] 了解更多有关如何运行分析的详细信息。AMD uProf 的图形版本还没有 TMA 分析。 
+就 Windows 而言，在撰写本文时，TMA 方法仅在服务器平台（代号 Genoa）上受支持，而不支持客户端系统（代号 Raphael）。TMA 支持在 AMD uProf 版本 4.1 中添加，但仅在命令行工具 `AMDuProfPcm` 工具中，它是 AMD uProf 安装的一部分。您可以参考 [[@AMDUprofManual](../References.md#AMDUprofManual), 第 2.8 章 管道利用率] 了解更多有关如何运行分析的详细信息。AMD uProf 的图形版本还没有 TMA 分析。 
 
 [TODO]: AMDuProfPcm 的 4.2 版本是否适用于客户端部分？
 

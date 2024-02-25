@@ -40,11 +40,11 @@
 
 我们使用 SPEC CPU2017 套件中的部分基准测试。[^4] SPEC CPU2017 包含一组行业标准性能基准测试，可对处理器、内存子系统和编译器进行压力测试。它被广泛用于比较高性能系统的性能。它也广泛用于计算机架构研究。
 
-具体来说，我们从 SPEC CPU2017 中选择了 15 个内存密集型基准测试（6 个 INT 和 9 个 FP），正如 [@MemCharacterizationSPEC2006] 中建议的那样。这些应用程序使用 GCC 6.3.1 和以下编译器选项编译：`-g -O3 -march=native -fno-unsafe-math-optimizations -fno-tree-loop-vectorize`，正如 SPEC 在套件提供的配置文件中指定的。
+具体来说，我们从 SPEC CPU2017 中选择了 15 个内存密集型基准测试（6 个 INT 和 9 个 FP），正如 [[@MemCharacterizationSPEC2006](../References.md#MemCharacterizationSPEC2006)] 中建议的那样。这些应用程序使用 GCC 6.3.1 和以下编译器选项编译：`-g -O3 -march=native -fno-unsafe-math-optimizations -fno-tree-loop-vectorize`，正如 SPEC 在套件提供的配置文件中指定的。
 
 ### 控制和监控 LLC 分配
 
-为了监控和执行 LLC 分配和内存读取带宽的限制，我们将使用 _AMD64 技术平台服务质量扩展_ [@QoSAMD]。用户可以通过特定于模型的寄存器 (MSR) 的库来管理此 QoS 扩展。首先，必须通过写入 `PQR_ASSOC` 寄存器 (MSR `0xC8F`) 为线程或一组线程分配资源管理标识符 (RMID) 和服务类别 (COS)。以下是硬件线程 1 的示例命令：
+为了监控和执行 LLC 分配和内存读取带宽的限制，我们将使用 _AMD64 技术平台服务质量扩展_ [[@QoSAMD](../References.md#QoSAMD)]。用户可以通过特定于模型的寄存器 (MSR) 的库来管理此 QoS 扩展。首先，必须通过写入 `PQR_ASSOC` 寄存器 (MSR `0xC8F`) 为线程或一组线程分配资源管理标识符 (RMID) 和服务类别 (COS)。以下是硬件线程 1 的示例命令：
 
 ```bash
 # 写入 PQR_ASSOC (MSR 0xC8F): RMID=1, COS=2 -> (COS << 32) + RMID
@@ -73,7 +73,7 @@ $ rdmsr -p 1 0xC8E 
 
 这将使我们能够估计缓存行中的 LLC 使用情况[^7]。要将此值转换为字节，我们需要将 `rdmsr` 命令返回的值乘以缓存行大小。
 
-同样，可以限制分配给线程的内存读取带宽。这是通过将无符号整数写入特定的 MSR 寄存器来实现的，该寄存器以 1/8 GB/s 的增量设置最大读取带宽。欢迎感兴趣的读者阅读 [@QoSAMD] 了解更多详细信息。
+同样，可以限制分配给线程的内存读取带宽。这是通过将无符号整数写入特定的 MSR 寄存器来实现的，该寄存器以 1/8 GB/s 的增量设置最大读取带宽。欢迎感兴趣的读者阅读 [[@QoSAMD](../References.md#QoSAMD)] 了解更多详细信息。
 
 ## 评估指标 {.unlisted .unnumbered}
 
@@ -98,7 +98,7 @@ $ rdmsr -p 1 0xC0010201
 
 类似地，通过写入 L3 控制寄存器 (MSR `0xC001023[0,2,4,6,8,A]`) 并读取其关联计数器 (MSR `0xC001023[1,3,5,7,9,B]`) 来访问 L3 缓存事件。最后，通过写入 `DF_PERF_CTL[0-3]` 控制寄存器 (MSR `0xC001024[0,2,4,6]`) 并读取其关联的 `DF_PERF_CTR[0-3]` 寄存器 (MSR `0xC001024[1,3,5,7]`) 来访问数据结构事件[^10]。
 
-本案例研究中使用的的方法在 [@Balancer2023] 中更详细地描述。可以在以下公共存储库中找到重现实验所需的代码和信息：[https://github.com/agusnt/BALANCER](https://github.com/agusnt/BALANCER)。
+本案例研究中使用的的方法在 [[@Balancer2023](../References.md#Balancer2023)] 中更详细地描述。可以在以下公共存储库中找到重现实验所需的代码和信息：[https://github.com/agusnt/BALANCER](https://github.com/agusnt/BALANCER)。
 
 ## 结果 {.unlisted .unnumbered}
 
@@ -116,11 +116,11 @@ $ rdmsr -p 1 0xC0010201
 
 对于 `503.bwaves`，我们观察到 MPKI 与 CPI 和 DMPKI 图表大致保持在相同水平。基准测试中可能没有太多数据重用和/或内存流量非常低。`520.omnetpp` 工作负载的行为与我们之前确定的相同：MPKI 随着可用空间的增加而减少。但是对于 `554.roms`，MPKI 图表显示随着可用空间增加，总缺失急剧下降，而 CPI 和 DMPKI 保持不变。在这种情况下，基准测试中存在数据重用，但这对性能无关紧要。预取器可以提前获取所需数据，消除需求缺失，无论 LLC 中可用空间如何。但是，随着可用空间减少，预取器无法在 LLC 中找到块并且必须从内存加载它们的可能性会增加。因此，为这类应用程序提供更多 LLC 容量不会直接提升其性能，但会使系统受益，因为它减少了内存流量。
 
-通过查看 CPI 和 DMPKI，我们最初认为 `554.roms` 对 LLC 大小不敏感。但通过分析 MPKI 图表，我们需要重新考虑我们的陈述并得出结论，即 `554.roms` 也对 LLC 大小敏感，因此最好不要限制其可用 LLC 空间，以免增加内存带宽消耗。更高的带宽消耗可能会增加内存访问延迟，进而意味着系统上运行的其他应用程序的性能下降 [@Balancer2023]。
+通过查看 CPI 和 DMPKI，我们最初认为 `554.roms` 对 LLC 大小不敏感。但通过分析 MPKI 图表，我们需要重新考虑我们的陈述并得出结论，即 `554.roms` 也对 LLC 大小敏感，因此最好不要限制其可用 LLC 空间，以免增加内存带宽消耗。更高的带宽消耗可能会增加内存访问延迟，进而意味着系统上运行的其他应用程序的性能下降 [[@Balancer2023](../References.md#Balancer2023)]。
 
 [^4]: SPEC CPU® 2017 - [https://www.spec.org/cpu2017/](https://www.spec.org/cpu2017/)
 [^6]: 我们使用 CPI 而不是每条指令的时间，因为我们假设 CPU 频率在实验过程中不会改变。
-[^7]: AMD 文档 [@QoSAMD] 更准确地使用了术语 L3 缓存转换因子，可以通过 `cpuid` 指令确定。
+[^7]: AMD 文档 [[@QoSAMD](../References.md#QoSAMD)] 更准确地使用了术语 L3 缓存转换因子，可以通过 `cpuid` 指令确定。
 [^8]: 我们仅使用掩码计算 L3 缺失，具体为 `L3Event[0x0300C00000400104]`。
 
 [^9]: 我们使用了`MemIoRemote`和`MemIoLocal`这两个子变量，它们从连接在远程/本地NUMA节点上的DRAM或IO请求填充数据缓存。

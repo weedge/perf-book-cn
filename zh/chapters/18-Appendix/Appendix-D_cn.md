@@ -94,7 +94,7 @@ $ perf script --ns --itrace=i1t -F time,srcline,insn,srccode
 ## 英特尔 PT 参考资料和链接 {.unnumbered .unlisted}
 
 * 英特尔® 64 和 IA-32 架构软件开发人员手册 [@IntelOptimizationManual，第 3 卷 C，第 36 章]。
-* 白皮书“硬件辅助指令分析和延迟检测” [@IntelPTPaper]。
+* 白皮书“硬件辅助指令分析和延迟检测” [[@IntelPTPaper](../References.md#IntelPTPaper)]。
 * Andi Kleen 在 LWN 上的文章，网址： [https://lwn.net/Articles/648154](https://lwn.net/Articles/648154)。
 * 英特尔 PT 微型教程，网址： [https://sites.google.com/site/intelptmicrotutorial/](https://sites.google.com/site/intelptmicrotutorial/)。
 * simple_pt: Linux 上的简单英特尔 CPU 处理器跟踪，网址：
@@ -103,6 +103,6 @@ $ perf script --ns --itrace=i1t -F time,srcline,insn,srccode
  [https://github.com/torvalds/linux/blob/master/tools/perf/Documentation/intel-pt.txt](https://github.com/torvalds/linux/blob/master/tools/perf/Documentation/intel-pt.txt)。
 * 英特尔处理器跟踪备忘单，网址： [http://halobates.de/blog/p/410](http://halobates.de/blog/p/410)。
 
-[^1]: 有关英特尔 PT 额外开销的更多信息，请参见 [@IntelPTPaper]。
+[^1]: 有关英特尔 PT 额外开销的更多信息，请参见 [[@IntelPTPaper](../References.md#IntelPTPaper)]。
 [^2]: 使用英特尔 PT 分析性能故障 - [https://easyperf.net/blog/2019/09/06/Intel-PT-part3](https://easyperf.net/blog/2019/09/06/Intel-PT-part3)。
 [^3]: 使用英特尔 PT 进行事后调试 - [https://easyperf.net/blog/2019/08/30/Intel-PT-part2](https://easyperf.net/blog/2019/08/30/Intel-PT-part2)。

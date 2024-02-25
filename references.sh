@@ -14,7 +14,8 @@ pandoc -t gfm \
     --filter=pandoc-citeproc pandoc-bib-ref.md \
     --bibliography references.bib \
     | sed 's/<\/div>//g' \
-    | sed 's/id="ref-/id="/g' \
+    | sed 's/<div id="ref-/<div id="/g' \
+    | sed 's/">/"><\/div>/g' \
     > ./zh/chapters/References.md
 
 # cite table

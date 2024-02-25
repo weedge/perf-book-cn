@@ -4,7 +4,7 @@
 
 要有效地优化循环，关键是要了解性能瓶颈。一旦找到占用大部分时间的循环，就尝试确定限制其性能的因素。通常，它将是以下一种或多种情况：内存延迟、内存带宽或机器的计算能力。Roofline 性能模型（[@sec:roofline]）是评估不同循环相对于硬件理论最大值的性能的一个良好起点。自上而下的微架构分析（[@sec:TMA]）也可以成为有关瓶颈的另一个很好的信息来源。
 
-在本节中，我们将研究针对上述瓶颈类型最著名的循环优化。我们首先讨论低级别的优化，这些优化只会在一个循环中移动代码。此类优化通常有助于提高循环内部计算的有效性。接下来，我们将研究重构循环的高级别优化，这些优化通常会影响多个循环。第二类优化通常旨在改进内存访问，消除内存带宽和内存延迟问题。请注意，这不是所有已知循环转换的完整列表。有关下面讨论的每个转换的更详细信息，读者可以参考 [@EngineeringACompilerBook]。
+在本节中，我们将研究针对上述瓶颈类型最著名的循环优化。我们首先讨论低级别的优化，这些优化只会在一个循环中移动代码。此类优化通常有助于提高循环内部计算的有效性。接下来，我们将研究重构循环的高级别优化，这些优化通常会影响多个循环。第二类优化通常旨在改进内存访问，消除内存带宽和内存延迟问题。请注意，这不是所有已知循环转换的完整列表。有关下面讨论的每个转换的更详细信息，读者可以参考 [[@EngineeringACompilerBook](../References.md#EngineeringACompilerBook)]。
 
 编译器可以自动识别执行某些循环转换的机会。然而，有时需要开发人员干预才能达到所需的结果。在本节的第二部分，我们将分享一些有关如何发现循环优化机会的想法。了解对给定循环进行了哪些转换以及编译器未能进行哪些优化是成功性能调优的关键之一。最后，我们将考虑使用多面体框架优化循环的另一种方法。
 
@@ -156,7 +156,7 @@ void foo(char* a, char* b) {
 
 多年来，研究人员开发了确定循环转换合法性和自动转换循环的技术。其中一项发明是 多面体框架: [https://en.wikipedia.org/wiki/Loop_optimization#The_polyhedral_or_constraint-based_framework](https://en.wikipedia.org/wiki/Loop_optimization#The_polyhedral_or_constraint-based_framework)[^3]。GRAPHITE: [https://gcc.gnu.org/wiki/Graphite](https://gcc.gnu.org/wiki/Graphite)[^4] 是最早集成到生产编译器中的多面体工具之一。GRAPHITE 基于从 GCC 的低级中间表示 GIMPLE 提取的多面体信息，执行一系列经典循环优化。GRAPHITE 证明了该方法的可行性。
 
-后来，LLVM 编译器开发了自己的多面体框架，称为 Polly: [https://polly.llvm.org/](https://polly.llvm.org/)[^5]。Polly 是 LLVM 的高级循环和数据局部性优化基础架构。它使用基于整数多面体的抽象数学表示来分析和优化程序的内存访问模式。Polly 执行经典循环转换，尤其是切分和循环融合，以改善数据局部性。该框架在许多著名的基准测试上显示了显著的加速 [@Grosser2012PollyP]。下面是一个例子，说明 Polly 如何将来自 Polybench 2.0: [https://web.cse.ohio-state.edu/~pouchet.2/software/polybench/](https://web.cse.ohio-state.edu/~pouchet.2/software/polybench/)[^6] 基准套件的通用矩阵乘法 (GEMM) 内核的运行速度提高了近 30 倍：
+后来，LLVM 编译器开发了自己的多面体框架，称为 Polly: [https://polly.llvm.org/](https://polly.llvm.org/)[^5]。Polly 是 LLVM 的高级循环和数据局部性优化基础架构。它使用基于整数多面体的抽象数学表示来分析和优化程序的内存访问模式。Polly 执行经典循环转换，尤其是切分和循环融合，以改善数据局部性。该框架在许多著名的基准测试上显示了显著的加速 [[@Grosser2012PollyP](../References.md#Grosser2012PollyP)]。下面是一个例子，说明 Polly 如何将来自 Polybench 2.0: [https://web.cse.ohio-state.edu/~pouchet.2/software/polybench/](https://web.cse.ohio-state.edu/~pouchet.2/software/polybench/)[^6] 基准套件的通用矩阵乘法 (GEMM) 内核的运行速度提高了近 30 倍：
 
 ```bash
 $ clang -O3 gemm.c -o gemm.clang

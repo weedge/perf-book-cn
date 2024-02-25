@@ -79,7 +79,7 @@ $ perf record -b -e cycles ./benchmark.exe
 
 LBR 堆栈也可以使用 `perf record --call-graph lbr` 命令收集，但是收集的信息量少于使用 `perf record -b`。例如，在运行 `perf record --call-graph lbr` 时不会收集分支预测和周期数据。
 
-因为每个收集的样本都捕获整个 LBR 堆栈（32 个最后的分支记录），所以收集的数据（`perf.data`）的大小比不使用 LBR 的采样要大得多。尽管如此，在大多数 LBR 使用案例中，运行时开销低于 1%。[@Nowak2014TheOO]
+因为每个收集的样本都捕获整个 LBR 堆栈（32 个最后的分支记录），所以收集的数据（`perf.data`）的大小比不使用 LBR 的采样要大得多。尽管如此，在大多数 LBR 使用案例中，运行时开销低于 1%。[[@Nowak2014TheOO](../References.md#Nowak2014TheOO)]
 
 用户可以导出原始 LBR 堆栈进行自定义分析。以下是可以用来转储收集的分支堆栈内容的 Linux perf 命令：
 
@@ -107,7 +107,7 @@ $ perf script -F brstack &> dump.txt
 
 ### AMD 平台上的 LBR
 
-AMD 处理器也支持 AMD Zen4 处理器上的最后分支记录 (LBR)。Zen4 拥有 16 对“from”和“to”地址日志以及一些额外的元数据。类似于 Intel LBR，AMD 处理器能够记录各种类型的分支。与 Intel LBR 的主要区别在于 AMD 处理器目前还不支持调用堆栈模式，因此 LBR 功能无法用于调用堆栈收集。另一个明显的区别是 AMD LBR 记录中没有周期计数字段。有关更多详细信息，请参见 [@AMDProgrammingManual，13.1.1.9 最后分支堆栈寄存器]。
+AMD 处理器也支持 AMD Zen4 处理器上的最后分支记录 (LBR)。Zen4 拥有 16 对“from”和“to”地址日志以及一些额外的元数据。类似于 Intel LBR，AMD 处理器能够记录各种类型的分支。与 Intel LBR 的主要区别在于 AMD 处理器目前还不支持调用堆栈模式，因此 LBR 功能无法用于调用堆栈收集。另一个明显的区别是 AMD LBR 记录中没有周期计数字段。有关更多详细信息，请参见 [[@AMDProgrammingManual](../References.md#AMDProgrammingManual)，13.1.1.9 最后分支堆栈寄存器]。
 
 从 Linux 内核 6.1 开始，Linux “perf” 在 AMD Zen4 处理器上支持我们将在下面讨论的分支分析用例，除非另有明确说明。Linux `perf` 命令收集 AMD LBR 使用相同的 `-b` 和 `-j` 选项。
 
@@ -119,7 +119,7 @@ $ AMDuProfCLI collect --branch-filter -o /tmp/ ./AMDTClassicMatMul-bin
 
 ## ARM 平台上的 BRBE
 
-ARM 在 2020 年作为 ARMv9.2-A ISA 的一部分推出了其名为 BRBE 的分支记录扩展。ARM BRBE 与英特尔的 LBR 非常相似，提供了许多类似的功能。就像英特尔的 LBR 一样，BRBE 记录也包含源地址和目标地址、预测错误位和周期计数值。根据最新可用的 BRBE 规范，不支持调用堆栈模式。分支记录仅包含已在架构上执行的分支的信息，即不在预测错误路径上。用户还可以根据特定分支类型过滤记录。一个值得注意的区别是 BRBE 支持可配置的 BRBE 缓冲区深度：处理器可以选择 BRBE 缓冲区的容量为 8、16、32 或 64 个记录。更多细节可在 [@Armv9ManualSupplement, 章节 F1 "Branch Record Buffer Extension"] 中找到。
+ARM 在 2020 年作为 ARMv9.2-A ISA 的一部分推出了其名为 BRBE 的分支记录扩展。ARM BRBE 与英特尔的 LBR 非常相似，提供了许多类似的功能。就像英特尔的 LBR 一样，BRBE 记录也包含源地址和目标地址、预测错误位和周期计数值。根据最新可用的 BRBE 规范，不支持调用堆栈模式。分支记录仅包含已在架构上执行的分支的信息，即不在预测错误路径上。用户还可以根据特定分支类型过滤记录。一个值得注意的区别是 BRBE 支持可配置的 BRBE 缓冲区深度：处理器可以选择 BRBE 缓冲区的容量为 8、16、32 或 64 个记录。更多细节可在 [[@Armv9ManualSupplement](../References.md#Armv9ManualSupplement), 章节 F1 "Branch Record Buffer Extension"] 中找到。
 
 在撰写本文时，还没有商用机器实现 ARMv9.2-A，因此无法测试此扩展的实际运行情况。
 
