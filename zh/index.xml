@@ -4,7 +4,7 @@
         <description><![CDATA[现代CPU上的性能分析与优化]]></description>
         <link>https://weedge.github.io/</link>
         <generator>RSS for Node</generator>
-        <lastBuildDate>Sun, 25 Feb 2024 16:01:44 GMT</lastBuildDate>
+        <lastBuildDate>Sun, 25 Feb 2024 16:09:23 GMT</lastBuildDate>
         <atom:link href="https://weedge.github.io/index.xml" rel="self" type="application/rss+xml"/>
         <author><![CDATA[weedge]]></author>
         <managingEditor><![CDATA[weege007@gmail.com]]></managingEditor>
@@ -684,11 +684,7 @@
         </item>
         <item>
             <title><![CDATA[No title]]></title>
-            <description><![CDATA[编码练习：编写一个微基准，使其经历 50% 的预测错误率或尽可能接近 50%。您的目标是用代码编写，使其所有分支指令中有一半被预测错误。这并不像您想象的那么简单。一些提示和想法：
-- 分支预测错误率计算为 BR_MISP_RETIRED.ALL_BRANCHES / BR_INST_RETIRED.ALL_BRANCHES。
-- 如果使用 C++ 编码，您可以 1) 使用类似于 perf-ninja 的 google benchmark，或 2) 编写常规控制台程序并使用 Linux perf 收集 CPU 计数器，或 3) 将 libpfm 集成到微基准中（参见 [@sec:MarkerAPI])。
-- 无需发明复杂的算法。一种简单的方法是在范围 [0;100) 中生成一个伪随机数，并检查它是否小于 50。随机数可以提前预生成。
-- 请记住，现代 CPU 可以记住较长（但仍然有限）的分支结果序列。]]></description>
+            <description><![CDATA[编码练习：编写一个微基准，使其经历 50% 的预测错误率或尽可能接近 50%。您的目标是用代码编写，使其所有分支指令中有一半被预测错误。这并不像您想象的那么简单。一些提示和想法：]]></description>
             <link>https://weedge.github.io/chapters/10-Optimizing-Branch-Prediction/10-4_Questions-Exercises_cn.html</link>
             <guid isPermaLink="true">https://weedge.github.io/chapters/10-Optimizing-Branch-Prediction/10-4_Questions-Exercises_cn.html</guid>
             <dc:creator><![CDATA[weedge]]></dc:creator>
