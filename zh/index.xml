@@ -4,7 +4,7 @@
         <description><![CDATA[现代CPU上的性能分析与优化]]></description>
         <link>https://weedge.github.io/</link>
         <generator>RSS for Node</generator>
-        <lastBuildDate>Sun, 25 Feb 2024 16:44:09 GMT</lastBuildDate>
+        <lastBuildDate>Sun, 25 Feb 2024 17:10:51 GMT</lastBuildDate>
         <atom:link href="https://weedge.github.io/index.xml" rel="self" type="application/rss+xml"/>
         <author><![CDATA[weedge]]></author>
         <managingEditor><![CDATA[weege007@gmail.com]]></managingEditor>
@@ -269,7 +269,7 @@
         </item>
         <item>
             <title><![CDATA[No title]]></title>
-            <description><![CDATA[具有 x86 架构的微处理器将复杂的 CISC 类指令转换为简单的 RISC 类微操作，缩写为 $\mu$ops 或 $\mu$ops。例如，像 ADD rax, rbx 这样的简单加法指令只会生成一个 $\mu$op，而更复杂的指令比如 ADD rax, [mem] 可能生成两个：一个用于从 mem 内存位置读取到临时（未命名）寄存器，另一个用于将其添加到 rax 寄存器。指令 ADD [mem], rax 会生成三个 $\mu$ops：一个用于从内存读取，一个用于相加，一个用于将结果写回内存。]]></description>
+            <description><![CDATA[具有 x86 架构的微处理器将复杂的 CISC 类指令转换为简单的 RISC 类微操作，缩写为 $$\mu$$ops 或 $$\mu$$ops。例如，像 ADD rax, rbx 这样的简单加法指令只会生成一个 $$\mu$$op，而更复杂的指令比如 ADD rax, [mem] 可能生成两个：一个用于从 mem 内存位置读取到临时（未命名）寄存器，另一个用于将其添加到 rax 寄存器。指令 ADD [mem], rax 会生成三个 $$\mu$$ops：一个用于从内存读取，一个用于相加，一个用于将结果写回内存。]]></description>
             <link>https://weedge.github.io/chapters/4-Terminology-And-Metrics/4-4_UOP_cn.html</link>
             <guid isPermaLink="true">https://weedge.github.io/chapters/4-Terminology-And-Metrics/4-4_UOP_cn.html</guid>
             <dc:creator><![CDATA[weedge]]></dc:creator>
