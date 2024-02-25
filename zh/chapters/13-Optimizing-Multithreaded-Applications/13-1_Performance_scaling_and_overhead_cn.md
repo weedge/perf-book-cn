@@ -10,13 +10,12 @@
 
 图 @fig:MT_Scaling 显示了来自[Starbench 并行基准套件](https://www.aes.tu-berlin.de/menue/research/projects/completed_projects/starbench_parallel_benchmark_suite/)的 `h264dec` 基准测试的性能扩展情况。我在拥有 4 个核心/8 个线程的 Intel Core i5-8259U 上进行了测试。请注意，在使用了 4 个线程之后，性能并没有显著提高。很可能，获取一个拥有更多核心的 CPU 不会提高性能。[^7]
 
-<div id="fig:MT_charts">
 
-![使用不同线程数量的性能扩展。](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/mt-perf/scaling.png){#fig:MT_Scaling width=45%}
-![使用不同线程数量的开销。](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/mt-perf/cycles.png){#fig:MT_cycles width=45%}
+![使用不同线程数量的性能扩展](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/mt-perf/scaling.png){#fig:MT_Scaling width=45%}
+
+![使用不同线程数量的开销](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/mt-perf/cycles.png){#fig:MT_cycles width=45%}
 
 在 Intel Core i5-8259U 上的 h264dec 基准测试的性能扩展和开销。
-</div>
 
 事实上，进一步增加计算节点可能会导致逆向加速。这种效应由 Neil Gunther 解释为[通用可扩展性法则](http://www.perfdynamics.com/Manifesto/USLscalability.html#tth_sEc1)[^8]（USL），它是安达尔定律的一个扩展。USL 描述了计算节点（线程）之间的通信作为性能的另一个限制因素。随着系统的扩展，开销开始阻碍性能的增长。超过临界点后，系统的能力开始下降（见图 @fig:MT_USL）。USL 被广泛用于对系统的容量和可扩展性建模。
 
