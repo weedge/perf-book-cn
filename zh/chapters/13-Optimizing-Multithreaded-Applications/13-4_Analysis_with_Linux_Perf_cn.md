@@ -71,7 +71,7 @@ $ sudo perf report -n --stdio -T --sort=overhead,prev_comm,prev_pid --no-call-gr
      0.75%           205              x264        2977
 ```
 
-上面的输出显示了哪些线程最频繁地被切换出执行。请注意，我们还收集了调用堆栈（`--call-graph dwarf`，见 [@sec:secCollectCallStacks]），因为我们需要用它来分析导致昂贵同步事件的路径：
+上面的输出显示了哪些线程最频繁地被切换出执行。请注意，我们还收集了调用堆栈（`--call-graph dwarf`，见 [[@sec:secCollectCallStacks](../5-Performance-Analysis-Approaches/5-5_Sampling_cn.md#sec:secCollectCallStacks)]），因为我们需要用它来分析导致昂贵同步事件的路径：
 
 ```bash
 $ sudo perf report -n --stdio -T --sort=overhead,symbol -F overhead,sample -G

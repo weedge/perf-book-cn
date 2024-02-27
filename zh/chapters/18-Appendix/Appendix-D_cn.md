@@ -24,7 +24,7 @@ Intel 处理器跟踪（PT）是一种 CPU 功能，通过将数据包编码为�
 
 ![Intel 处理器跟踪时间数据包](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/appendix-D/PT_timings.jpg){#fig:PT_timings width=90%}
 
-在图 @fig:PT_timings 中展示的示例中，指令数据（控制流）完全准确，但时间信息不太准确。显然，`CALL(edx)`、`TEST` 和 `JB` 指令并不是同时发生的，但我们没有更准确的时间信息。具有时间戳使我们能够将程序的时间间隔与系统中的另一个事件对齐，并且很容易与挂钟时间进行比较。在某些实现中，跟踪时间可以通过一个循环精确模式进一步改进，其中硬件记录了常规数据包之间的周期计数（有关更多详细信息，请参阅 [@IntelOptimizationManual，第 3C 卷，第 36 章]）.
+在图 @fig:PT_timings 中展示的示例中，指令数据（控制流）完全准确，但时间信息不太准确。显然，`CALL(edx)`、`TEST` 和 `JB` 指令并不是同时发生的，但我们没有更准确的时间信息。具有时间戳使我们能够将程序的时间间隔与系统中的另一个事件对齐，并且很容易与挂钟时间进行比较。在某些实现中，跟踪时间可以通过一个循环精确模式进一步改进，其中硬件记录了常规数据包之间的周期计数（有关更多详细信息，请参阅 [[@IntelOptimizationManual](../References.md#IntelOptimizationManual)，第 3C 卷，第 36 章]）.
 
 ## 收集和解码跟踪 {.unnumbered .unlisted}
 
@@ -93,7 +93,7 @@ $ perf script --ns --itrace=i1t -F time,srcline,insn,srccode
 
 ## 英特尔 PT 参考资料和链接 {.unnumbered .unlisted}
 
-* 英特尔® 64 和 IA-32 架构软件开发人员手册 [@IntelOptimizationManual，第 3 卷 C，第 36 章]。
+* 英特尔® 64 和 IA-32 架构软件开发人员手册 [[@IntelOptimizationManual](../References.md#IntelOptimizationManual)，第 3 卷 C，第 36 章]。
 * 白皮书“硬件辅助指令分析和延迟检测” [[@IntelPTPaper](../References.md#IntelPTPaper)]。
 * Andi Kleen 在 LWN 上的文章，网址： [https://lwn.net/Articles/648154](https://lwn.net/Articles/648154)。
 * 英特尔 PT 微型教程，网址： [https://sites.google.com/site/intelptmicrotutorial/](https://sites.google.com/site/intelptmicrotutorial/)。

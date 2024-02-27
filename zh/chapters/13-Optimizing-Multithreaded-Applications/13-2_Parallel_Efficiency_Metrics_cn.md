@@ -30,6 +30,6 @@ $$
 自旋时间是 CPU 忙于等待时间。当软件线程等待时，这种情况经常发生，因为同步 API 导致 CPU 轮询[[@IntelCpuMetrics](../References.md#IntelCpuMetrics)]。实际上，内核同步原语的实现更倾向于在一段时间内锁定旋转，而不是立即进行线程上下文切换（这是昂贵的）。然而，过多的自旋时间可能反映了无法进行有效工作的机会的丧失。
 
 [^11]: 类似 `pthread`、`OpenMP` 和 `Intel TBB` 等线程库和 API 具有它们自己的线程创建和管理开销。
-[^12]: 诸如 Intel VTune Profiler 等性能分析工具可以区分在线程旋转时采集的分析样本。它们通过为每个样本提供调用堆栈来完成这项工作（见 [@sec:secCollectCallStacks]）。
+[^12]: 诸如 Intel VTune Profiler 等性能分析工具可以区分在线程旋转时采集的分析样本。它们通过为每个样本提供调用堆栈来完成这项工作（见 [[@sec:secCollectCallStacks](../5-Performance-Analysis-Approaches/5-5_Sampling_cn.md#sec:secCollectCallStacks)]）。
 [^13]: 线程过度订阅 - [https://software.intel.com/en-us/vtune-help-thread-oversubscription](https://software.intel.com/en-us/vtune-help-thread-oversubscription)。
 [^14]: 线程池 - [https://en.wikipedia.org/wiki/Thread_pool](https://en.wikipedia.org/wiki/Thread_pool)。

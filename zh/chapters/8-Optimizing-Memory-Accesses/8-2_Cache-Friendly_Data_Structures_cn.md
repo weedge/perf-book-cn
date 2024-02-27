@@ -126,7 +126,7 @@ __m512 * ptr = new __m512[N];
 [^8]: 博客文章 "对象向量 vs 指针向量" 作者 B. Filipek - [https://www.bfilipek.com/2014/05/vector-of-objects-vs-vector-of-pointers.html](https://www.bfilipek.com/2014/05/vector-of-objects-vs-vector-of-pointers.html)。
 [^9]: 通常情况下，人们会针对 L2 缓存的大小进行调整，因为它是内核之间不共享的。
 [^10]: 博客文章 "检测伪共享" - [https://easyperf.net/blog/2019/12/17/Detecting-false-sharing-using-perf#2-tune-the-code-for-better-utilization-of-cache-hierarchy](https://easyperf.net/blog/2019/12/17/Detecting-false-sharing-using-perf#2-tune-the-code-for-better-utilization-of-cache-hierarchy)。
-[^11]: 英特尔处理器的 `CPUID` 指令在 [@IntelOptimizationManual, Volume 2] 中描述。
+[^11]: 英特尔处理器的 `CPUID` 指令在 [[@IntelOptimizationManual](../References.md#IntelOptimizationManual), Volume 2] 中描述。
 [^13]: Linux 手册页面，用于 `memalign` - [https://linux.die.net/man/3/memalign](https://linux.die.net/man/3/memalign)。
 [^14]:生成对齐内存- [https://embeddedartistry.com/blog/2017/02/22/generating-aligned-memory/](https://embeddedartistry.com/blog/2017/02/22/generating-aligned-memory/)。
 典型的`malloc`实现涉及同步，以防止多个线程试图动态分配内存

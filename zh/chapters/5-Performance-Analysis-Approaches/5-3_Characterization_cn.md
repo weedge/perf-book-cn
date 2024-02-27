@@ -28,7 +28,7 @@ $ perf stat -- ./a.exe
 
 现代CPU拥有数百个可计数的性能事件。记住所有这些事件及其含义是非常困难的。更难的是理解何时使用特定的PMC。这就是为什么通常我们不建议手动收集特定的PMCs，除非您真的知道自己在做什么。相反，我们建议使用像Intel Vtune Profiler这样的工具来自动化这个过程。尽管如此，有时候您可能有兴趣收集特定的PMCs。
 
-您可以在[@IntelOptimizationManual，第3B卷，第19章]中找到所有Intel CPU代数的性能事件的完整列表。PMCs的描述也可以在[perfmon-events.intel.com](https://perfmon-events.intel.com/)上找到。每个事件都使用`Event`和`Umask`十六进制值进行编码。有时性能事件还可以使用附加参数进行编码，例如`Cmask`、`Inv`等。表[@tbl:perf_count]显示了针对Intel Skylake微体系结构编码的两个性能事件的示例。
+您可以在[[@IntelOptimizationManual](../References.md#IntelOptimizationManual)，第3B卷，第19章]中找到所有Intel CPU代数的性能事件的完整列表。PMCs的描述也可以在[perfmon-events.intel.com](https://perfmon-events.intel.com/)上找到。每个事件都使用`Event`和`Umask`十六进制值进行编码。有时性能事件还可以使用附加参数进行编码，例如`Cmask`、`Inv`等。表[@tbl:perf_count]显示了针对Intel Skylake微体系结构编码的两个性能事件的示例。
 
 | 事件编号 | Umask值 | 事件掩码助记符 | 描述 |
 | ---- | ----- | -------- | ---- |

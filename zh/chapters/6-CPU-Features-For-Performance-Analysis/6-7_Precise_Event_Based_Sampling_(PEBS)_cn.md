@@ -4,9 +4,9 @@
 
 ### 英特尔平台上的 PEBS
 
-与最后分支记录类似，PEBS 用于在分析程序时捕获每个收集到的样本的额外数据。当性能计数器配置为 PEBS 时，处理器会保存一组具有定义格式的额外数据，称为 PEBS 记录。英特尔 Skylake CPU 的 PEBS 记录格式如图 @fig:PEBS_record 所示。记录包含通用寄存器状态 (`EAX`, `EBX`, `ESP` 等）、`EventingIP`, `Data Linear Address` 和稍后将讨论的 `延迟值`。PEBS 记录的内容布局因不同的微架构而异，请参阅 [@IntelOptimizationManual, 第 3B 卷，第 20 章 性能监控]。
+与最后分支记录类似，PEBS 用于在分析程序时捕获每个收集到的样本的额外数据。当性能计数器配置为 PEBS 时，处理器会保存一组具有定义格式的额外数据，称为 PEBS 记录。英特尔 Skylake CPU 的 PEBS 记录格式如图 @fig:PEBS_record 所示。记录包含通用寄存器状态 (`EAX`, `EBX`, `ESP` 等）、`EventingIP`, `Data Linear Address` 和稍后将讨论的 `延迟值`。PEBS 记录的内容布局因不同的微架构而异，请参阅 [[@IntelOptimizationManual](../References.md#IntelOptimizationManual), 第 3B 卷，第 20 章 性能监控]。
 
-![PEBS记录格式适用于第六代、第七代和第八代英特尔酷睿处理器家族。 *© Image from [@IntelOptimizationManual, Volume 3B, Chapter 20].*](../../img/pmu-features/PEBS_record.png){#fig:PEBS_record width=90%}
+![PEBS记录格式适用于第六代、第七代和第八代英特尔酷睿处理器家族。 *© Image from [[@IntelOptimizationManual](../References.md#IntelOptimizationManual), Volume 3B, Chapter 20].*](../../img/pmu-features/PEBS_record.png){#fig:PEBS_record width=90%}
 
 从 Skylake 架构开始，PEBS 记录已经增强，可以收集 XMM 寄存器和 LBR 记录。格式已经重新组织，将字段分组为基本组、内存组、GPR 组、XMM 组和 LBR 组。性能分析工具可以选择感兴趣的数据组，从而减小记录大小并降低记录生成延迟。默认情况下，PEBS 记录只包含基本组。
 
@@ -73,7 +73,7 @@ $ spe-parser perf.data -t csv
 
 现在我们已经介绍了高级采样功能，让我们讨论一下 **如何** 使用它们来改善性能分析。我们将从精确事件的概念开始。
 
-性能分析的一个主要问题是精确地定位导致特定性能事件的指令。正如 [@sec:profiling] 中所讨论的，基于中断的采样基于计数特定性能事件并等待其溢出。当溢出中断发生时，处理器需要一段时间停止执行并标记导致溢出的指令。对于现代复杂的乱序 CPU 架构来说，这一点尤其困难。
+性能分析的一个主要问题是精确地定位导致特定性能事件的指令。正如 [[@sec:profiling](../5-Performance-Analysis-Approaches/5-5_Sampling_cn.md#sec:profiling)] 中所讨论的，基于中断的采样基于计数特定性能事件并等待其溢出。当溢出中断发生时，处理器需要一段时间停止执行并标记导致溢出的指令。对于现代复杂的乱序 CPU 架构来说，这一点尤其困难。
 
 它引入了滑动的概念，滑动定义为导致事件的 IP (指令地址) 与事件被标记的 IP 之间的距离。滑动使得难以发现导致性能问题的指令。考虑一个具有大量缓存未命中的应用程序，其热门汇编代码如下所示：
 
@@ -85,7 +85,7 @@ $ spe-parser perf.data -t csv
 
 分析器可能会将 `load3` 标记为导致大量缓存未命中的指令，而实际上，真正的罪魁祸首是 `load1`。对于高性能处理器，这种滑动可能数百条处理器指令。这通常会让性能工程师感到非常困惑。有兴趣的读者可以访问 Intel 开发者专区网站: [https://software.intel.com/en-us/vtune-help-hardware-event-skid](https://software.intel.com/en-us/vtune-help-hardware-event-skid)[^4] 了解更多关于此类问题基础原因的信息。
 
-通过让处理器本身存储指令指针（以及其他信息）可以缓解滑移问题。使用 Intel PEBS 时，PEBS 记录中的 `EventingIP` 字段指示导致事件的指令。这通常仅适用于受支持事件的一个子集，称为“精确事件”。可以在 [@IntelOptimizationManual, 第 3B 卷，第 20 章 性能监控] 中找到特定微架构的精确事件完整列表。有关使用 PEBS 精确事件缓解滑移的示例，请参见 easyperf 博客: [https://easyperf.net/blog/2018/08/29/Understanding-performance-events-skid](https://easyperf.net/blog/2018/08/29/Understanding-performance-events-skid).[^2]
+通过让处理器本身存储指令指针（以及其他信息）可以缓解滑移问题。使用 Intel PEBS 时，PEBS 记录中的 `EventingIP` 字段指示导致事件的指令。这通常仅适用于受支持事件的一个子集，称为“精确事件”。可以在 [[@IntelOptimizationManual](../References.md#IntelOptimizationManual), 第 3B 卷，第 20 章 性能监控] 中找到特定微架构的精确事件完整列表。有关使用 PEBS 精确事件缓解滑移的示例，请参见 easyperf 博客: [https://easyperf.net/blog/2018/08/29/Understanding-performance-events-skid](https://easyperf.net/blog/2018/08/29/Understanding-performance-events-skid).[^2]
 
 以下是 Skylake 微架构的精确事件列表：
 

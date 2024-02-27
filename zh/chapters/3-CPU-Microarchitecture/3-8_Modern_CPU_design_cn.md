@@ -2,7 +2,7 @@
 
 为了看到我们在本章讨论的所有概念如何在实践中使用，让我们来看看英特尔第12代酷睿处理器Goldencove的实现，该处理器于2021年上市。该核心被用作Alderlake和Sapphire Rapids平台中的P核心。图@fig:Goldencove_diag显示了Goldencove核心的模块图。请注意，本节仅描述了单个核心，而不是整个处理器。因此，我们将跳过关于频率、核心数量、L3缓存、核心互连、内存延迟和带宽以及其他内容的讨论。
 
-![Intel GoldenCove微架构CPU核心的模块图。*© 图片来源[@IntelOptimizationManual]。*](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/uarch/goldencove_block_diagram.png){#fig:Goldencove_diag width=100%}
+![Intel GoldenCove微架构CPU核心的模块图。*© 图片来源[[@IntelOptimizationManual](../References.md#IntelOptimizationManual)]。*](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/uarch/goldencove_block_diagram.png){#fig:Goldencove_diag width=100%}
 
 该核心分为一个按顺序执行的前端，负责从内存中提取和解码x86指令为 $$\mu$$ ops，以及一个6宽度的超标量、乱序执行的后端。Goldencove核心支持2路SMT。它有一个32KB的一级指令缓存（L1 I-cache），和一个48KB的一级数据缓存（L1 D-cache）。L1缓存由统一的1.25MB（服务器芯片中为2MB）L2缓存支持。L1和L2缓存对每个核心是私有的。在本节末尾，我们还将查看TLB层次结构。
 

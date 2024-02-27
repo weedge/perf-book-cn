@@ -26,7 +26,7 @@
 | 超线程 | 已禁用 (1 个线程/核心) |
 | 操作系统 | Ubuntu 22.04，内核 5.15.0-76 |
 
-表:实验所用服务器的主要特性。{#tbl:experimental_setup}
+表: 实验所用服务器的主要特性。{#tbl:experimental_setup}
 
 ## AMD Milan 7313P 处理器的集群式内存层次结构
 

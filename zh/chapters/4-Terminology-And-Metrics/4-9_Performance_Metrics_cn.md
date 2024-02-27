@@ -25,9 +25,10 @@
 | IpArith Scalar SP | 每标量单精度 FP 算术指令 | INST_RETIRED.ANY / FP_ARITH_INST_RETIRED.SCALAR_SINGLE |
 | IpArith Scalar DP | 每标量双精度 FP 算术指令 | INST_RETIRED.ANY / FP_ARITH_INST_RETIRED.SCALAR_DOUBLE |
 | Ip Arith AVX128 | 每 FP 算术 AVX128 128 位指令 | INST_RETIRED.ANY / (FP_ARITH_INST_RETIRED.128B_PACKED_DOUBLE + FP_ARITH_INST_RETIRED.128B_PACKED_SINGLE) |
-| Ip Arith AVX256 | 每 FP 算术 AVX256 256 位指令 | INST_RETIRED.ANY / (FP_ARITH_INST_RETIRED.256B_
+| Ip Arith AVX256 | 每 FP 算术 AVX256 256 位指令 | INST_RETIRED.ANY / ( FP_ARITH_INST_RETIRED.256B_PACKED_DOUBLE+ FP_ARITH_INST_RETIRED.256B_PACKED_SINGLE) |
+| Ip SWPF | 每个软件预取指令 (of any type) | INST_RETIRED.ANY / SW_PREFETCH_ACCESS.T0:u0xF |
 
-表：英特尔Goldencove架构的一系列次要指标及其描述和公式（非详尽）。{#tbl:perf_metrics}
+Table：英特尔Goldencove架构的一系列次要指标及其描述和公式（非详尽）。 {#tbl:perf_metrics}
 
 关于这些指标的一些说明。首先，ILP和MLP指标并不代表应用程序的理论最大值；而是衡量在给定机器上应用程序的实际ILP和MLP。在具有无限资源的理想机器上，这些数字会更高。其次，除了"DRAM BW Use"和"Load Miss Real Latency"之外的所有指标都是分数；我们可以对每个指标进行相当直接的推理，以确定特定指标是高还是低。但要理解"DRAM BW Use"和"Load Miss Real Latency"指标的意义，我们需要将其放在一个上下文中。对于前者，我们想知道一个程序是否饱和了内存带宽。后者为你提供了缓存失效的平均成本，但这本身是无用的，除非你知道缓存层次结构中每个组件的延迟。我们将在下一节讨论如何找出缓存延迟和峰值内存带宽。
 
