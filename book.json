@@ -113,7 +113,7 @@
         {
           "label": "下载PDF",
           "icon": "fa fa-file-pdf-o",
-          "url": "http://localhost:4000/book.pdf",
+          "url": "https://raw.githubusercontent.com/weedge/perf-book-cn/main/perf-book-cn.pdf",
           "position": "left",
           "text": "下载PDF",
           "target": "_blank"
