@@ -21,4 +21,4 @@
 > [!TIP]
 > - 文章中的`pandoc markdown`标签gitbook未能识别，暂未找到pandoc插件, 不影响整体阅读. (pandoc工具主要是用来生成离线PDF电子书, gitbook适合在线阅读)
 > - [pandoc](https://pandoc.org/MANUAL.html) 通过bibtex生成引用样式: [citation-style-language(CSL)-styles](https://github.com/citation-style-language/styles), 可从 [Zotero Style 官网](https://www.zotero.org/styles) 挑选需要样式下载 
-> - 翻译的[源文件存储库](https://github.com/dendibakh/perf-book)对应的commit: [5ddfadc](https://github.com/weedge/perf-book/commit/5ddfadc9c292b7dbac4d868e7a25b9a6ea3648c8)
+> - 翻译的[源文件存储库](https://github.com/dendibakh/perf-book)对应的commit: [5ddfadc](https://github.com/dendibakh/perf-book/commit/5ddfadc9c292b7dbac4d868e7a25b9a6ea3648c8)
