@@ -4,7 +4,7 @@
         <description><![CDATA[现代CPU上的性能分析与优化]]></description>
         <link>https://weedge.github.io/</link>
         <generator>RSS for Node</generator>
-        <lastBuildDate>Sun, 25 Feb 2024 17:10:51 GMT</lastBuildDate>
+        <lastBuildDate>Tue, 27 Feb 2024 15:15:08 GMT</lastBuildDate>
         <atom:link href="https://weedge.github.io/index.xml" rel="self" type="application/rss+xml"/>
         <author><![CDATA[weedge]]></author>
         <managingEditor><![CDATA[weege007@gmail.com]]></managingEditor>
@@ -61,7 +61,7 @@
         </item>
         <item>
             <title><![CDATA[No title]]></title>
-            <description><![CDATA[曾经和同事辩论过某段代码的性能吗？那么你可能知道要预测哪段代码会表现最佳有多么困难。在现代处理器内部有如此多的运作部件，即使对代码进行微小的调整也可能触发显著的性能变化。这就是为什么本书的第一个建议是：始终进行测试。许多人在尝试优化他们的应用程序时依赖直觉。而通常情况下，最终会在各处随意修复，而对应用程序的性能没有产生任何真正的影响。]]></description>
+            <description><![CDATA[曾经和同事辩论过某段代码的性能吗？那么你可能知道要预测哪段代码会表现最佳有多么困难。在现代处理器内部有如此多的运作部件，即使对代码进行微小的调整也可能触发显著的性能变化。这就是为什么本书的第一个建议是：**始终进行测量分析(Measure)**。许多人在尝试优化他们的应用程序时依赖直觉。而通常情况下，最终会在各处随意修复，而对应用程序的性能没有产生任何真正的影响。]]></description>
             <link>https://weedge.github.io/chapters/1-Introduction/1-3_What_is_performance_analysis_cn.html</link>
             <guid isPermaLink="true">https://weedge.github.io/chapters/1-Introduction/1-3_What_is_performance_analysis_cn.html</guid>
             <dc:creator><![CDATA[weedge]]></dc:creator>
@@ -110,7 +110,7 @@
         </item>
         <item>
             <title><![CDATA[No title]]></title>
-            <description><![CDATA[当一个应用程序在共享基础设施上运行时（在公共云中很常见），通常会有来自其他客户的其他工作负载在同一台服务器上运行。随着虚拟化和容器等技术变得越来越流行，公共云提供商试图充分利用他们服务器的容量。不幸的是，这为在这样的环境中进行性能测量带来了额外的障碍。与相邻进程共享资源可能以不可预测的方式影响性能测量。]]></description>
+            <description><![CDATA[当一个应用程序在共享基础设施上运行时（在公共云中很常见），通常会有来自其他客户的其他工作负载在同一台服务器上运行。随着虚拟化和容器等技术变得越来越流行，公共云提供商试图充分利用他们服务器的容量。不幸的是，在这样的环境中进行性能测量带来了额外的障碍。与相邻进程共享资源可能以不可预测的方式影响性能测量。]]></description>
             <link>https://weedge.github.io/chapters/2-Measuring-Performance/2-2_Measuring_Performance_In_Procution_cn.html</link>
             <guid isPermaLink="true">https://weedge.github.io/chapters/2-Measuring-Performance/2-2_Measuring_Performance_In_Procution_cn.html</guid>
             <dc:creator><![CDATA[weedge]]></dc:creator>
@@ -429,7 +429,7 @@
         </item>
         <item>
             <title><![CDATA[No title]]></title>
-            <description><![CDATA[TMA 方法最早由英特尔在 2014 年推出，并从 SandyBridge 家族的处理器开始提供 Fourth。英特尔的实施为每个高级类别提供了多个子类别，可以更好地帮助您更好地识别和定位应用程序中出现的处理器性能瓶塞 (见图 @fig:TMA)。]]></description>
+            <description><![CDATA[TMA方法学首次由英特尔于2014年提出，并从SandyBridge系列处理器开始提供支持。英特尔的实现支持每个高级别桶的嵌套类别，从而更好地了解程序中的CPU性能瓶颈（参见图@fig:TMA）。]]></description>
             <link>https://weedge.github.io/chapters/6-CPU-Features-For-Performance-Analysis/6-2_TMA-Intel_cn.html</link>
             <guid isPermaLink="true">https://weedge.github.io/chapters/6-CPU-Features-For-Performance-Analysis/6-2_TMA-Intel_cn.html</guid>
             <dc:creator><![CDATA[weedge]]></dc:creator>
