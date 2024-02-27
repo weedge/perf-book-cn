@@ -2,7 +2,7 @@
 
 set -e
 
-# gitbook build
+gitbook build
 
 git checkout gh-pages
 cp -rf _book/* ./ 
