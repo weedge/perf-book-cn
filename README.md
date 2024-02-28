@@ -25,3 +25,7 @@
 > - [pandoc](https://pandoc.org/MANUAL.html) 通过bibtex生成引用样式: [citation-style-language(CSL)-styles](https://github.com/citation-style-language/styles), 可从 [Zotero Style 官网](https://www.zotero.org/styles) 挑选需要样式下载 
 > - 翻译的[源文件存储库](https://github.com/dendibakh/perf-book)对应的commit: [5ddfadc](https://github.com/dendibakh/perf-book/commit/5ddfadc9c292b7dbac4d868e7a25b9a6ea3648c8)
 > - 通过`pandoc`生成latex源文件，具体设置见：[https://github.com/weedge/perf-book/blob/feat/cn/export_book_zh.py](https://github.com/weedge/perf-book/blob/feat/cn/export_book_zh.py)
+
+## License
+
+本书采用[Creative Commons Attribution-NonCommercial 4.0 International Public License](https://creativecommons.org/licenses/by-nc/4.0/legalcode)开源，具体条款可参考LICENSE文件。
