@@ -1,6 +1,3 @@
----
-typora-root-url: ..\..\img
----
 
 ## 错误预测的分支 {#sec:BbMisp}
 

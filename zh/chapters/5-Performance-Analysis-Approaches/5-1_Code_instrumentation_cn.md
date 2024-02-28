@@ -1,6 +1,3 @@
----
-typora-root-url: ..\..\img
----
 
 ## 代码仪器化[^2] {#sec:secInstrumentation}
 

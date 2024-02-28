@@ -1,6 +1,3 @@
----
-typora-root-url: ..\..\img
----
 
 ## 管道槽
 

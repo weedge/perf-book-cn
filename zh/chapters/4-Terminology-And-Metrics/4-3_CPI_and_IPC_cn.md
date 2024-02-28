@@ -1,7 +1,3 @@
----
-typora-root-url: ..\..\img
----
-
 ## CPI 和 IPC {#sec:IPC}
 
 这两个是两个基本指标，分别代表：

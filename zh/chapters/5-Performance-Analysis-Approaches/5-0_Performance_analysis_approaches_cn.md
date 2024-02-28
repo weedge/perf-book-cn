@@ -1,6 +1,3 @@
----
-typora-root-url: ..\..\img
----
 
 # 性能分析方法 {#sec:sec_PerfApproaches}
 

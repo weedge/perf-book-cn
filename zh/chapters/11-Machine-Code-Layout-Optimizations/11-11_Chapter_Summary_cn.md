@@ -1,6 +1,3 @@
----
-typora-root-url: ..\..\img
----
 ## 章节总结 {.unlisted .unnumbered}
 
 CPU 前端优化总结见表 {@tbl:CPU_FE_OPT}。

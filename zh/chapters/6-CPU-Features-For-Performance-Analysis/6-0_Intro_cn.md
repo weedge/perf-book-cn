@@ -1,6 +1,3 @@
----
-typora-root-url: ..\..\img
----
 
 ## CPU 特性用于性能分析
 
