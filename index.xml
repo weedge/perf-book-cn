@@ -4,7 +4,7 @@
         <description><![CDATA[现代CPU上的性能分析与优化]]></description>
         <link>https://weedge.github.io/</link>
         <generator>RSS for Node</generator>
-        <lastBuildDate>Wed, 28 Feb 2024 02:41:46 GMT</lastBuildDate>
+        <lastBuildDate>Wed, 28 Feb 2024 13:55:13 GMT</lastBuildDate>
         <atom:link href="https://weedge.github.io/index.xml" rel="self" type="application/rss+xml"/>
         <author><![CDATA[weedge]]></author>
         <managingEditor><![CDATA[weege007@gmail.com]]></managingEditor>
@@ -214,7 +214,7 @@
         </item>
         <item>
             <title><![CDATA[No title]]></title>
-            <description><![CDATA[为了看到我们在本章讨论的所有概念如何在实践中使用，让我们来看看英特尔第12代酷睿处理器Goldencove的实现，该处理器于2021年上市。该核心被用作Alderlake和Sapphire Rapids平台中的P核心。图@fig:Goldencove_diag显示了Goldencove核心的模块图。请注意，本节仅描述了单个核心，而不是整个处理器。因此，我们将跳过关于频率、核心数量、L3缓存、核心互连、内存延迟和带宽以及其他内容的讨论。]]></description>
+            <description><![CDATA[为了看到我们在本章讨论的所有概念如何在实践中使用，让我们来看看英特尔第12代酷睿处理器Goldencove的实现，该处理器于2021年上市。该核心被用作Alderlake和Sapphire Rapids平台中的P核心。图 @fig:Goldencove_diag 显示了Goldencove核心的模块图。请注意，本节仅描述了单个核心，而不是整个处理器。因此，我们将跳过关于频率、核心数量、L3缓存、核心互连、内存延迟和带宽以及其他内容的讨论。]]></description>
             <link>https://weedge.github.io/chapters/3-CPU-Microarchitecture/3-8_Modern_CPU_design_cn.html</link>
             <guid isPermaLink="true">https://weedge.github.io/chapters/3-CPU-Microarchitecture/3-8_Modern_CPU_design_cn.html</guid>
             <dc:creator><![CDATA[weedge]]></dc:creator>
@@ -248,7 +248,7 @@
         </item>
         <item>
             <title><![CDATA[No title]]></title>
-            <description><![CDATA[现代处理器通常执行的指令数量比程序流程所需的要多。这是因为一些指令是以推测性的方式执行的，如[@sec:SpeculativeExec]中所讨论的。对于大多数指令，CPU在结果可用时提交，所有先前的指令都已退役。但对于以推测性方式执行的指令，CPU会保留它们的结果，而不立即提交它们的结果。当推测结果被证明是正确时，CPU会解除此类指令的阻塞并正常进行。但当推测结果被证明是错误时，CPU会丢弃推测指令所做的所有更改，并不会退役它们。因此，CPU处理的指令可以被执行但不一定被退役。考虑到这一点，我们通常可以预期执行的指令数量高于已退役的指令数量。]]></description>
+            <description><![CDATA[现代处理器通常执行的指令数量比程序流程所需的要多。这是因为一些指令是以推测性的方式执行的，如[@sec:SpeculativeExec]中所讨论的。对于大多数指令，CPU在结果可用时提交，所有先前的指令都已退役(retired)。但对于以推测性方式执行的指令，CPU会保留它们的结果，而不立即提交它们的结果。当推测结果被证明是正确时，CPU会解除此类指令的阻塞并正常进行。但当推测结果被证明是错误时，CPU会丢弃推测指令所做的所有更改，并不会退役它们。因此，CPU处理的指令可以被执行但不一定被退役。考虑到这一点，我们通常可以预期执行的指令数量高于已退役的指令数量。]]></description>
             <link>https://weedge.github.io/chapters/4-Terminology-And-Metrics/4-1_Retired_and_Executed_Instruction_cn.html</link>
             <guid isPermaLink="true">https://weedge.github.io/chapters/4-Terminology-And-Metrics/4-1_Retired_and_Executed_Instruction_cn.html</guid>
             <dc:creator><![CDATA[weedge]]></dc:creator>
@@ -269,7 +269,7 @@
         </item>
         <item>
             <title><![CDATA[No title]]></title>
-            <description><![CDATA[具有 x86 架构的微处理器将复杂的 CISC 类指令转换为简单的 RISC 类微操作，缩写为 $$\mu$$ops 或 $$\mu$$ops。例如，像 ADD rax, rbx 这样的简单加法指令只会生成一个 $$\mu$$op，而更复杂的指令比如 ADD rax, [mem] 可能生成两个：一个用于从 mem 内存位置读取到临时（未命名）寄存器，另一个用于将其添加到 rax 寄存器。指令 ADD [mem], rax 会生成三个 $$\mu$$ops：一个用于从内存读取，一个用于相加，一个用于将结果写回内存。]]></description>
+            <description><![CDATA[具有 x86 架构的微处理器将复杂的 CISC 类指令转换为简单的 RISC 类微操作，缩写为 $$\mu$$ops。例如，像 ADD rax, rbx 这样的简单加法指令只会生成一个 $$\mu$$op，而更复杂的指令比如 ADD rax, [mem] 可能生成两个：一个用于从 mem 内存位置读取到临时（未命名）寄存器，另一个用于将其添加到 rax 寄存器。指令 ADD [mem], rax 会生成三个 $$\mu$$ops：一个用于从内存读取，一个用于相加，一个用于将结果写回内存。]]></description>
             <link>https://weedge.github.io/chapters/4-Terminology-And-Metrics/4-4_UOP_cn.html</link>
             <guid isPermaLink="true">https://weedge.github.io/chapters/4-Terminology-And-Metrics/4-4_UOP_cn.html</guid>
             <dc:creator><![CDATA[weedge]]></dc:creator>
