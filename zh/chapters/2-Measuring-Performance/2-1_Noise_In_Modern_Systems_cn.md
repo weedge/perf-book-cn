@@ -20,7 +20,7 @@
 
 最后，重要的是要记住，即使特定硬件或软件功能具有非确定性行为，也并不意味着它被认为是有害的。它可能会产生不一致的结果，但它旨在提高系统的整体性能。禁用此类功能可能会减少微基准测试中的噪音，但会使整个套件运行更长时间。这对于 CI/CD 性能测试尤其重要，因为整个基准测试套件的运行时间有限制。
 
-[^1]: 冷处理器是指处于空闲模式一段时间，使其冷却下来的 CPU。 
-[^11]: 动态频率缩放 - https://en.wikipedia.org/wiki/Dynamic_frequency_scaling。 
-[^14]: Temci - https://github.com/parttimenerd/temci。
+[^1]: 冷处理器是指处于空闲模式一段时间，使其冷却下来的 CPU 
+[^11]: 动态频率缩放 - https://en.wikipedia.org/wiki/Dynamic_frequency_scaling 
+[^14]: Temci - https://github.com/parttimenerd/temci
 
