@@ -4,7 +4,7 @@
         <description><![CDATA[现代CPU上的性能分析与优化]]></description>
         <link>https://weedge.github.io/</link>
         <generator>RSS for Node</generator>
-        <lastBuildDate>Wed, 28 Feb 2024 13:55:13 GMT</lastBuildDate>
+        <lastBuildDate>Thu, 29 Feb 2024 15:29:13 GMT</lastBuildDate>
         <atom:link href="https://weedge.github.io/index.xml" rel="self" type="application/rss+xml"/>
         <author><![CDATA[weedge]]></author>
         <managingEditor><![CDATA[weege007@gmail.com]]></managingEditor>
@@ -18,14 +18,14 @@
             <dc:creator><![CDATA[weedge]]></dc:creator>
         </item>
         <item>
-            <title><![CDATA[通告 {.unlisted .unnumbered}]]></title>
+            <title><![CDATA[通告]]></title>
             <description><![CDATA[责任。工程和软件开发领域的知识和最佳实践不断变化。从业者和研究人员必须始终依靠自己的经验和知识来评估和使用此处描述的任何信息、方法、化合物或实验。在使用这些信息或方法时，他们应注意自己的安全和他人的安全，包括对其职业责任的各方。]]></description>
             <link>https://weedge.github.io/chapters/0-Preface/0-1_Notices_cn.html</link>
             <guid isPermaLink="true">https://weedge.github.io/chapters/0-Preface/0-1_Notices_cn.html</guid>
             <dc:creator><![CDATA[weedge]]></dc:creator>
         </item>
         <item>
-            <title><![CDATA[前言 {.unnumbered .unlisted}]]></title>
+            <title><![CDATA[前言]]></title>
             <description><![CDATA[Denis Bakhvalov是Intel的高级开发人员，负责C++编译器项目，旨在为各种不同架构生成优化代码。性能工程和编译器始终是他主要关注的领域之一。Denis于2008年开始作为软件开发人员的职业生涯，并在多个领域工作，包括开发桌面应用程序、嵌入式系统、性能分析和编译器开发。2016年，Denis开始了他的easyperf.net博客，专注于性能分析和调优、C/C++编译器以及CPU微体系结构。Denis是积极生活方式的支持者，在业余时间喜欢踢足球、打网球、跑步和下棋。此外，Denis还是两个美丽女儿的父亲。]]></description>
             <link>https://weedge.github.io/chapters/0-Preface/0-2_Preface_cn.html</link>
             <guid isPermaLink="true">https://weedge.github.io/chapters/0-Preface/0-2_Preface_cn.html</guid>
@@ -40,7 +40,7 @@
         </item>
         <item>
             <title><![CDATA[介绍 {#sec .sec1}]]></title>
-            <description><![CDATA[[TODO]: 更新介绍。这是书中最重要的部分。:) 更新说明我们现在正处于一个新时代的开端。PC -> 移动 -> 云 -> AI?]]></description>
+            <description><![CDATA[常说，“性能为王”。十年前是真的，现在当然也是如此。根据[@Domo2017]的数据，在2017年，全球每天创造了2.5个万亿^1字节的数据，如[@Statista2018]所预测的那样，这个数字每年增长25%。在我们日益数据中心化的世界中，信息交换的增长推动了对更快软件（SW）和更快硬件（HW）的需求。可以说，数据增长不仅对计算能力提出了需求，还对存储和网络系统提出了需求。]]></description>
             <link>https://weedge.github.io/chapters/1-Introduction/1-0_Introduction_cn.html</link>
             <guid isPermaLink="true">https://weedge.github.io/chapters/1-Introduction/1-0_Introduction_cn.html</guid>
             <dc:creator><![CDATA[weedge]]></dc:creator>
@@ -89,13 +89,12 @@
         </item>
         <item>
             <title><![CDATA[No title]]></title>
-            <description><![CDATA[\sectionbreak]]></description>
             <link>https://weedge.github.io/chapters/1-Introduction/1-7_Chapter_Summary_cn.html</link>
             <guid isPermaLink="true">https://weedge.github.io/chapters/1-Introduction/1-7_Chapter_Summary_cn.html</guid>
             <dc:creator><![CDATA[weedge]]></dc:creator>
         </item>
         <item>
-            <title><![CDATA[第一部分：在现代CPU上的性能分析 {.unnumbered}]]></title>
+            <title><![CDATA[第一部分：在现代CPU上的性能分析]]></title>
             <description><![CDATA[了解应用程序性能的第一步是知道如何进行测量。人们将性能视为应用程序的特性之一。[^15] 但与其他特性不同，性能不是一个布尔属性：一个应用程序可以非常慢，飞快，或者介于两者之间。这就是为什么对于是否具有性能的问题，不可能回答“是”或“否”的原因。]]></description>
             <link>https://weedge.github.io/chapters/2-Measuring-Performance/2-0_Measuring_Performance_cn.html</link>
             <guid isPermaLink="true">https://weedge.github.io/chapters/2-Measuring-Performance/2-0_Measuring_Performance_cn.html</guid>
@@ -151,7 +150,6 @@
         </item>
         <item>
             <title><![CDATA[No title]]></title>
-            <description><![CDATA[\sectionbreak]]></description>
             <link>https://weedge.github.io/chapters/2-Measuring-Performance/2-8_Chapter_summary_cn.html</link>
             <guid isPermaLink="true">https://weedge.github.io/chapters/2-Measuring-Performance/2-8_Chapter_summary_cn.html</guid>
             <dc:creator><![CDATA[weedge]]></dc:creator>
@@ -234,7 +232,6 @@
         </item>
         <item>
             <title><![CDATA[No title]]></title>
-            <description><![CDATA[\sectionbreak]]></description>
             <link>https://weedge.github.io/chapters/3-CPU-Microarchitecture/3-11_Chapter_summary_cn.html</link>
             <guid isPermaLink="true">https://weedge.github.io/chapters/3-CPU-Microarchitecture/3-11_Chapter_summary_cn.html</guid>
             <dc:creator><![CDATA[weedge]]></dc:creator>
@@ -332,7 +329,6 @@
         </item>
         <item>
             <title><![CDATA[No title]]></title>
-            <description><![CDATA[\sectionbreak]]></description>
             <link>https://weedge.github.io/chapters/4-Terminology-And-Metrics/4-16_Chapter_summary_cn.html</link>
             <guid isPermaLink="true">https://weedge.github.io/chapters/4-Terminology-And-Metrics/4-16_Chapter_summary_cn.html</guid>
             <dc:creator><![CDATA[weedge]]></dc:creator>
@@ -408,7 +404,6 @@
         </item>
         <item>
             <title><![CDATA[No title]]></title>
-            <description><![CDATA[\sectionbreak]]></description>
             <link>https://weedge.github.io/chapters/5-Performance-Analysis-Approaches/5-10_Chapter_Summary_cn.html</link>
             <guid isPermaLink="true">https://weedge.github.io/chapters/5-Performance-Analysis-Approaches/5-10_Chapter_Summary_cn.html</guid>
             <dc:creator><![CDATA[weedge]]></dc:creator>
@@ -436,7 +431,7 @@
         </item>
         <item>
             <title><![CDATA[No title]]></title>
-            <description><![CDATA[[TODO]: TMA 从哪个内核版本开始在 Linux perf 中支持？]]></description>
+            <description><![CDATA[从 Zen4 开始，AMD 处理器支持一级和二级 TMA 分析。根据 AMD 文档，它被称为“管道利用率”分析，但基本思想保持不变。L1 和 L2 桶也与 Intel 的非常相似。Linux 用户可以使用 perf 工具收集管道利用率数据。]]></description>
             <link>https://weedge.github.io/chapters/6-CPU-Features-For-Performance-Analysis/6-3_TMA-AMD_cn.html</link>
             <guid isPermaLink="true">https://weedge.github.io/chapters/6-CPU-Features-For-Performance-Analysis/6-3_TMA-AMD_cn.html</guid>
             <dc:creator><![CDATA[weedge]]></dc:creator>
@@ -460,6 +455,13 @@
             <description><![CDATA[现代高性能 CPU 提供分支记录机制，使处理器能够连续记录一组先前执行的分支。但在进入细节之前，你可能会问：为什么我们对分支如此感兴趣？ 嗯，因为这是我们如何确定程序控制流的方式。我们基本上忽略基本块（参见 [@sec:BasicBlock]）中的其他指令，因为分支总是基本块中的最后一个指令。由于基本块中的所有指令都保证执行一次，因此我们只能关注将“代表”整个基本块的分支。因此，如果我们跟踪每个分支的结果，就可以重建程序的整个逐行执行路径。事实上，这就是英特尔处理器跟踪 (PT) 功能可以做到的，它在附录 D 中讨论。我们将在这里讨论的分支记录机制基于采样而不是跟踪，因此具有不同的用例和功能。]]></description>
             <link>https://weedge.github.io/chapters/6-CPU-Features-For-Performance-Analysis/6-6_Last_Branch_Record_cn.html</link>
             <guid isPermaLink="true">https://weedge.github.io/chapters/6-CPU-Features-For-Performance-Analysis/6-6_Last_Branch_Record_cn.html</guid>
+            <dc:creator><![CDATA[weedge]]></dc:creator>
+        </item>
+        <item>
+            <title><![CDATA[No title]]></title>
+            <description><![CDATA[主要 CPU 供应商提供了一系列附加功能来增强性能分析。由于 CPU 供应商以不同的方式处理性能监控，因此这些功能不仅在调用方式上存在差异，而且在功能上也存在差异。在 Intel 处理器中，它被称为处理器事件采样 (PEBS)，首次引入于 NetBurst 微架构。AMD 处理器上类似的功能称为指令采样 (IBS)，从 AMD Opteron 家族 (10h 代) 核心开始可用。接下来，我们将更详细地讨论这些功能，包括它们的相似之处和不同之处。]]></description>
+            <link>https://weedge.github.io/chapters/6-CPU-Features-For-Performance-Analysis/6-7_Precise_Event_Based_Sampling_PEBS_cn.html</link>
+            <guid isPermaLink="true">https://weedge.github.io/chapters/6-CPU-Features-For-Performance-Analysis/6-7_Precise_Event_Based_Sampling_PEBS_cn.html</guid>
             <dc:creator><![CDATA[weedge]]></dc:creator>
         </item>
         <item>
@@ -553,7 +555,7 @@
         </item>
         <item>
             <title><![CDATA[No title]]></title>
-            <description><![CDATA[\markright{Part2. Source Code Tuning}]]></description>
+            <description><![CDATA[欢迎来到本书的第二部分，我们将讨论各种低级源代码优化技术，也称为 调优。在第一部分，我们学习了如何找到代码中的性能瓶颈，这只是开发人员工作的一半。另一半是解决问题。]]></description>
             <link>https://weedge.github.io/chapters/8-Optimizing-Memory-Accesses/8-0_Source_Code_Tuning_For_CPU_cn.html</link>
             <guid isPermaLink="true">https://weedge.github.io/chapters/8-Optimizing-Memory-Accesses/8-0_Source_Code_Tuning_For_CPU_cn.html</guid>
             <dc:creator><![CDATA[weedge]]></dc:creator>
@@ -601,7 +603,6 @@
         </item>
         <item>
             <title><![CDATA[No title]]></title>
-            <description><![CDATA[\sectionbreak]]></description>
             <link>https://weedge.github.io/chapters/8-Optimizing-Memory-Accesses/8-6_Chapter_Summary_cn.html</link>
             <guid isPermaLink="true">https://weedge.github.io/chapters/8-Optimizing-Memory-Accesses/8-6_Chapter_Summary_cn.html</guid>
             <dc:creator><![CDATA[weedge]]></dc:creator>
@@ -656,7 +657,6 @@
         </item>
         <item>
             <title><![CDATA[No title]]></title>
-            <description><![CDATA[\sectionbreak]]></description>
             <link>https://weedge.github.io/chapters/9-Optimizing-Computations/9-7_Chapter_Summary_cn.html</link>
             <guid isPermaLink="true">https://weedge.github.io/chapters/9-Optimizing-Computations/9-7_Chapter_Summary_cn.html</guid>
             <dc:creator><![CDATA[weedge]]></dc:creator>
@@ -691,7 +691,6 @@
         </item>
         <item>
             <title><![CDATA[No title]]></title>
-            <description><![CDATA[\sectionbreak]]></description>
             <link>https://weedge.github.io/chapters/10-Optimizing-Branch-Prediction/10-5_Chapter_Summary_cn.html</link>
             <guid isPermaLink="true">https://weedge.github.io/chapters/10-Optimizing-Branch-Prediction/10-5_Chapter_Summary_cn.html</guid>
             <dc:creator><![CDATA[weedge]]></dc:creator>
@@ -829,7 +828,6 @@
         </item>
         <item>
             <title><![CDATA[No title]]></title>
-            <description><![CDATA[\sectionbreak]]></description>
             <link>https://weedge.github.io/chapters/12-Other-Tuning-Areas/12-9_Chapter_summary_cn.html</link>
             <guid isPermaLink="true">https://weedge.github.io/chapters/12-Other-Tuning-Areas/12-9_Chapter_summary_cn.html</guid>
             <dc:creator><![CDATA[weedge]]></dc:creator>
@@ -898,7 +896,6 @@
         </item>
         <item>
             <title><![CDATA[No title]]></title>
-            <description><![CDATA[\sectionbreak]]></description>
             <link>https://weedge.github.io/chapters/13-Optimizing-Multithreaded-Applications/13-9_Chapter_Summary_cn.html</link>
             <guid isPermaLink="true">https://weedge.github.io/chapters/13-Optimizing-Multithreaded-Applications/13-9_Chapter_Summary_cn.html</guid>
             <dc:creator><![CDATA[weedge]]></dc:creator>
@@ -918,7 +915,7 @@
             <dc:creator><![CDATA[weedge]]></dc:creator>
         </item>
         <item>
-            <title><![CDATA[术语表 {.unnumbered}]]></title>
+            <title><![CDATA[术语表]]></title>
             <description><![CDATA[\markright{Glossary}]]></description>
             <link>https://weedge.github.io/chapters/16-Glossary/16-0_Glossary_cn.html</link>
             <guid isPermaLink="true">https://weedge.github.io/chapters/16-Glossary/16-0_Glossary_cn.html</guid>
@@ -953,7 +950,7 @@
             <dc:creator><![CDATA[weedge]]></dc:creator>
         </item>
         <item>
-            <title><![CDATA[附录 D. Intel 处理器跟踪 {.unnumbered}]]></title>
+            <title><![CDATA[附录 D. Intel 处理器跟踪]]></title>
             <description><![CDATA[\markright{附录 D}]]></description>
             <link>https://weedge.github.io/chapters/18-Appendix/Appendix-D_cn.html</link>
             <guid isPermaLink="true">https://weedge.github.io/chapters/18-Appendix/Appendix-D_cn.html</guid>
