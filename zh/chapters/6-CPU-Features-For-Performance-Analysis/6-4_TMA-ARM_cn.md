@@ -65,7 +65,6 @@ Stage 2 (uarch metrics)
   Crypto Operations Percentage........  0.00% operations
 ```
 
- [TODO]: 为什么操作组合加起来不等于 100%？
 Misc 类别包含不在主类别中的指令。例如，barriers
 
 在上面的命令中，选项 `-n BackendBound` 收集与 `Backend Bound` 类别及其后代相关的所有指标。输出中每个指标的描述在 [[@ARMNeoverseV1](../References.md#ARMNeoverseV1)TopDown] 中给出。请注意，它们与我们在 [@sec:PerfMetricsCaseStudy] 中讨论的非常相似，因此您可能也想重新查看它。
@@ -74,9 +73,7 @@ Misc 类别包含不在主类别中的指令。例如，barriers
 
 查看 `L1/L2/LL Cache Effectiveness` 指标，我们可以发现数据缓存未命中的潜在问题。对 L1D 缓存的 ~22 次访问中就有一次会导致未命中（参见 `L1D Cache Miss Ratio`），这是可以容忍但仍然很昂贵的。对于 L2，这个数字是 37 分之一（参见 `L2 Cache Miss Ratio`），这要好得多。然而对于 LLC，`LL Cache Read Miss Ratio` 是不令人满意的：每 4 次访问就会导致一次失败。由于这是一个 AI 基准测试，其中大部分时间可能花在矩阵乘法上，因此循环阻塞等代码转换可能会有所帮助（参见 [@sec:LoopOpts])。
 
-[TODO]: AI 算法以“内存饥渴”而闻名，然而，这些数据并没有提供内存带宽消耗的洞察力。
 
-[TODO]: 通过检查哪些库显示样本高来证明这一点，使用 `-p` 或 `-t` 运行 `perf record`。
 
 最后一类给出了操作组合，这在某些情况下很有用。在我们的例子中，我们应该关注 SIMD 操作的低百分比，特别是考虑到使用了高度优化的 `Tensorflow` 和 `numpy` 库。相比之下，整数运算和分支的百分比似乎太高了。分支可能来自 Python 解释器或过多的函数调用。而高百分比的整数操作可能是由于缺乏矢量化或线程同步造成的。 [[@ARMNeoverseV1](../References.md#ARMNeoverseV1)TopDown] 给出了一个使用来自 `Speculative Operation Mix` 类别的数据发现矢量化机会的示例。
 
@@ -84,7 +81,6 @@ Misc 类别包含不在主类别中的指令。例如，barriers
 
 AI Benchmark Alpha 有各种可能表现出不同性能特征的测试。上面显示的输出汇总了所有基准并给出了总体细分。如果单个测试确实存在不同的性能瓶颈，这通常不是一个好主意。您需要对每个测试进行单独的 Topdown 分析。 `topdown-tool` 可以提供帮助的一种方法是使用 `-i` 选项，该选项将根据可配置的时间间隔输出数据。然后，您可以比较间隔并决定下一步。
 
-[TODO]: N2 论文公开后更新。
 
 [^1]: AI Benchmark Alpha - [https://ai-benchmark.com/alpha.html](https://ai-benchmark.com/alpha.html)
 [^2]: ARM `topdown-tool` - [https://learn.arm.com/install-guides/topdown-tool/](https://learn.arm.com/install-guides/topdown-tool/)

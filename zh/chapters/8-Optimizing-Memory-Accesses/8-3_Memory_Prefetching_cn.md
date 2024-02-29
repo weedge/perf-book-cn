@@ -17,7 +17,7 @@ for (int i = 0; i < N; ++i) {
 }
 ```
 
-![显示关键路径上的负载延迟的执行时间线.](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/memory-access-opts/SWmemprefetch1.png){#fig:SWmemprefetch1 width=90%}
+![显示关键路径上的负载延迟的执行时间线.](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/memory-access-opts/SWmemprefetch1.png)<div id="SWmemprefetch1"></div>
 
 这里还有另一个重要观察。当 CPU 接近完成第一次迭代时，它会推测性地开始执行来自第二次迭代的指令。这在迭代之间创建了一个积极的执行重叠。然而，即使在现代处理器中，也缺少足够的 OOO 功能，无法完全将缓存未命中延迟与来自迭代 1 的 `doSomeExtensiveComputation` 的执行重叠。换句话说，在我们的例子中，CPU 无法提前查看当前执行，以便足够早地发出加载指令。
 
@@ -35,7 +35,7 @@ for (int i = 0; i < N; ++i) {
 }
 ```
 
-![通过与其他执行重叠来隐藏缓存未命中延迟.](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/memory-access-opts/SWmemprefetch2.png){#fig:SWmemprefetch2 width=90%}
+![通过与其他执行重叠来隐藏缓存未命中延迟.](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/memory-access-opts/SWmemprefetch2.png)<div id="SWmemprefetch2"></div>
 
 在 x86 平台上利用显式软件预取的另一种选择是使用编译器内部函数 `_mm_prefetch`。有关更多详细信息，请参见 Intel 内部函数指南。无论如何，编译器都会将其编译成机器指令：x86 的 `PREFETCH` 和 ARM 的 `pld`。对于某些平台，编译器可能会跳过插入指令，因此检查生成的机器代码是一个好主意。
 

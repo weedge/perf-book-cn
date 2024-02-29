@@ -11,7 +11,7 @@ MESI（**M**odified **E**xclusive **S**hared **I**nvalid）是最著名的缓存
 * **共享（Shared）：** 缓存行存在于这里和其他缓存行中，并且与其在 RAM 中的值匹配
 * **无效（Invalid）：** 缓存行未使用（即不包含任何 RAM 位置）
 
-![MESI 状态图. *© Image by University of Washington via courses.cs.washington.edu.*](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/mt-perf/MESI_Cache_Diagram.jpg){#fig:MESI width=60%}
+![MESI 状态图. *© Image by University of Washington via courses.cs.washington.edu.*](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/mt-perf/MESI_Cache_Diagram.jpg)<div id="MESI"></div>
 
 
 从内存中获取时，每个缓存行都将一个状态编码到其标签中。然后，缓存行状态会从一个状态转换到另一个状态。[^25] 现实中，CPU 供应商通常会实现稍作改进的 MESI 变体。例如，英特尔使用 MESIF: [https://en.wikipedia.org/wiki/MESIF_protocol](https://en.wikipedia.org/wiki/MESIF_protocol)，[^26] 它添加了转发 (F) 状态，而 AMD 则使用 MOESI: [https://en.wikipedia.org/wiki/MOESI_protocol](https://en.wikipedia.org/wiki/MOESI_protocol)，[^27] 它添加了拥有 (O) 状态。但这些协议仍然保持了基本 MESI 协议的本质。
@@ -58,7 +58,7 @@ S s;
 }
 ```
 
-![False共享:两个线程访问同一个缓存行。 *© Image by Intel Developer Zone via software.intel.com.*](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/mt-perf/FalseSharing.jpg){#fig:FalseSharing width=50%}
+![False共享:两个线程访问同一个缓存行。 *© Image by Intel Developer Zone via software.intel.com.*](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/mt-perf/FalseSharing.jpg)<div id="FalseSharing"></div>
 
 假共享是多线程应用程序性能问题的常见来源。因此，现代分析工具内置了检测此类案例的支持。TMA 将经历真/假共享的应用程序描述为内存绑定。通常，在这种情况下，您会看到 争用访问: [https://software.intel.com/en-us/vtune-help-contested-accesses](https://software.intel.com/en-us/vtune-help-contested-accesses)[^18] 指标的高值。
 

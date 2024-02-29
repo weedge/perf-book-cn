@@ -4,7 +4,7 @@
 
 将 Coz 分析器应用于 Phoronix 测试套件: [https://www.phoronix-test-suite.com/](https://www.phoronix-test-suite.com/) 中的 C-Ray: [https://openbenchmarking.org/test/pts/c-ray](https://openbenchmarking.org/test/pts/c-ray) 基准的示例如图 @fig:CozProfile 所示。根据图表，如果我们将 c-ray-mt.c 中第 540 行的性能提高 20%，Coz 预计 C-Ray 基准整体应用程序性能将相应提高约 17%。一旦我们在这条线上的改进达到 ~45%，对其应用程序的影响就会根据 Coz 的估计开始趋于平缓。有关此示例的更多详细信息，请参阅 easyperf 博客上的文章: [https://easyperf.net/blog/2020/02/26/coz-vs-sampling-profilers](https://easyperf.net/blog/2020/02/26/coz-vs-sampling-profilers)[^17]。
 
-![CozProfile 适用于 [C-Ray](https://openbenchmarking.org/test/pts/c-ray) 基准的 Coz 分析文件.](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/mt-perf/CozProfile.png){#fig:CozProfile width=70%}
+![CozProfile 适用于 [C-Ray](https://openbenchmarking.org/test/pts/c-ray) 基准的 Coz 分析文件.](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/mt-perf/CozProfile.png)<div id="CozProfile"></div>
 
 [^16]: COZ 源代码 - [https://github.com/plasma-umass/coz](https://github.com/plasma-umass/coz)。
 [^17]: 博客文章“COZ 与采样性能分析器” - [https://easyperf.net/blog/2020/02/26/coz-vs-sampling-profilers](https://easyperf.net/blog/2020/02/26/coz-vs-sampling-profilers)。

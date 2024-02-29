@@ -1,4 +1,4 @@
-# 第一部分：在现代CPU上的性能分析 {.unnumbered}
+# 第一部分：在现代CPU上的性能分析 
 
 # 性能测量 {#sec:secMeasPerf}
 

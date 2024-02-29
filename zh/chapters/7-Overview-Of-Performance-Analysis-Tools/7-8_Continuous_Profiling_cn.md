@@ -6,7 +6,7 @@
 
 持续性能分析 (CP) 是一种始终处于开启状态的系统级、基于采样的性能分析器，但采样率较低，以尽量减少运行时影响。通过持续收集所有进程的数据，可以比较代码执行在不同时间段为什么会不同，甚至可以在事件发生后进行调试。CP 工具提供了宝贵的见解，可以了解哪些代码使用了最多的资源，从而使工程师能够减少生产环境中的资源使用，从而节省成本。与 Linux perf 或 Intel VTune 等典型性能分析器不同，CP 可以从应用程序堆栈一直向下定位到内核堆栈，从 *任何* 指定的日期和时间找到性能问题，并支持比较任意两个日期/时间的调用堆栈，以突出性能差异。
 
-![Parca 持续性能分析器 Web 界面截图.](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/perf-tools/Continuous_profiling.png){#fig:Continuous_profiling width=100%}
+![Parca 持续性能分析器 Web 界面截图.](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/perf-tools/Continuous_profiling.png)<div id="Continuous_profiling"></div>
 
 为了展示典型 CP 的外观，让我们来看看开源 CP 之一 Parca: [https://github.com/parca-dev/parca](https://github.com/parca-dev/parca)[^1] 的 Web 界面，如图 @fig:Continuous_profiling 所示。顶部面板显示了一个时间序列图，其中包含在从时间窗口下拉列表中选择的期间（在本例中为“最近 15 分钟”）机器上各种进程收集的 CPU 样本数量，但是为了适应页面，图片被裁剪为仅显示最后 10 分钟。默认情况下，Parca 每秒收集 19 个样本。对于每个样本，它都会收集主机系统上所有进程的堆栈跟踪。分配给特定进程的样本越多，它在一段时间内的 CPU 活动就越多。在我们的例子中，您可以看到最繁忙的进程（顶部线条）表现出突发性行为，CPU 活动出现峰值和下降。如果您是此应用程序的主要开发人员，您可能会好奇为什么会发生这种情况。当您推出新版本的应用程序，突然看到分配给进程的 CPU 样本出现意外峰值，这表明出现了问题。
 

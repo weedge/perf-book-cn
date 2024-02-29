@@ -26,8 +26,8 @@ void foo(bool cond1, bool cond2) {              void foo(bool cond1, bool cond2)
 
 <div id="fig:FunctionSplitting">
 
-![默认布局](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/cpu_fe_opts/FunctionSplitting_Default.png){#fig:FuncSplit_default width=45%}
-![改进的布局](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/cpu_fe_opts/FunctionSplitting_Improved.png){#fig:FuncSplit_better width=45%}
+![默认布局](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/cpu_fe_opts/FunctionSplitting_Default.png)<div id="FuncSplit_default"></div>
+![改进的布局](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/cpu_fe_opts/FunctionSplitting_Improved.png)<div id="FuncSplit_better"></div>
 
 将冷代码拆分到单独的函数中。
 </div>

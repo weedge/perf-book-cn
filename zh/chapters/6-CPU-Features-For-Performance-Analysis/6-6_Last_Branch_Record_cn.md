@@ -226,7 +226,7 @@ Linux `perf` 通过分析每个 LBR 条目并从中提取预测错误位来计�
 
 图 @fig:LBR_timing_BB 展示了这样的图表示例。它是通过分析所有满足上述规则的 LBR 条目编译而成的。读取图表的方法如下：它告诉我们给定延迟值出现的比率。例如，大约 2% 的时间测量到基本块延迟正好为 100 周期，14% 的时间测量到 280 周期，我们从未见过 150 到 200 周期之间的数值。另一种解读方式是：根据收集的数据，如果您要测量某个基本块的延迟，看到特定延迟的概率是多少？
 
-![基本块延迟的概率密度图，基本块起始地址为 `0x400618`](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/pmu-features/LBR_timing_BB.png){#fig:LBR_timing_BB width=90%}
+![基本块延迟的概率密度图，基本块起始地址为 `0x400618`](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/pmu-features/LBR_timing_BB.png)<div id="LBR_timing_BB"></div>
 
 我们可以清楚地看到两个峰值：一个较小的峰值大约在 80 周期\circled{1}，两个更大的峰值在 280 和 305 周期\circled{2}。该块从一个不适合 CPU L3 缓存的大数组中进行非顺序加载，因此基本块的延迟很大程度上取决于此加载。基于图表，我们可以得出结论，第一个峰值\circled{1}对应于 L3 缓存命中，第二个峰值\circled{2}对应于 L3 缓存未命中，其中加载请求一直到主内存。
 
@@ -234,7 +234,6 @@ Linux `perf` 通过分析每个 LBR 条目并从中提取预测错误位来计�
 
 在适当的性能分析工具支持到位之前，构建类似于图 @fig:LBR_timing_BB 的概率密度图需要手动解析原始 LBR 转储。有关如何执行此操作的示例，请参见 easyperf 博客: [https://easyperf.net/blog/2019/04/03/Precise-timing-of-machine-code-with-Linux-perf](https://easyperf.net/blog/2019/04/03/Precise-timing-of-machine-code-with-Linux-perf)[^9]。幸运的是，在较新的 Linux perf 版本中，获取这些信息要容易得多。以下示例直接使用 Linux perf 在我们之前介绍的 LLVM 测试套件中相同的 7-zip 基准测试上演示了这种方法：
 
-[TODO]: 检查：“添加 `-F +srcline_from,srcline_to` 会降低构建报告的速度。希望在更高版本的 perf 中，解码时间会得到改善”。
 
 ```bash
 $ perf record -e cycles -b -- ./7zip.exe b

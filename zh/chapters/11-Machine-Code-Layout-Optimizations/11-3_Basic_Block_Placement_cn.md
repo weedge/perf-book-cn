@@ -13,9 +13,9 @@ if (cond)
 
 <div id="fig:BBLayout">
 
-![默认布局](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/cpu_fe_opts/BBLayout_Default.png){#fig:BB_default width=40%}
+![默认布局](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/cpu_fe_opts/BBLayout_Default.png)<div id="BB_default"></div>
 
-![改进的布局](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/cpu_fe_opts/BBLayout_Better.png){#fig:BB_better width=40%}
+![改进的布局](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/cpu_fe_opts/BBLayout_Better.png)<div id="BB_better"></div>
 
 上面代码片段的两种机器代码布局版本。
 </div>

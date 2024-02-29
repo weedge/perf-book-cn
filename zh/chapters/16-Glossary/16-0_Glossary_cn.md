@@ -1,4 +1,4 @@
-# 术语表 {.unnumbered}
+# 术语表 
 
 \markright{Glossary}
 

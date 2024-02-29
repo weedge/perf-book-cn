@@ -1,10 +1,10 @@
-## 附录 A. 减少测量噪声(Reducing Measurement Noise) {.unnumbered}
+## 附录 A. 减少测量噪声(Reducing Measurement Noise) 
 
 \markright{附录 A}
 
 以下是一些示例功能，它们可能导致性能测量的不确定性增加。有关完整讨论，请参见 [@sec:secFairExperiments]。
 
-## 动态频率缩放(Dynamic Frequency Scaling) {.unnumbered .unlisted}
+## 动态频率缩放(Dynamic Frequency Scaling) 
 
 动态频率缩放 (DFS): [https://en.wikipedia.org/wiki/Dynamic_frequency_scaling](https://en.wikipedia.org/wiki/Dynamic_frequency_scaling)[^11] 是一种通过在运行要求苛刻任务时自动提高 CPU 运行频率来提升系统性能的技术。例如，英特尔 CPU 具有名为 睿频加速: [https://en.wikipedia.org/wiki/Intel_Turbo_Boost](https://en.wikipedia.org/wiki/Intel_Turbo_Boost)[^1] 的 DFS 实现功能，AMD CPU 则采用 Turbo Core: [https://en.wikipedia.org/wiki/AMD_Turbo_Core](https://en.wikipedia.org/wiki/AMD_Turbo_Core)[^2] 功能。
 
@@ -39,7 +39,7 @@ echo 1 > /sys/devices/system/cpu/intel_pstate/no_turbo
 echo 0 > /sys/devices/system/cpu/cpufreq/boost
 ```
 
-## 同时多线程(Simultaneous Multithreading) {.unnumbered .unlisted}
+## 同时多线程(Simultaneous Multithreading) 
 
 现代 CPU 内核通常采用 同时多线程 (SMT): [https://en.wikipedia.org/wiki/Simultaneous_multithreading](https://en.wikipedia.org/wiki/Simultaneous_multithreading)[^4] 方式制造。这意味着在一个物理内核中，您可以同时执行两个线程。通常，体系结构状态: [https://en.wikipedia.org/wiki/Architectural_state](https://en.wikipedia.org/wiki/Architectural_state)[^5] 会被复制，但执行资源（ALU、缓存等）不会。这意味着如果我们在同一个内核上以“同时”方式运行两个独立的进程（在不同的线程中），它们会相互争夺资源，例如缓存空间。
 
@@ -85,7 +85,7 @@ $ cat /sys/devices/system/cpu/cpu0/topology/thread_siblings_list
 0
 ```
 
-## 缩放调速器(Scaling Governor) {.unnumbered .unlisted}
+## 缩放调速器(Scaling Governor) 
 
 Linux内核可以控制 CPU 频率用于不同的目的。其中一个目的是节能，在这种情况下，Linux内核内部的调速器[^7] 可以决定降低 CPU 运行频率。对于性能测量，建议将调速器策略设置为“性能”，以避免低于标称时钟频率。下面是如何将其设置为所有内核：
 
@@ -96,7 +96,7 @@ do
 done
 ```
 
-## CPU 亲和性(CPU Affinity) {.unnumbered .unlisted}
+## CPU 亲和性(CPU Affinity) 
 
 处理器亲和性: [https://en.wikipedia.org/wiki/Processor_affinity](https://en.wikipedia.org/wiki/Processor_affinity)[^8] 允许将进程绑定到特定 CPU 内核。在 Linux 中，可以使用 `taskset`: [https://linux.die.net/man/1/taskset](https://linux.die.net/man/1/taskset)[^9] 工具实现这一点。这里 
 
@@ -124,7 +124,7 @@ $ cset shield -c N1,N2 -k on
 $ cset shield --exec -- perf stat -r 10 <cmd>
 ```
 
-## 进程优先级(Process Priority) {.unnumbered .unlisted}
+## 进程优先级(Process Priority) 
 
 在 Linux 中，可以使用 `nice` 工具提高进程优先级。通过提高优先级，进程可以获得更多 CPU 时间，并且 Linux 调度器会比具有正常优先级的进程更青睐它。优先级范围从 `-20`（最高优先级值）到 `19`（最低优先级值），默认值为 `0`。
 
@@ -136,7 +136,7 @@ $ perf stat -r 10 -- sudo nice -n -5 taskset -c 1 a.exe
 ```
 请注意，上下文切换的数量变为 `0`，因此该进程不间断地接收所有计算时间。
 
-## 文件系统缓存(Filesystem Cache) {.unnumbered .unlisted}
+## 文件系统缓存(Filesystem Cache) 
 
 通常，会分配一部分主内存来缓存文件系统内容，包括各种数据。这减少了应用程序访问磁盘的次数。以下示例说明了文件系统缓存如何影响简单 `git status` 命令的运行时间：
 

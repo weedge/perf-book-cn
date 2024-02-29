@@ -1,4 +1,4 @@
-## 问题和练习 {.unlisted .unnumbered}
+## 问题和练习 
 
 1. 使用本章讨论的技术解决以下实验作业：
     - `perf-ninja::branches_to_cmov_1`

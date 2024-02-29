@@ -8,7 +8,7 @@
 4. 存储访问（MEM）
 5. 写回（WB）
 
-![简单的5级流水线图。](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/uarch/Pipelining.png){#fig:Pipelining width=70%}
+![简单的5级流水线图。](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/uarch/Pipelining.png)<div id="Pipelining"></div>
 
 图@fig:Pipelining显示了5级流水线CPU的理想流水线视图。在周期1中，指令x进入流水线的IF阶段。在下一个周期中，随着指令x移动到ID阶段，程序中的下一条指令进入IF阶段，依此类推。一旦流水线满了，就像上面的周期5一样，CPU的所有流水线阶段都在忙于处理不同的指令。没有流水线技术，指令`x+1`在指令`x`完成其工作之后才能开始执行。
 

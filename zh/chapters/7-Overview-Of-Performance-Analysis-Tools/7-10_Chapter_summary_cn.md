@@ -1,4 +1,4 @@
-## 章节总结 {.unlisted .unnumbered}
+## 章节总结 
 
 * 我们快速概述了三大平台（Linux、Windows 和 MacOS）上最流行的工具。根据 CPU 供应商的不同，性能分析工具的选择也会有所不同。对于使用英特尔处理器的系统，我们推荐使用 Vtune；对于使用 AMD 处理器的系统，我们推荐使用 uProf；对于苹果平台，我们推荐使用 Xcode Instruments。
 
@@ -12,4 +12,4 @@
 
 [^1]: KUtrace - [https://github.com/dicksites/KUtrace](https://github.com/dicksites/KUtrace)
 
-\sectionbreak
+

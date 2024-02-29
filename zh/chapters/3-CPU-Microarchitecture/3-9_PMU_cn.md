@@ -2,9 +2,8 @@
 
 每个现代CPU都提供了监控性能的设施，这些设施被合并到了性能监控单元（PMU）中。该单元集成了帮助开发人员分析其应用程序性能的功能。一个现代Intel CPU中的PMU示例如图@fig:PMU所示。大多数现代PMU都有一组性能监控计数器（PMC），可用于收集程序执行过程中发生的各种性能事件。稍后在[@sec:counting]中，我们将讨论如何使用PMC进行性能分析。此外，PMU还具有其他增强性能分析的功能，如LBR、PEBS和PT，[@sec:PmuChapter]专门讨论了这个话题。
 
-[TODO]: 此图中使用的字体大小对于舒适阅读来说太小了。
 
-![现代Intel CPU的性能监控单元。](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/uarch/PMU.png){#fig:PMU width=70%}
+![现代Intel CPU的性能监控单元。](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/uarch/PMU.png)<div id="PMU"></div>
 
 随着每一代CPU设计的演进，它们的PMU也在发展。在Linux上，可以使用`cpuid`命令确定CPU中PMU的版本，如[@lst:QueryPMU]所示。类似的信息可以通过检查`dmesg`命令的输出从内核消息缓冲区中提取。每个Intel PMU版本的特性，以及与上一个版本的变化，可以在[[@IntelOptimizationManual](../References.md#IntelOptimizationManual), Volume 3B, Chapter 20]中找到。
 
@@ -28,7 +27,7 @@ Architecture Performance Monitoring Features (0xa/edx):
 
 如果我们想象一下对处理器的简化视图，它可能看起来像图@fig:PMC所示的样子。正如我们在本章前面讨论过的，现代CPU具有缓存、分支预测器、执行流水线和其他单元。当连接到多个单元时，PMC可以从中收集有趣的统计信息。例如，它可以计算经过了多少个时钟周期，执行了多少条指令，在此期间发生了多少缓存失效或分支预测错误等性能事件。
 
-![带有性能监控计数器的CPU的简化视图。](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/uarch/PMC.png){#fig:PMC width=60%}
+![带有性能监控计数器的CPU的简化视图。](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/uarch/PMC.png)<div id="PMC"></div>
 
 通常，PMC的宽度为48位，这使得分析工具能够在不中断程序执行的情况下运行很长时间[^2]。性能计数器是作为模型特定寄存器（MSR）实现的硬件寄存器。这意味着计数器的数量和它们的宽度会因型号而异，您不能依赖于在您的CPU中的相同数量的计数器。您应该始终首先查询它，例如使用`cpuid`等工具。PMC可以通过`RDMSR`和`WRMSR`指令访问，这些指令只能在内核空间执行。幸运的是，只有当您是性能分析工具的开发人员时，才需要关注这一点，例如Linux perf或Intel Vtune分析器。这些工具处理了编程PMC的所有复杂性。
 

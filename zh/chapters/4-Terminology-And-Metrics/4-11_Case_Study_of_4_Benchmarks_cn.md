@@ -14,7 +14,6 @@
 - 256GB NVMe PCIe M.2 SSD
 - 64位 Ubuntu 22.04.1 LTS (Jammy Jellyfish)
 
-[TODO]: 添加使用的编译器版本和编译器选项
 
 为了收集性能指标，我们使用了`toplev.py`脚本，它是[pmu-tools](https://github.com/andikleen/pmu-tools)[^1]的一部分，由Andi Kleen编写：
 
@@ -30,7 +29,6 @@ $ ~/workspace/pmu-tools/toplev.py -m --global --no-desc -v -- <app with args>
 
 * **Clang 15 自我构建**。C++代码编译是一项性能特性非常平坦的任务，即没有大的热点。通常，您会发现运行时间归因于许多不同的函数。我们首先注意到的是，P核心比E核心多做了68%的工作，并且IPC要好42%。但是P核心和E核心的IPC都很低。乍一看，`L*MPKI`指标看起来并不令人担忧；然而，结合加载未命中实际延迟（`LdMissLat`，以核心时钟表示），我们可以看到缓存未命中的平均成本相当高（~77个周期）。现在，当我们查看`*STLB_MPKI`指标时，我们注意到与我们测试的任何其他基准测试都存在实质性差异。这是由于Clang编译器（以及其他编译器）的另一个方面：二进制文件的大小相对较大（超过100 MB）。代码不断跳转到远处的位置，导致TLB子系统的压力很大。正如您所看到的，该问题存在于指令（请参阅`Code stlb MPKI`）和数据（请参阅`Ld stlb MPKI`）之间。让我们继续进行分析。DRAM带宽使用率高于前两个基准测试，但仍然没有达到我们平台的最大内存带宽的一半（约为25 GB/s）。我们关注的另一个问题是每次调用的指令数量非常少（`IpCall`）：每个函数调用只有约41条指令。不幸的是，这是编译代码库的本质：它有数千个小函数。编译器需要更积极地内联所有这些函数和包装器。然而，我们怀疑与进行函数调用相关的性能开销仍然是Clang编译器的一个问题。此外，人们可以注意到高`ipBranch`和`IpMispredict`指标。对于Clang编译，每五条指令中就有一条分支，大约每35条分支中就有一条误预测。几乎没有FP或矢量指令，但这并不奇怪。结论：Clang具有庞大的代码库，平坦的性能配置文件，许多小函数和“分支”代码；性能受到数据缓存和TLB未命中以及分支误预测的影响。
 
-[TODO]: 令人疑惑的是，P核和E核完成的工作量大致相同，但P核需要更长的时间来完成这些工作，导致P核上一个逻辑线程的IPC低于一个物理E核。目前我们还没有对此现象很好的解释。
 
 * **CloverLeaf**。与之前一样，我们从分析指令和核心周期开始。P核心和E核心完成的工作量大致相同，但P核心需要更长的时间来完成这项工作，导致P核心上的一个逻辑线程的IPC比一个物理E核心上的IPC低。我们对此还没有一个很好的解释。`L*MPKI`指标很高，特别是每千条指令的L3未命中次数。加载未命中延迟（`LdMissLat`）超出了图表范围，表明平均缓存未命中的价格非常高。接下来，我们看一下`DRAM带宽使用`指标，发现内存带宽完全饱和了。这就是问题所在：系统中的所有核心共享同一个内存总线，因此它们竞争访问主存，有效地阻塞了执行。CPU缺乏它们需要的数据。进一步说，我们可以看到CloverLeaf几乎没有受到分支误预测或函数调用开销的影响。指令混合主要由FP双精度标量操作主导，代码的某些部分被矢量化。结论：多线程CloverLeaf受到内存带宽的限制。
 
@@ -78,9 +76,7 @@ $ ~/workspace/pmu-tools/toplev.py -m --global --no-desc -v -- <app with args>
 $ ~/workspace/pmu-tools/toplev.py -m --global --no-desc -v --xlsx workload.xlsx –xchart -- ./clover_leaf
 ```
 
-![CloverLeaf 基准测试的一组指标图表](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/terms-and-metrics/CloverMetricCharts2.png){#fig:CloverMetricCharts width=100% }
-
-[TODO]: 描述图表。
+![CloverLeaf 基准测试的一组指标图表](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/terms-and-metrics/CloverMetricCharts2.png)<div id="CloverMetricCharts width=100%"></div>
 
 尽管与摘要中报告的值偏差不大，但我们可以看到工作负载并不总是稳定的。在查看 IPC 图表后，我们可以假设工作负载中没有不同的阶段，变化是由性能事件的多路复用引起的（在 [@sec:counting] 中讨论）。然而，这只是一个需要证实或否定的假设。可能的方法是通过以更高粒度（在本例中为 10 秒）运行收集来收集更多数据点并研究源代码。仅根据数字得出结论要小心；始终获取第二个数据源来确认您的假设。
 

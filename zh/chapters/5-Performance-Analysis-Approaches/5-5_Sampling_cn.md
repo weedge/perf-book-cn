@@ -18,7 +18,7 @@
 
 在本节中，我们将讨论使用 PMC 和 EBS 的机制。图 @fig:Sampling 说明了 PMU 的计数器溢出功能，该功能用于触发性能监控中断 (PMI)，也称为 `SIGPROF`。在基准测试开始时，我们会配置我们想要采样的事件。识别热点意味着知道程序花费大部分时间在哪里。因此，在周期上进行采样是非常自然的，这也是许多性能分析工具的默认设置。但这并不一定是严格的规则；我们可以对任何想要的性能事件进行采样。例如，如果我们想知道程序中 L3 缓存未命中最多的位置，我们将在相应的事件上进行采样，即 `MEM_LOAD_RETIRED.L3_MISS`。
 
-![使用性能计数器进行采样](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/perf-analysis/SamplingFlow.png){#fig:Sampling width=60%}
+![使用性能计数器进行采样](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/perf-analysis/SamplingFlow.png)<div id="Sampling"></div>
 
 初始化寄存器后，我们开始计数并让基准测试继续。我们将 PMC 配置为计数周期，因此它将在每个周期递增。最终，它会溢出。当寄存器溢出时，硬件将引发 PMI。性能分析工具被配置为捕获 PMI，并具有用于处理它们的中断服务程序 (ISR)。我们在 ISR 中执行多个步骤：首先，我们禁用计数；然后，我们记录 CPU 在计数器溢出时执行的指令；然后，我们将计数器重置为 `N` 并恢复基准测试。
 
@@ -74,15 +74,13 @@ Percent | Source code & Disassembly of x264 for cycles:ppp
 
 大多数带有图形用户界面 (GUI) 的性能分析器，例如 Intel VTune Profiler，都可以并排显示源代码和关联的汇编代码。此外，还有一些工具可以以类似于 Intel Vtune 和其他工具的丰富图形界面可视化 Linux `perf` 原始数据的输出。您将在第 7 章中更详细地看到所有这些内容。
 
-[TODO]: 采样技术会压缩宝贵的信息，无法检测异常行为。
 
 ### 收集调用堆栈 {#sec:secCollectCallStacks}
 
-[TODO]: 展开解释unwinding的复杂性
 
 在采样时，我们经常会遇到程序中最热门的函数被多个函数调用的情况。图 @fig:CallStacks 显示了一个这样的场景示例。性能分析工具的输出可能显示 `foo` 是程序中最热门的函数之一，但如果它有多个调用者，我们想知道哪个调用者调用 `foo` 的次数最多。对于程序中出现诸如 `memcpy` 或 `sqrt` 之类的库函数的热点，这是典型情况。要了解特定的函数为什么成为热点，我们需要知道程序控制流图 (CFG) 中哪个路径导致了这种情况。
 
-![Control Flow Graph: hot function "foo" has multiple callers.](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/perf-analysis/CallStacksCFG.png){#fig:CallStacks width=50%}
+![Control Flow Graph: hot function "foo" has multiple callers.](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/perf-analysis/CallStacksCFG.png)<div id="CallStacks"></div>
 
 
 分析 `foo` 所有调用者的源代码可能非常耗时。我们只想关注那些导致 `foo` 成为热点的调用者。换句话说，我们想要找出程序 CFG 中最热门的路径。性能分析工具通过在收集性能样本时捕获进程的调用堆栈和其他信息来实现这一点。然后，对所有收集到的堆栈进行分组，使我们能够看到导致特定函数的最热门路径。

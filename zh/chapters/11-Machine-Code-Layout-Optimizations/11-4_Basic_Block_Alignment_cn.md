@@ -24,9 +24,9 @@ void benchmark_func(int* a) {    │ 00000000004046a0 <_Z14benchmark_funcPi>:
 
 <div id="fig:LoopLayout">
 
-![默认布局](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/cpu_fe_opts/LoopAlignment_Default.png){#fig:Loop_default width=82%}
+![默认布局](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/cpu_fe_opts/LoopAlignment_Default.png)<div id="Loop_default"></div>
 
-![改进布局](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/cpu_fe_opts/LoopAlignment_Better.png){#fig:Loop_better width=82%}
+![改进布局](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/cpu_fe_opts/LoopAlignment_Better.png)<div id="Loop_better"></div>
 
 [@lst:LoopAlignment] 中循环的两种不同的代码布局。
 </div>

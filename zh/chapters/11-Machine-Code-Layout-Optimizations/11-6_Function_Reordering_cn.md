@@ -8,8 +8,8 @@
 
 <div id="fig:FunctionGrouping">
 
-![默认布局](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/cpu_fe_opts/FunctionGrouping_Default.png){#fig:FuncGroup_default width=40%}
-![改进的布局](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/cpu_fe_opts/FunctionGrouping_Better.png){#fig:FuncGroup_better width=40%}
+![默认布局](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/cpu_fe_opts/FunctionGrouping_Default.png)<div id="FuncGroup_default"></div>
+![改进的布局](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/cpu_fe_opts/FunctionGrouping_Better.png)<div id="FuncGroup_better"></div>
 
 重新排列热点函数。
 </div>

@@ -1,10 +1,9 @@
-[TODO]: 找到循环进位依赖的一种方法是在LLVM-IR中查看循环的phi节点。
 
 ## 数据流依赖
 
 当程序语句引用前面语句的数据时，我们称这两个语句之间存在数据依赖性。有时人们也使用“依赖链”或“数据流依赖”等术语。我们最熟悉的例子如图 @fig:LinkedListChasing 所示。要访问节点 `N+1`，我们应该首先取消引用指针 `N->next` 的引用。对于右边的循环，这是一个递归的数据依赖性，这意味着它跨越了循环的多个迭代。基本上，遍历一个链表是一个非常长的依赖链。
 
-![遍历链表时的数据依赖性.](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/computation-opts/LinkedListChasing.png){#fig:LinkedListChasing width=80%}
+![遍历链表时的数据依赖性.](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/computation-opts/LinkedListChasing.png)<div id="LinkedListChasing"></div>
 
 
 传统程序是在假设顺序执行模型的情况下编写的。在这个模型下，指令一个接一个地执行，原子地按照程序指定的顺序执行。然而，正如我们已经知道的，现代 CPU 不是这样构建的。它们被设计成乱序执行指令，并行执行，并以最大限度利用可用执行单元的方式执行。
@@ -72,7 +71,7 @@ void particleMotion(vector<Particle> &particles,     │   fmadd  s3, s3, s4, s5
 
 恭喜您找到了它！存在一个关于 `XorShift32::val` 的循环依赖。要生成下一个随机数，生成器必须首先生成前一个数字。`gen()` 方法的下一个调用将基于前一个数字生成数字。图 @fig:DepChain 直观地显示了有问题的循环进位依赖。请注意，计算粒子坐标的代码（将角度转换为弧度，正弦，余弦，乘以速度）会在相应的随机数准备好后立即开始执行，但不会更早。
 
-![在 [@lst:DepChain] 中依赖执行的可视化](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/computation-opts/DepChain.png){#fig:DepChain width=80%}
+![在 [@lst:DepChain] 中依赖执行的可视化](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/computation-opts/DepChain.png)<div id="DepChain"></div>
 
 每个粒子坐标的计算代码彼此独立，因此向左拉伸它们以更多地重叠它们的执行可能会有益。您可能想知道：“但是这三个（或六个）指令如何拖慢整个循环？”。确实，循环中还有许多其他“繁重”指令，例如 `fmul` 和 `fmadd`。然而，它们不在关键路径上，因此可以与其他指令并行执行。并且由于现代 CPU 非常宽，它们将同时执行来自多个迭代的指令。这允许 OOO 引擎在循环的不同迭代中有效地找到并行性（独立指令）。
 

@@ -25,7 +25,7 @@ Each iteration took 31.1 base frequency clocks (	12.5	ns)
 
 的左侧的第一个区域对应于L1d缓存，该缓存是每个物理核心私有的。我们可以观察到E核心的延迟为0.9ns，而P核心稍高为1.1ns。此外，我们可以使用此图来确认缓存大小。请注意，当缓冲区大小超过32KB时，E核心的延迟开始上升，但是在48KB之前E核心的延迟保持不变。这证实了E核心的L1d缓存大小为32KB，而P核心的L1d缓存大小为48KB。
 
-![在Intel Core i7-1260P上使用mlc工具测量的L1/L2/L3缓存读取延迟，启用了大页。](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/terms-and-metrics/MemLatencies.png){#fig:MemoryLatenciesCharts width=100% }
+![在Intel Core i7-1260P上使用mlc工具测量的L1/L2/L3缓存读取延迟，启用了大页。](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/terms-and-metrics/MemLatencies.png)<div id="MemoryLatenciesCharts width=100%"></div>
 
 第二个区域显示 L2 缓存延迟，E 核的延迟几乎是 P 核的两倍（5.9ns vs. 3.2ns）。对于 P 核，延迟在我们超过 1.25MB 缓冲区大小后会增加，这是预期的。但我们期望 E 核的延迟保持不变，直到 2MB，但在我们的测量中没有发生这种情况。
 
@@ -50,7 +50,7 @@ Stream-triad like:      30503.68
 
 这里的新选项是 `-k`，它指定了用于测量的CPU编号列表。`-Y` 选项告诉MLC使用AVX2加载，即每次加载32字节。MLC使用不同的读写比例来测量带宽，但在下图中，我们只显示了全部读取带宽，因为它可以让我们对内存带宽的峰值有一个直观的了解。但其他比例也可能很重要。我们在使用Intel MLC测量的系统的组合延迟和带宽数字如图 @fig:MemBandwidthAndLatenciesDiagram 所示。
 
-![Intel Core i7-1260P内存层次结构的块图和外部DDR4内存。](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/terms-and-metrics/MemBandwidthAndLatenciesDiagram.png){#fig:MemBandwidthAndLatenciesDiagram width=100% }
+![Intel Core i7-1260P内存层次结构的块图和外部DDR4内存。](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/terms-and-metrics/MemBandwidthAndLatenciesDiagram.png)<div id="MemBandwidthAndLatenciesDiagram width=100%"></div>
 
 核心可以从较低级别的缓存（如L1和L2）中获得比从共享的L3缓存或主内存中更高的带宽。共享缓存（如L3和E核心L2）相当好地扩展，可以同时为多个核心提供请求。例如，单个E核心L2的带宽为100GB/s。使用来自同一集群的两个E核心，我测量了140GB/s，三个E核心为165GB/s，而所有四个E核心可以从共享L2中获得175GB/s。对于L3缓存也是如此，单个P核心的带宽为60GB/s，而单个E核心只有25GB/s。但是当所有核心都被使用时，L3缓存可以维持300GB/s的带宽。
 

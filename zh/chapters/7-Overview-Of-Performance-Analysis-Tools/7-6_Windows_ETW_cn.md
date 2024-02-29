@@ -1,4 +1,3 @@
-[TODO]:可能成为附录的候选人
 
 ## Windows 事件跟踪
 
@@ -44,7 +43,7 @@ ETW 跟踪捕获了所有进程在系统级别的动态，这很棒，但它可�
 - `ETWAnalyzer`：[^5] 读取 ETW 数据并生成聚合摘要 JSON 文件，这些文件可以在命令行进行查询、过滤和排序，或者导出为 CSV 文件。
 - `PerfView`：主要用于故障排除 .NET 应用程序。为垃圾回收和 JIT 编译触发的 ETW 事件被解析并作为报告或 CSV 数据轻松访问。
 
-### 案例研究 - 程序启动缓慢 {.unlisted .unnumbered}
+### 案例研究 - 程序启动缓慢 
 
 接下来，我们将通过一个示例，使用 ETWController 捕获 ETW 跟踪并使用 WPA 进行可视化。
 
@@ -68,7 +67,7 @@ C:\Windows\System32\wpr.exe
 - 从互联网下载一些可执行文件，解压缩它并双击可执行文件启动它。
 - 之后，您可以通过按“*停止录制*”按钮停止分析。
 
-![使用 ETWController UI 启动 ETW 收集.](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/perf-tools/ETWController_Dialog.png){#fig:ETWController_Dialog width=75%}
+![使用 ETWController UI 启动 ETW 收集.](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/perf-tools/ETWController_Dialog.png)<div id="ETWController_Dialog"></div>
 
 第一次停止分析需要更长的时间，因为所有托管代码都会生成合成 pdb，这是一个一次性操作。分析达到已停止状态后，您可以按“*在 WPA 中打开*”按钮，将 ETL 文件加载到 Windows Performance Analyzer 中，并附带 ETWController 提供的配置文件。CSwitch 配置文件会生成大量数据，这些数据存储在 4 GB 的环形缓冲区中，允许您在最旧的事件被覆盖之前录制 1-2 分钟。有时在正确的时间点停止分析有点艺术气息。如果您遇到偶发问题，可以将录制保持启用数小时，并在事件（例如文件中由轮询脚本检查的日志条目）出现时停止录制，以在问题发生时停止录制。
 
@@ -78,7 +77,7 @@ Windows 支持事件日志和性能计数器触发器，允许在性能计数器
 
 图 @fig:WPA_MainView 显示了在 Windows Performance Analyzer (WPA) 中打开的已录制 ETW 数据。WPA 视图分为三个部分：*CPU 使用率（采样）*、*通用事件* 和 *CPU 使用率（精确）*。为了理解它们之间的区别，让我们更深入地研究一下。上面 *CPU 使用率（采样）* 图表可用于识别 CPU 时间花在何处。数据是通过定期间隔对所有正在运行的线程进行采样收集的。与其他分析工具中的热点视图非常相似。
 
-![Windows Performance Analyzer 应用程序启动缓慢概览.](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/perf-tools/WPA_MainView.png){#fig:WPA_MainView width=100% }
+![Windows Performance Analyzer 应用程序启动缓慢概览.](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/perf-tools/WPA_MainView.png)<div id="WPA_MainView width=100%"></div>
 
 接下来是 *通用事件* 视图，其中显示鼠标点击和捕获的屏幕截图等事件。请记住，我们在 ETWController 窗口中启用了拦截这些事件的功能。因为事件放在时间线上，所以很容易将 UI 交互与系统如何响应它们相关联。
 
@@ -86,7 +85,7 @@ Windows 支持事件日志和性能计数器触发器，允许在性能计数器
 
 现在我们熟悉了 WPA 界面，让我们观察一下图表。首先，我们可以在时间线上找到 `MouseButton` 事件 63 和 64。ETWController 将收集期间拍摄的所有屏幕截图保存在一个新建的文件夹中。分析数据本身保存在名为 `SlowProcessStart.etl` 的文件中，还有一个名为 `SlowProcessStart.etl.Screenshots` 的新文件夹。该文件夹包含屏幕截图和一个可以在浏览器中查看的 `Report.html` 文件。每个记录的键盘/鼠标交互都保存在一个以其事件编号命名的文件中，例如 `Screenshot_63.jpg`。图 @fig:ETWController_ClickScreenshot（已裁剪）显示鼠标双击（事件 63 和 64）。鼠标指针位置标记为绿色方块，除非单击事件发生，则为红色。这使得很容易发现何时何地执行了鼠标单击。
 
-![使用 ETWController 捕获的鼠标点击屏幕截图.](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/perf-tools/ETWController_ClickScreenshot.png){#fig:ETWController_ClickScreenshot width=60% }
+![使用 ETWController 捕获的鼠标点击屏幕截图.](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/perf-tools/ETWController_ClickScreenshot.png)<div id="ETWController_ClickScreenshot width=60%"></div>
 
 双击标志着我们应用程序等待某事时 1.2 秒延迟的开始。在时间戳 `35.1` 时，`explorer.exe` 处于活动状态，因为它试图启动新的应用程序。但后来它没有做太多工作，应用程序也没有启动。相反，`MsMpEng.exe` 接管执行直到时间 `35.7`。到目前为止，它看起来像是在下载的可执行文件允许启动之前进行防病毒扫描。但我们不能 100% 确定 `MsMpEng.exe` 正在阻止新应用程序的启动。
 

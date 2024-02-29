@@ -6,7 +6,7 @@
 
 与最后分支记录类似，PEBS 用于在分析程序时捕获每个收集到的样本的额外数据。当性能计数器配置为 PEBS 时，处理器会保存一组具有定义格式的额外数据，称为 PEBS 记录。英特尔 Skylake CPU 的 PEBS 记录格式如图 @fig:PEBS_record 所示。记录包含通用寄存器状态 (`EAX`, `EBX`, `ESP` 等）、`EventingIP`, `Data Linear Address` 和稍后将讨论的 `延迟值`。PEBS 记录的内容布局因不同的微架构而异，请参阅 [[@IntelOptimizationManual](../References.md#IntelOptimizationManual), 第 3B 卷，第 20 章 性能监控]。
 
-![PEBS记录格式适用于第六代、第七代和第八代英特尔酷睿处理器家族。 *© Image from [[@IntelOptimizationManual](../References.md#IntelOptimizationManual), Volume 3B, Chapter 20].*](../../img/pmu-features/PEBS_record.png){#fig:PEBS_record width=90%}
+![PEBS记录格式适用于第六代、第七代和第八代英特尔酷睿处理器家族。 *© Image from [[@IntelOptimizationManual](../References.md#IntelOptimizationManual), Volume 3B, Chapter 20].*](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/pmu-features/PEBS_record.png)<div id="PEBS_record"></div>
 
 从 Skylake 架构开始，PEBS 记录已经增强，可以收集 XMM 寄存器和 LBR 记录。格式已经重新组织，将字段分组为基本组、内存组、GPR 组、XMM 组和 LBR 组。性能分析工具可以选择感兴趣的数据组，从而减小记录大小并降低记录生成延迟。默认情况下，PEBS 记录只包含基本组。
 
@@ -44,14 +44,9 @@ $ perf report
 ```
 在上一个命令中，`cnt_ctl=0` 表示计数时钟周期，`cnt_ctl=1` 表示在间隔期间计数已分配的 ops；`l3missonly=1` 只保留具有 L3 未命中的样本。请注意，在上述两个命令中，都使用了 `-a` 选项来为所有内核收集 IBS 样本，否则 `perf` 在 Linux 内核 6.1 上无法收集样本。从 6.2 版本开始，除非您想要为所有内核收集 IBS 样本，否则不再需要 `-a` 选项。`perf report` 命令将显示类似于常规 PMU 事件的与函数和源代码行关联的样本，但会提供我们稍后讨论的附加功能。
 
-[TODO]: 这些 `cnt_ctl,l3missonly` IBS 控件/过滤器是否是唯一存在的？它们在哪里记录？
-[TODO]: 如果我想进行自定义分析，如何解析 IBS 原始转储？
-
 ### ARM 平台上的 SPE
 
 Arm Statistical Profiling Extension (SPE) 是一项架构功能，旨在增强 Arm CPU 内的指令执行性能分析。自 2019 年推出的 Neoverse N1 核心以来，这项功能就可用。SPE 功能扩展被指定为 Armv8-A 架构的一部分，从 Arm v8.2 起提供支持。与其他解决方案相比，SPE 更类似于 AMD IBS，而不是 Intel PEBS。类似于 IBS，SPE 与通用性能监测器计数器 (PMC) 分开，但它只有一个机制，而不是两种类型的 IBS（获取和执行）。
-
-[TODO]: SPE 是否可选？例如，它是否可用于 Apple/Qualcomm 硅？
 
 SPE 采样过程内置于指令执行流水线中。样本收集仍然基于可配置的间隔，但操作是根据统计信息选择的。每个采样的操作都会生成一个样本记录，其中包含有关此操作执行的各种数据。SPE 记录保存指令地址，负载和存储访问的数据的虚拟和物理地址，数据访问的来源（缓存或 DRAM）以及时间戳，以与系统中其他事件进行关联。此外，它还可以提供各种流水线阶段的延迟，例如发出延迟（从调度到执行）、转换延迟（虚拟到物理地址转换的周期数）和执行延迟（功能单元中负载/存储的延迟）。白皮书 [[@ARMSPE](../References.md#ARMSPE)] 更详细地描述了 ARM SPE，并展示了一些使用它的优化示例。
 
@@ -67,7 +62,6 @@ $ spe-parser perf.data -t csv
 
 其中 `<controls>` 允许您可选地指定收集的各种控件和过滤器。 `perf report` 将根据用户使用 `<controls>` 选项所要求的内容提供通常的输出。 `spe-parser`[^5] 是由 ARM 工程师开发的工具，用于解析捕获的 perf 记录数据并将所有 SPE 记录保存到 CSV 文件中。
 
-[TODO]: 是否可以在 Windows 上 ARM 上使用 SPE？`WindowsPerf` 是否可以收集可由 `spe-parser` 解析的 SPE 数据？
 
 ### 精确事件
 
@@ -102,11 +96,7 @@ MEM_LOAD_RETIRED.*      MEM_LOAD_L3_HIT_RETIRED.*
 $ perf record -e cycles:pp -- ./a.exe
 ```
 
-[TODO]: Denis 展示常规事件和精确事件的示例？
-
 对于 AMD IBS 和 ARM SPE，所有收集的样本在设计上都是精确的，因为硬件会捕获确切的指令地址。事实上，它们都以非常相似的方式工作。每当溢出发生时，该机制将导致溢出的指令保存到专用缓冲区中，然后由中断处理程序读取。由于地址被保留，因此 IBS 和 SPE 样本与指令的关联是精确的。
-
-[TODO]: Linux perf 在 ARM 上支持 `:p` 后缀吗？
 
 精确事件为性能工程师提供了便利，因为它们有助于避免误导性数据，这些数据经常让初学者甚至高级开发人员感到困惑。TMA 方法论依赖精确事件来定位低效执行发生的源代码确切行。
 

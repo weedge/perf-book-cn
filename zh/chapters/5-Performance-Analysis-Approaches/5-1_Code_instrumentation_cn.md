@@ -107,7 +107,6 @@ Coords findObject(const ObjParams& p, Coords c, float searchRadius) {
 
 二进制仪器化在性能分析和调试中非常有用。二进制仪器化最流行的工具之一是Intel [Pin](https://software.intel.com/en-us/articles/pin-a-dynamic-binary-instrumentation-tool)[^1]工具。Pin拦截程序在发生有趣事件时的执行，并生成从程序中的这一点开始的新仪器化代码。它允许收集各种运行时信息，例如：
 
-[TODO]: 添加SDE的讨论?
 
 * 指令计数和函数调用计数。
 * 拦截函数调用和应用程序中任何指令的执行。

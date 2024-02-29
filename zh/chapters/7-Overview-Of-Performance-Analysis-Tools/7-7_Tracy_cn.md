@@ -1,4 +1,3 @@
-[TODO]:可能成为附录的候选人
 
 ## 专业和混合性能分析器 {#sec:Tracy}
 
@@ -6,7 +5,7 @@
 
 开发人员创建了性能分析器，这些性能分析器提供特定环境中的一些有用功能，通常带有您可以用于手动为代码插入标记的标记 API。这允许您观察特定函数或代码块（稍后称为 *zone*）的性能。继续游戏行业，这个领域有一些工具：一些直接集成到游戏引擎中，如 Unreal，而另一些则作为外部库和工具提供，可以集成到您的项目中。一些最常用的性能分析器是 Tracy、RAD Telemetry、Remotery: [https://github.com/Celtoys/Remotery](https://github.com/Celtoys/Remotery) 和 Optick: [https://github.com/bombomby/optick](https://github.com/bombomby/optick)（仅限 Windows）。接下来，我们展示了 Tracy: [https://github.com/wolfpld/tracy](https://github.com/wolfpld/tracy)，[^1] 因为这似乎是一个更受欢迎的项目，但是这些概念也适用于其他性能分析器。
 
-### 你可以用 Tracy 做什么： {.unlisted .unnumbered}
+### 你可以用 Tracy 做什么： 
 
 - 调试程序中的性能异常，例如慢帧。
 - 将慢事件与系统中的其他事件关联起来。
@@ -14,11 +13,11 @@
 - 检查源代码和汇编代码。
 - 在代码更改后进行“前后”比较。
 
-### 你不能用 Tracy 做什么： {.unlisted .unnumbered}
+### 你不能用 Tracy 做什么： 
 
 - 检查 CPU 微架构问题，例如收集各种性能计数器。
 
-### 案例研究：使用 Tracy 分析慢帧 {.unlisted .unnumbered}
+### 案例研究：使用 Tracy 分析慢帧 
 
 在下面的例子中，我们使用了 ToyPathTracer: [https://github.com/wolfpld/tracy/tree/master/examples/ToyPathTracer](https://github.com/wolfpld/tracy/tree/master/examples/ToyPathTracer)[^2] 程序，这是一个简单的路径追踪器，类似于光线追踪技术，通过向场景中每个像素发射数千条射线来渲染逼真的图像。为了处理一帧，该实现将每个像素行的处理分配给一个单独的线程。
 
@@ -51,25 +50,25 @@ Tracy 有两种操作模式：它可以存储所有时间数据，直到分析�
 
 我们使用 Tracy 调试程序并找出为什么某些帧比其他帧慢的原因。数据是在一台配备 Ryzen 7 5800X 处理器的 Windows 11 机器上捕获的。该程序是用 MSVC 19.36.32532 编译的。Tracy 图形界面非常丰富，不幸的是太难容纳在一张屏幕截图中，所以我们将其分解。在顶部，有一个时间线视图，如图 @fig:Tracy_Main_View 所示，已裁剪以适合页面。它仅显示第 76 帧的一部分，渲染该帧需要 44.1 毫秒。在该图上，我们看到了在该帧期间处于活动状态的 `Main thread` 和五个 `WorkerThread`。所有线程，包括主线程，都在执行工作以推进最终图像的渲染进度。正如我们之前所说，每个线程在 `TraceRowJob` 区域内处理一行像素。每个 `TraceRowJob` 区域实例包含许多较小的区域，这些区域不可见。Tracy 会折叠内部区域并仅显示折叠实例的数量——例如，主线程中第一个 `TraceRowJob` 下方的数字“4,109”表示的意思。请注意，`DoExtraWork` 区域的实例嵌套在 `TraceRowJob` 区域下。这种观察已经可以导致发现，但在实际应用中可能并不那么明显。现在让我们先放下这个。
 
-![Tracy 主时间线视图.](../../img/perf-tools/tracy/tracy_main_timeline.png){#fig:Tracy_Main_View width=100%}
+![Tracy 主时间线视图.](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/perf-tools/tracy/tracy_main_timeline.png)<div id="Tracy_Main_View"></div>
 
 在主面板的正上方，有一个直方图显示所有记录的帧的时间，请参见图 @fig:Tracy_Frame_Time_View。它可以更容易地发现可能导致卡顿的长时间运行的帧。它可以更容易地发现那些比平均时间更长才能完成的帧。在此示例中，大多数帧大约需要 33 毫秒（黄色条）。但是也有一些帧需要更长的时间，并用红色标记。如屏幕截图所示，将鼠标悬停在直方图中的条形图上时，会显示一个工具提示，显示给定帧的详细信息。在此示例中，我们显示了最后一个帧的详细信息，以绿色突出显示。
 
-![Tracy 帧时间.](../../img/perf-tools/tracy/tracy_frame_view.png){#fig:Tracy_Frame_Time_View width=90%}
+![Tracy 帧时间.](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/perf-tools/tracy/tracy_frame_view.png)<div id="Tracy_Frame_Time_View"></div>
 
 Figure @fig:Tracy_CPU_Data 展示了分析器的 CPU 数据部分。该区域显示给定线程正在哪个内核上执行，它还显示上下文切换。此部分还将显示其他正在 CPU 上运行的程序。如图像所示，将鼠标悬停在 CPU 数据视图中的给定部分上时，会显示给定线程的详细信息。详细信息包括线程运行所在的 CPU、父程序、单个线程和计时信息。我们可以看到 `TestCpu.exe` 线程在 CPU 1 上活动了 4.4 毫秒。
 
-![Tracy CPU 数据视图.](../../img/perf-tools/tracy/tracy_cpu_view.png){#fig:Tracy_CPU_Data width=100%}
+![Tracy CPU 数据视图.](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/perf-tools/tracy/tracy_cpu_view.png)<div id="Tracy_CPU_Data"></div>
 
 接下来是一个面板，提供有关程序花费时间的位置的信息，也称为热点。图 @fig:Tracy_Hotspots 捕获了 Tracy 统计窗口的屏幕截图。我们可以检查记录的数据，包括给定函数处于活动状态的总时间、它被调用的次数等。还可以选择主视图中的时间范围，仅过滤与该时间间隔相对应的信息。
 
-![Tracy 函数统计数据.](../../img/perf-tools/tracy/tracy_hotspots.png){#fig:Tracy_Hotspots width=100%}
+![Tracy 函数统计数据.](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/perf-tools/tracy/tracy_hotspots.png)<div id="Tracy_Hotspots"></div>
 
 我们展示的最后一组面板允许我们更深入地分析单个区域实例。一旦您单击任何区域实例，例如，在主时间线视图或 CPU 数据视图上，Tracy 将打开一个区域信息窗口（参见图 @fig:Tracy_Zone_Details，左侧面板），其中包含此区域实例的详细信息。它告诉了区域本身或其子区域消耗了多少执行时间。在此示例中，`TraceRowJob` 函数的执行耗时 19.24 毫秒，但函数本身消耗的时间不包括其被调用者，仅为 1.36 毫秒，仅占 7%。其余时间由子区域占用。
 
 很容易发现调用 `DoExtraWork` 占据了大部分时间，16.99 毫秒中的 19.24 毫秒。请注意，这个特定的 `TraceRowJob` 实例运行时间比平均情况长 4.4 倍（图像上找到“平均时间的 437.93%”）。Bingo! 我们发现了一个慢实例，其中 `TraceRowJob` 函数由于一些额外工作而变慢。一种方法是单击 `DoExtraWork` 行以检查此区域实例。这将使用 `DoExtraWork` 实例的详细信息更新区域信息视图，以便我们可以深入了解导致性能问题的原因。此视图还显示了区域启动的源文件和代码行。因此，另一个策略是检查源代码以了解为什么当前的 `TraceRowJob` 实例比平时花费更多时间。
 
-![Tracy 区域详细信息窗口.](../../img/perf-tools/tracy/tracy_zone_details.png){#fig:Tracy_Zone_Details width=100%}
+![Tracy 区域详细信息窗口.](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/perf-tools/tracy/tracy_zone_details.png)<div id="Tracy_Zone_Details"></div>
 
 记得我们在图 @fig:Tracy_Frame_Time_View 上看到，还有其他慢帧。让我们看看这是否是所有慢帧的常见问题。如果我们点击“统计”按钮，它将显示“查找区域”面板（图 @fig:Tracy_Zone_Details，右侧）。在这里，我们可以看到聚合所有区域实例的时间直方图。这对于确定执行函数时有多少差异特别有用。查看右侧的直方图，我们看到 `TraceRowJob` 函数的中位数持续时间为 3.59 毫秒，大多数调用花费 1 到 7 毫秒之间。但是，有一些实例花费的时间超过 10 毫秒，峰值为 23 毫秒。请注意，时间轴是对数的。“查找区域”窗口还提供其他数据点，包括所检查区域的平均值、中位数和标准差。
 

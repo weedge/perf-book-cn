@@ -79,7 +79,7 @@
 * [6-4.TMA 在 ARM 处理器上](./chapters/6-CPU-Features-For-Performance-Analysis/6-4_TMA-ARM_cn.md)
 * [6-5.TMA 总结](./chapters/6-CPU-Features-For-Performance-Analysis/6-5_TMA-summary_cn.md)
 * [6-6.分支记录机制](./chapters/6-CPU-Features-For-Performance-Analysis/6-6_Last_Branch_Record_cn.md)
-* [6-7.基于硬件的采样功能](./chapters/6-CPU-Features-For-Performance-Analysis/6-7_Precise_Event_Based_Sampling_(PEBS)_cn.md)
+* [6-7.基于硬件的采样功能](./chapters/6-CPU-Features-For-Performance-Analysis/6-7_Precise_Event_Based_Sampling_PEBS_cn.md)
 * [6-8.问题和练习](./chapters/6-CPU-Features-For-Performance-Analysis/6-8_Questions-Exercises_cn.md)
 * [6-9.章节总结](./chapters/6-CPU-Features-For-Performance-Analysis/6-9_Chapter_Summary_cn.md)
 

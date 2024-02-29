@@ -43,7 +43,7 @@ a.c:5:3: remark: unrolled loop by a factor of 8 with run-time trip count [-Rpass
 ...
 ```
 
-![Visualizing the order of operations in [@lst:optReport].](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/perf-analysis/VectorDep.png){#fig:VectorDep width=30%}
+![Visualizing the order of operations in [@lst:optReport].](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/perf-analysis/VectorDep.png)<div id="VectorDep"></div>
 
 如果我们将 [@lst:optReport] 中的代码矢量化，它会导致在数组 a 中写入错误的值。假设 CPU SIMD 单元可以一次处理四个浮点数，我们可以得到可以用以下伪代码表示的代码：
 ```cpp

@@ -8,7 +8,7 @@
 
 对于本案例研究，我们使用 AMD Milan 处理器，但其他服务器处理器，例如 Intel Xeon 和 ARM ThunderX，也包含硬件支持，允许用户控制 LLC 空间和内存读取带宽分配给处理器线程。
 
-### 目标机器：AMD EPYC 7313P {.unlisted .unnumbered}
+### 目标机器：AMD EPYC 7313P 
 
 我们使用了一个服务器系统，该系统配有 16 核 AMD EPYC 7313P 处理器，代号为 Milan，AMD 于 2021 年推出。该系统的关键特性在表 @tbl:experimental_setup 中指定。
 
@@ -32,11 +32,11 @@
 
 图 @fig:milan7313P 展示了 AMD Milan 7313P 处理器的集群式内存层次结构。它由四个核心复合芯片 (CCD) 组成，这些 CCD 通过一个 I/O 芯片连接彼此和片外内存。每个 CCD 集成一个核心复合体 (CCX) 和一个 I/O 连接。反过来，每个 CCX 都有四个 Zen3 内核，可以运行八个线程，共享一个 32 MiB 的受害者 LLC，即 LLC 填充了从 CCX 的四个 L2 缓存驱逐的缓存行。
 
-![AMD Milan 7313P 处理器的集群式内存层次结构](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/other-tuning/Milan7313P.png){#fig:milan7313P width=80%}
+![AMD Milan 7313P 处理器的集群式内存层次结构](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/other-tuning/Milan7313P.png)<div id="milan7313P"></div>
 
 虽然总共有 128 MiB 的 LLC，但 CCX 的四个内核无法将缓存行存储在除其自己的 32 MiB LLC (32 MiB/CCX x 4 CCX) 以外的 LLC 中。由于我们将运行单线程基准测试，因此我们可以关注单个 CCX。实验中 LLC 的大小将在 0 到 32 MiB 之间变化，步长为 2 MiB。
 
-### 工作负载：SPEC CPU2017 {.unlisted .unnumbered}
+### 工作负载：SPEC CPU2017 
 
 我们使用 SPEC CPU2017 套件中的部分基准测试。[^4] SPEC CPU2017 包含一组行业标准性能基准测试，可对处理器、内存子系统和编译器进行压力测试。它被广泛用于比较高性能系统的性能。它也广泛用于计算机架构研究。
 
@@ -75,7 +75,7 @@ $ rdmsr -p 1 0xC8E 
 
 同样，可以限制分配给线程的内存读取带宽。这是通过将无符号整数写入特定的 MSR 寄存器来实现的，该寄存器以 1/8 GB/s 的增量设置最大读取带宽。欢迎感兴趣的读者阅读 [[@QoSAMD](../References.md#QoSAMD)] 了解更多详细信息。
 
-## 评估指标 {.unlisted .unnumbered}
+## 评估指标 
 
 用于量化应用程序性能的最终指标是执行时间。为了分析内存层次结构对系统性能的影响，我们还将使用以下三个指标：1) CPI，每条指令的周期数[^6]，2) DMPKI，每千条指令的 LLC 中的需求缺失，以及 3) MPKI，每千条指令的 LLC 中的总缺失（需求 + 预取）。虽然 CPI 与应用程序性能直接相关，但 DMPKI 和 MPKI 不一定会影响性能。表 @tbl:metrics 显示了用于从特定硬件计数器计算每个指标的公式。有关每个计数器的详细描述，请参见 AMD 的处理器编程参考 [@amd_ppr]。
 
@@ -100,13 +100,13 @@ $ rdmsr -p 1 0xC0010201
 
 本案例研究中使用的的方法在 [[@Balancer2023](../References.md#Balancer2023)] 中更详细地描述。可以在以下公共存储库中找到重现实验所需的代码和信息：[https://github.com/agusnt/BALANCER](https://github.com/agusnt/BALANCER)。
 
-## 结果 {.unlisted .unnumbered}
+## 结果 
 
 我们在系统中单独运行一套 SPEC CPU2017 基准测试，仅使用一个实例和单个硬件线程。重复这些运行，同时将可用 LLC 大小从 0 更改为 32 MiB，步长为 2 MiB。图 @fig:characterization_llc 从左到右以图形方式显示每个分配的 LLC 大小的 CPI、DMPKI 和 MPKI。对于 CPI 图表，Y 轴上的较低值意味着更好的性能。此外，由于系统上的频率是固定的，因此 CPI 图表反映了绝对分数。例如，具有 32 MiB LLC 的 `520.omnetpp` (虚线) 比 0 MiB LLC 快 2.5 倍。
 
 对于 DMPKI 和 MPKI 图表，Y 轴上的值越低越好。对应于 `503.bwaves` (实线)、`520.omnetpp` (虚线) 和 `554.roms` (虚线) 的三条线代表了所有应用程序中观察到的三个主要趋势。我们不显示其余基准测试。
 
-![随着 LLC 分配限制增加 (2 MiB 步长)，CPI, DMPKI 和 MPKI.](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/other-tuning/llc-bw.png){#fig:characterization_llc width=95%}
+![随着 LLC 分配限制增加 (2 MiB 步长)，CPI, DMPKI 和 MPKI.](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/other-tuning/llc-bw.png)<div id="characterization_llc"></div>
 
 在 CPI 和 DMPKI 图表中可以区分两种行为。一方面，`520.omnetpp` 利用了其在 LLC 中的可用空间：随着 LLC 中分配的空间增加，CPI 和 DMPKI 都显着降低。我们可以说 `520.omnetpp` 的行为对 LLC 可用大小敏感。增加分配的 LLC 空间可以提高性能，因为它避免了驱逐将来会使用的缓存行。
 

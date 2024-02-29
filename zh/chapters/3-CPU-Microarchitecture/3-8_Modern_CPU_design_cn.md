@@ -2,7 +2,7 @@
 
 为了看到我们在本章讨论的所有概念如何在实践中使用，让我们来看看英特尔第12代酷睿处理器Goldencove的实现，该处理器于2021年上市。该核心被用作Alderlake和Sapphire Rapids平台中的P核心。图 @fig:Goldencove_diag 显示了Goldencove核心的模块图。请注意，本节仅描述了单个核心，而不是整个处理器。因此，我们将跳过关于频率、核心数量、L3缓存、核心互连、内存延迟和带宽以及其他内容的讨论。
 
-![Intel GoldenCove微架构CPU核心的模块图。*© 图片来源[[@IntelOptimizationManual](../References.md#IntelOptimizationManual)]。*](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/uarch/goldencove_block_diagram.png){#fig:Goldencove_diag width=100%}
+![Intel GoldenCove微架构CPU核心的模块图。*© 图片来源[[@IntelOptimizationManual](../References.md#IntelOptimizationManual)]。*](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/uarch/goldencove_block_diagram.png)<div id="Goldencove_diag"></div>
 
 该核心分为一个按顺序执行的前端，负责从内存中提取和解码x86指令为$$\mu$$ops，以及一个6宽度的超标量、乱序执行的后端。Goldencove核心支持2路SMT。它有一个32KB的一级指令缓存（L1 I-cache），和一个48KB的一级数据缓存（L1 D-cache）。L1缓存由统一的1.25MB（服务器芯片中为2MB）L2缓存支持。L1和L2缓存对每个核心是私有的。在本节末尾，我们还将查看TLB层次结构。
 
@@ -39,11 +39,9 @@ CPU后端采用乱序执行引擎执行指令并存储结果。CPU后端的核�
 - **NOP指令**：`NOP`通常用于填充或对齐的目的。它只是被标记为已完成，而不将其分配到保留站(Reservation Station)。
 - **其他旁路（Other bypasses）**：CPU设计架构师还优化了某些算术操作。例如，任何数乘以一始终得到相同的数。除以一也是如此。任何数乘以零始终得到零，等等。某些CPU可以在运行时识别这些情况，并以比常规乘法或除法更短的延迟执行它们。
 
-[TODO]: 定义执行端口的术语
 
 "调度器/保留站(Scheduler / Reservation Station)"（RS）是跟踪给定$$\mu$$op的所有资源可用性并在准备就绪时将$$\mu$$op分派到分配端口的结构。当一条指令进入RS时，调度器开始跟踪其数据依赖关系。一旦所有源操作数可用，RS尝试将$$\mu$$op分派到空闲的执行端口。RS的条目比ROB少。它每个周期最多可以分派6个$$\mu$$ops。
 
-[TODO]: 提到VEC堆栈同时执行fp和打包操作
 
 如图 @fig:Goldencove_diag 所示，有12个执行端口：
 
@@ -78,7 +76,7 @@ Goldencove核心每个周期最多可以执行三次加载和两次存储操作�
 
 回想一下[@sec:TLBs]，虚拟地址到物理地址的转换被缓存在TLB中。Golden Cove的TLB层次结构如图 @fig:GLC_TLB 所示。与常规数据缓存类似，它有两个级别，其中级别1分别为指令（ITLB）和数据（DTLB）有单独的实例。L1 ITLB有256个条目，用于常规的4KB页面，覆盖256 * 4KB等于1MB的内存空间，而L1 DTLB有96个条目，覆盖384KB。
 
-![Golden Cove的TLB层次.](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/uarch/GLC_TLB_hierarchy.png){#fig:GLC_TLB width=50%}
+![Golden Cove的TLB层次.](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/uarch/GLC_TLB_hierarchy.png)<div id="GLC_TLB"></div>
 
 第二级别的层次结构（STLB）缓存了指令和数据的转换。这是一个更大的存储，用于为在L1 TLB中未命中的请求提供服务。L2 STLB可以容纳2048个最近的数据和指令页面地址转换，覆盖总共8MB的内存空间。对于2MB的大页面，可用的条目较少：L1 ITLB有32个条目，L1 DTLB有32个条目，而L2 STLB只能使用1024个条目，这些条目也是共享的常规4KB页面。
 
@@ -88,7 +86,6 @@ Goldencove核心每个周期最多可以执行三次加载和两次存储操作�
 
 Goldencove微体系结构有四个专用页行走器，允许它同时处理4个页面行走。在TLB未命中的情况下，这些硬件单元将向内存子系统发出所需的加载，并使用新条目填充TLB层次结构。由页行走器生成的页表加载可以在L1、L2或L3缓存中命中（详细信息未公开）。最后，页行走器可以预测未来的TLB未命中，并在未命中实际发生之前进行推测性页面行走以更新TLB条目。
 
-[TODO]: SMT
 
 Goldencove的规格未公开两个SMT线程之间资源共享的方式。但是一般来说，为了提高这些资源的动态利用，缓存、TLB和执行单元是完全共享的。另一方面，用于在主要流水线阶段之间分段指令的缓冲区要么被复制，要么被分区。这些缓冲区包括IDQ、ROB、RAT、RS、LDQ和STQ。PRF也是复制的。
 

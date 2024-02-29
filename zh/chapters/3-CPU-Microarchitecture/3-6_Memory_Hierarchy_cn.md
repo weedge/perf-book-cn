@@ -37,7 +37,7 @@ $$
 
 集合关联缓存中的每个块都与一个地址标签相关联。此外，标签还包含状态位，例如有效位，用于指示数据是否有效。标签还可以包含其他位，用于指示访问信息、共享信息等，这将在本章的后续部分描述。
 
-![用于缓存查找的地址组织。](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/uarch/CacheLookup.png){#fig:CacheLookup width=80%}
+![用于缓存查找的地址组织。](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/uarch/CacheLookup.png)<div id="CacheLookup"></div>
 
 图 @fig:CacheLookup 显示了从流水线生成的地址如何用于检查缓存。最低位地址位定义了给定块内的偏移量；块偏移位（对于32字节缓存行为5位，对于64字节缓存行为6位）。使用上面描述的公式根据索引位选择集合。选择集合后，标签位用于与该集合中的所有标签进行比较。如果其中一个标签与传入请求的标签匹配并且有效位已设置，则会发生缓存命中。与该块条目相关联的数据（与标签查找并行读出缓存的数据数组）将提供给执行流水线。如果标签不匹配，则会发生缓存未命中。
 
@@ -103,7 +103,7 @@ DRAM模块组织为一组DRAM芯片。内存*rank*是一个术语，用于描述
 
 每个rank由多个DRAM芯片组成。内存*width*定义了每个DRAM芯片的总线宽度。由于每个rank的总线宽度为64位（或ECC RAM为72位），它还定义了rank内存在芯片中的数量。内存宽度可以是`x4`、`x8`或`x16`中的一个值，这定义了发送到每个芯片的总线宽度。例如，图@fig:Dram_ranks显示了一个2Rx16双rank DRAM DDR4模块的组织，总容量为2GB。每个rank中有四个芯片，总线宽度为16位。四个芯片共同提供64位输出。两个rank通过一个rank选择信号逐个选择。
 
-![2Rx16双rank DRAM DDR4模块，总容量2GB的组织。](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/uarch/DRAM_ranks.png){#fig:Dram_ranks width=80%}
+![2Rx16双rank DRAM DDR4模块，总容量2GB的组织。](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/uarch/DRAM_ranks.png)<div id="Dram_ranks"></div>
 
 单rank或双rank的性能哪个更好并没有直接的答案，因为它取决于应用程序的类型。通过rank选择信号从一个rank切换到另一个rank需要额外的时钟周期，这可能会增加访问延迟。另一方面，如果一个rank没有被访问，它可以在其他rank忙碌时并行进行刷新周期。一旦上一个rank完成数据传输，下一个rank就可以立即开始传输。此外，单rank模块产生的热量更少，故障的可能性更低。
 
@@ -111,7 +111,7 @@ DRAM模块组织为一组DRAM芯片。内存*rank*是一个术语，用于描述
 
 具有单个内存通道的系统在DRAM和内存控制器之间有一个64位宽的数据总线。多通道架构通过增加内存数据总线的宽度，允许同时访问DRAM模块。例如，双通道架构将内存数据总线的宽度从64位扩展到128位，将可用带宽加倍，参见图@fig:Dram_channels。请注意，每个内存模块仍然是一个64位设备，但我们将它们连接方式有所不同。如今，服务器机器通常具有四个和八个内存通道。
 
-![双通道DRAM设置的组织。](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/uarch/DRAM_channels.png){#fig:Dram_channels width=50%}
+![双通道DRAM设置的组织。](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/uarch/DRAM_channels.png)<div id="Dram_channels"></div>
 
 或者，您也可能遇到具有复制内存控制器的设置。例如，处理器可能具有两个集成的内存控制器，每个内存控制器都可以支持多个内存通道。这两个控制器是独立的，只查看总物理内存地址空间的自己的部分。
 
@@ -125,7 +125,7 @@ $$
 
 要在系统中利用多个内存通道，有一种称为交错的技术。它在一个页面中将相邻地址在多个内存设备之间分布。图@fig:Dram_channel_interleaving显示了用于顺序内存访问的2路交错的示例。与以前一样，我们有双通道内存配置（通道A和B），具有两个独立的内存控制器。现代处理器按每四个缓存行（256字节）进行交错，即，前四个相邻缓存行发送到通道A，然后下一组四个缓存行发送到通道B。
 
-![顺序内存访问的2路交错。](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/uarch/DRAM_channel_interleaving.png){#fig:Dram_channel_interleaving width=70%}
+![顺序内存访问的2路交错。](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/uarch/DRAM_channel_interleaving.png)<div id="Dram_channel_interleaving"></div>
 
 如果不使用交错，连续的相邻访问将发送到同一个内存控制器，而不是利用第二个可用的控制器。相反，交错使硬件并行性更好地利用了可用的内存带宽。对于大多数工作负载，当所有通道都被填充时，性能最大化，因为它将单个内存区域扩展到尽可能多的DRAM模块中。
 

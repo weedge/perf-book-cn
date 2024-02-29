@@ -2,7 +2,7 @@
 
 Roofline 性能模型是一个以吞吐量为导向的性能模型，在 HPC 领域广泛使用。它于 2009 年在加州大学伯克利分校开发。模型中的“roofline”表示应用程序的性能不能超过机器的能力。程序中的每个函数和每个循环都受到机器的计算或内存容量的限制。这个概念在图 @fig:RooflineIntro 中有所体现。应用程序的性能始终会受到某条“roofline”函数的限制。
 
-![Roofline model. *© Image taken from [NERSC Documentation](https://docs.nersc.gov/development/performance-debugging-tools/roofline/#arithmetic-intensity-ai-and-achieved-performance-flops-for-application-characterization).*](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/perf-analysis/Roofline-intro.png){#fig:RooflineIntro width=80%}
+![Roofline model. *© Image taken from [NERSC Documentation](https://docs.nersc.gov/development/performance-debugging-tools/roofline/#arithmetic-intensity-ai-and-achieved-performance-flops-for-application-characterization).*](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/perf-analysis/Roofline-intro.png)<div id="RooflineIntro"></div>
 
 硬件有两个主要限制：计算速度 (峰值计算性能，FLOPS) 和数据移动速度 (峰值内存带宽，GB/s)。应用程序的最大性能受峰值 FLOPS（水平线）和平台带宽乘以运算强度（对角线）两者之间的最小值限制。图 @fig:RooflineIntro 中的 roofline 图将两个应用程序 `A` 和 `B` 的性能与硬件限制进行了对比。应用程序 `A` 的运算强度较低，其性能受内存带宽限制，而应用程序 `B` 的计算密集型程度更高，因此不会受到内存瓶颈的太大影响。类似地，`A` 和 `B` 可以代表程序中的两个不同函数，并具有不同的性能特征。Roofline 性能模型会考虑到这一点，可以在同一个图表上显示应用程序的多个函数和循环。
 
@@ -24,7 +24,7 @@ void matmul(int N, float a[][2048], float b[][2048], float c[][2048]) {
 
 传统的应用程序性能提升方式是充分利用机器的 SIMD 和多核能力。通常情况下，我们需要优化多个方面：矢量化、内存、线程。Roofline 方法可以帮助评估应用程序的这些特性。在 roofline 图表上，我们可以绘制标量单核、SIMD 单核和 SIMD 多核性能的理论最大值（见图 @fig:RooflineIntro2）。这将使我们了解改进应用程序性能的空间。如果我们发现我们的应用程序受计算绑定（即具有高算术强度）并且低于峰值标量单核性能，我们应该考虑强制矢量化（参见 [@sec:Vectorization]）并将工作分发到多个线程上。相反，如果应用程序的算术强度低，我们应该寻求改善内存访问的方法（参见 [@sec:MemBound]）。使用 Roofline 模型优化性能的最终目标是向上移动这些点。矢量化和线程化向上移动点，而通过增加算术强度优化内存访问则会将点向右移动，并且可能也会提高性能。
 
-![Roofline model.](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/perf-analysis/Roofline-intro2.jpg){#fig:RooflineIntro2 width=70%}
+![Roofline model.](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/perf-analysis/Roofline-intro2.jpg)<div id="RooflineIntro2"></div>
 
 理论最大值（roofline）通常在设备规范中给出，可以很容易地查阅。您也可以根据您使用的机器的特性计算理论最大值。一旦您知道机器的参数，这通常并不难做。对于 Intel Core i5-8259U 处理器，使用 AVX2 和 2 个 Fused Multiply Add (FMA) 单元的最大 FLOP 数（单精度浮点）可以计算如下：
 
@@ -53,7 +53,7 @@ Roofline 方法可以通过在同一个图表上打印“之前”和“之后�
 * 交换两个最内层的循环（交换第 4 和第 5 行）。这可以实现缓存友好的内存访问（参见 [@sec:MemBound]）。
 * 使用 AVX2 指令启用最内层循环的自动矢量化。
 
-![Roofline analysis for matrix multiplication on Intel NUC Kit NUC8i5BEH with 8GB RAM using clang 10 compiler.](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/perf-analysis/roofline_matrix.png){#fig:RooflineMatrix width=90%}
+![Roofline analysis for matrix multiplication on Intel NUC Kit NUC8i5BEH with 8GB RAM using clang 10 compiler.](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/perf-analysis/roofline_matrix.png)<div id="RooflineMatrix"></div>
 
 总结来说，Roofline 性能模型可以帮助：
 

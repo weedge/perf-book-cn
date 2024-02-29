@@ -4,7 +4,7 @@ TMA方法学首次由英特尔于2014年提出，并从SandyBridge系列处理�
 
 该工作流程旨在“深入挖掘(drill down)”TMA层次结构的较低级别，直到我们达到对性能瓶颈的非常具体的分类为止。例如，首先，我们收集主要的四个桶的指标：`Front End Bound`、`Back End Bound`、`Retiring`、`Bad Speculation`。比如，我们发现程序执行的大部分时间被内存访问阻塞了（这是`Back End Bound`桶，参见图@fig:TMA）。接下来的步骤是再次运行工作负载，并仅收集与`Memory Bound`桶有关的特定指标。这个过程重复进行，直到我们知道确切的根本原因，例如，`L3 Bound`。
 
-![TMA性能瓶颈的层次结构。*© Image by Ahmad Yasin.*](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/pmu-features/TMAM.png){#fig:TMA width=90%}
+![TMA性能瓶颈的层次结构。*© Image by Ahmad Yasin.*](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/pmu-features/TMAM.png)<div id="TMA"></div>
 
 多次运行工作负载并在每次运行时专注于特定指标是完全可以的。但通常，运行一次工作负载并收集所有TMA各级别所需的所有指标就足够了。性能分析工具通过在单次运行中在不同性能事件之间进行多路复用（参见[@sec:secMultiplex]）来实现这一点。此外，在现实应用中，性能可能受到多个因素的限制。例如，它可以同时经历大量的分支错误预测（`Bad Speculation`）和缓存丢失（`Back End Bound`）。在这种情况下，TMA将同时深入挖掘多个桶，并确定每种类型的瓶颈对程序性能的影响。像英特尔的VTune Profiler、AMD的uProf和Linux的`perf`等分析工具可以在单次基准测试运行中计算所有TMA指标。但是，这仅在工作负载稳定时才可行。否则，最好回到多次运行和每次运行都进行深入挖掘的原始策略。
 
@@ -12,7 +12,7 @@ TMA的前两个级别的指标以所有流水线插槽的百分比表示（参�
 
 TMA的第一步是识别程序中的性能瓶颈。在完成这一步之后，我们需要知道问题具体出现在代码的哪里。TMA的第二步是将问题的源头定位到代码的确切行和汇编指令。该分析方法提供了应针对性能问题的每个类别使用的确切性能事件。然后，您可以在此事件上进行采样，以找到在第一阶段识别的性能瓶颈所在的源代码行。如果这个过程让您感到困惑，不用担心，阅读案例研究后一切都会变得清晰。
 
-## 案例研究：使用 TMA 减少缓存未命中数量 {.unlisted .unnumbered}
+## 案例研究：使用 TMA 减少缓存未命中数量 
 
 作为本案例研究的示例，我们采用了非常简单的基准测试，使其易于理解和更改。它显然不能代表现实世界的应用程序，但足以演示 TMA 的工作流程。本书的第二部分中有更多实用的例子。
 
@@ -20,11 +20,10 @@ TMA的第一步是识别程序中的性能瓶颈。在完成这一步之后，�
 
 我们使用配备有 Intel Core i5-8259U CPU（基于 Skylake）和 16GB DRAM（DDR4 2400 MT/s）的机器运行实验，运行 64 位 Ubuntu 20.04（内核版本 5.13.0-27）。
 
-### 步骤 1：识别瓶颈 {.unlisted .unnumbered}
+### 步骤 1：识别瓶颈 
 
 作为第一步，我们运行微基准测试并收集一组有限的事件，这些事件将帮助我们计算第 1 级指标。在这里，我们尝试通过将它们归因于四个 L1 桶（“前端受限”、“后端受限”、“退休”、“错误猜测”）来识别应用程序的高级性能瓶颈。可以使用 Linux `perf` 工具收集第 1 级指标。从 Linux 内核 4.8 开始，`perf` 在 `perf stat` 命令中有一个 `--topdown` 选项，用于打印 TMA 第 1 级指标。以下是我们基准测试的细分。本部分的命令输出经过修剪以节省空间。
 
-[TODO]: 在AlderLake上，`perf stat --topdown`无法在内核4.8上工作，需要更新版本。现在它可以打印L1和L2 TMA指标。（请参阅 [https://github.com/dendibakh/perf-book/issues/42](https://github.com/dendibakh/perf-book/issues/42)）
 
  ```bash
 $ perf stat --topdown -a -- taskset -c 0 ./benchmark.exe
@@ -96,7 +95,7 @@ $ perf stat -e cycles,cycle_activity.stalls_l3_miss -- ./benchmark.exe
 
 `CYCLE_ACTIVITY.STALLS_L3_MISS` 事件会计算执行停顿时的周期数，而 L3 缓存未命中需求加载尚未完成。我们可以看到大约有 60% 的此类周期，这非常糟糕。
 
-### 步骤 2：定位代码中的位置 {.unlisted .unnumbered}
+### 步骤 2：定位代码中的位置 
 
 TMA 过程的第二个步骤是找到性能事件最频繁发生的代码位置。为此，应该使用与步骤 1 中确定的瓶颈类型相对应的事件对工作负载进行采样。
 
@@ -158,7 +157,7 @@ int main() {
 
 通过查看 [@lst:TMA_asm]，我们可以看到函数 `foo` 中的所有 L3 缓存未命中都被标记为单个指令。现在我们知道是哪条指令导致了这么多 L3 未命中，让我们来修复它。
 
-### 步骤 3：修复问题 {.unlisted .unnumbered}
+### 步骤 3：修复问题 
 
 请记住，在 `foo` 函数的开头有用 NOP 模拟的虚拟工作。这会在我们获得将要访问的下一个地址的那一刻与实际加载指令之间创建一个时间窗口。这个时间窗口的存在使我们有机会在虚拟工作的同时开始预取内存位置。[@lst:TMA_prefetch] 展示了这个想法。有关显式内存预取技术的更多信息，请参阅 [@sec:memPrefetch]。
 
@@ -176,7 +175,7 @@ int main() {
 
 TMA 是一个迭代过程，因此一旦我们修复了一个问题，我们就需要从步骤 1 开始重复该过程。它可能会将瓶颈移动到另一个桶中，在本例中是“退休”。这是一个演示 TMA 方法工作流程的简单示例。分析现实世界的应用程序不太可能那么容易。本书第二部分的章节组织得井井有条，以便与 TMA 流程一起使用。特别是，第 8 章涵盖“内存受限”类别，第 9 章涵盖“核心受限”，第 10 章涵盖“错误猜测”，第 11 章涵盖“前端受限”。这种结构的目的是形成一个清单，供您在遇到特定性能瓶颈时用于驱动代码更改。
 
-#### 其他资源和链接 {.unlisted .unnumbered}
+#### 其他资源和链接 
 
 - Ahmad Yasin 的论文“用于性能分析和计数器架构的顶向下方法” [[@TMA_ISPASS](../References.md#TMA_ISPASS)]。
 - Ahmad Yasin 在 IDF'15 上的演讲“使用英特尔 Skylake 的顶向下分析使软件优化变得简单”，网址： [https://youtu.be/kjufVhyuV_A](https://youtu.be/kjufVhyuV_A)。

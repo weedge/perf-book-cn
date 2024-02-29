@@ -84,7 +84,7 @@ munmap(ptr, size);
 * 使用来自已挂载的 `hugetlbfs` 文件系统的文件进行 `mmap` ([示例代码](https://github.com/torvalds/linux/blob/master/tools/testing/selftests/vm/hugepage-mmap.c)[^26])。
 * 使用 `SHM_HUGETLB` 标志的 `shmget` ([示例代码](https://github.com/torvalds/linux/blob/master/tools/testing/selftests/vm/hugepage-shm.c)[^27]).
 
-## 透明大页内存 {.unnumbered .unlisted}
+## 透明大页内存 
 
 要在 Linux 上允许应用程序使用透明大页 (THP)，需要确保 `/sys/kernel/mm/transparent_hugepage/enabled` 设置为 `always` 或 `madvise`。 前者启用系统范围的 THP 使用，而后者则将对哪些内存区域应使用 THP 的控制权交给用户代码，从而避免消耗更多内存资源的风险。 以下是使用 `madvise` 方法的示例：
 

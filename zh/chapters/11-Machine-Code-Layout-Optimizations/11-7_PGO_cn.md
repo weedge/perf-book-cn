@@ -6,7 +6,7 @@
 
 图 @fig:PGO_flow 显示了使用 PGO 的传统工作流程，也称为 *插桩化的(instrumented) PGO*。首先，您编译您的程序并告诉编译器自动检测代码。这将在函数中插入一些记账代码以收集运行时统计信息。第二个步骤是使用代表应用程序典型工作负载的输入数据运行插桩化的(instrumented)二进制文件。这将生成分析(profiling)数据，一个包含运行时统计信息的新文件。它是一个原始转储文件，其中包含有关函数调用计数、循环迭代计数和其他基本块命中计数的信息。此工作流程的最后一步是使用分析(profiling)数据重新编译程序以生成优化的可执行文件。
 
-![使用工具 PGO 的工作流程.](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/cpu_fe_opts/pgo_flow.png){#fig:PGO_flow width=90% }
+![使用工具 PGO 的工作流程.](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/cpu_fe_opts/pgo_flow.png)<div id="PGO_flow width=90%"></div>
 
 开发人员可以通过使用 `-fprofile-instr-generate` 选项构建程序来启用 LLVM 编译器中的 PGO 检测（步骤 1）。这将指示编译器检测代码，从而在运行时收集分析(profiling)信息。之后，LLVM 编译器可以使用 `-fprofile-instr-use` 选项使用分析(profiling)数据重新编译程序并输出经过 PGO 调整的二进制文件。clang 中使用 PGO 的指南在 文档: [https://clang.llvm.org/docs/UsersManual.html#profiling-with-instrumentation](https://clang.llvm.org/docs/UsersManual.html#profiling-with-instrumentation) 中进行了描述。[^7] GCC 编译器使用不同的选项集：`-fprofile-generate` 和 `-fprofile-use`，如 文档: [https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html#Optimize-Options](https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html#Optimize-Options) 所述。[^10]
 

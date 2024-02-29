@@ -1,6 +1,4 @@
-[TODO]:在下面的表格中添加边框线
-
-## 主要 CPU 微架构列表 {.unnumbered}
+## 主要 CPU 微架构列表 
 
 \markright{List of the Major CPU Microarchitectures}
 

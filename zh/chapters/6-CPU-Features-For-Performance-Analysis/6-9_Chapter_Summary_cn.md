@@ -1,5 +1,5 @@
 
-## 章节总结 {.unlisted .unnumbered}
+## 章节总结 
 
 * 仅当所有高级性能问题都已修复后，才建议使用硬件功能进行低级微调。调整设计不良的算法是时间上的浪费。一旦消除所有主要性能问题，就可以使用 CPU 性能监控功能来分析和进一步调整应用程序。 
 * 自顶向下的微架构分析 (TMA) 方法是一种非常强大且易学的方法，即使是经验不足的开发人员也可以轻松使用它来识别程序对 CPU 微架构的无效使用。TMA 是一个迭代过程，包括多个步骤，其中包括描述工作负载和定位源代码中瓶颈发生的确切位置。我们建议 TMA 应该成为每次低级调整工作的起点之一。
@@ -11,4 +11,3 @@
 
 [^2]: ARM CoreSight - [https://developer.arm.com/ip-products/system-ip/coresight-debug-and-trace](https://developer.arm.com/ip-products/system-ip/coresight-debug-and-trace)
 
-\sectionbreak

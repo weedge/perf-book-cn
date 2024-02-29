@@ -6,11 +6,11 @@
 
 访问数据和代码（指令）都需要地址转换。具有 4KB 页面大小的系统的机制如图 @fig:VirtualMem 所示。虚拟地址分为两部分。虚拟页号（52 个最高有效位）用于索引页表，以生成虚拟页号和相应物理页之间的映射。对于 4KB 页面中的偏移量，我们需要 12 位；正如已经说过的那样，64 位指针的其他 52 位用于页本身的地址。请注意，页面内的偏移量（12 个最低有效位）不需要转换，并且“原样”用于访问物理内存位置。
 
-![4KB 页面的虚拟到物理地址转换](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/uarch/VirtualMem.png){#fig:L2PageTables width=70%}
+![4KB 页面的虚拟到物理地址转换](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/uarch/VirtualMem.png)<div id="L2PageTables"></div>
 
 页表可以是单层或嵌套的。图 @fig:L2PageTables 显示了一个 2 级页表的示例。请注意地址如何分成更多部分。首先要提的是，没有使用 16 个最高有效位。这似乎浪费了位，但即使使用剩余的 48 位，我们也可以寻址 256 TB 的总内存 (2^48^)。一些应用程序使用这些未使用的位来保留元数据，也称为“指针标记”。
 
-![2 级页表示例](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/uarch/L2PageTables.png){#fig:L2PageTables width=70%}
+![2 级页表示例](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/uarch/L2PageTables.png)<div id="L2PageTables"></div>
 
 嵌套页表是一个 radix 树，它与一些元数据一起保存物理页地址。要找到这样一个 2 级页表的翻译，我们首先使用位 32..47 作为索引到 1 级页表，也称为“页表目录”。目录中的每个描述符都指向 2^16^ 个 2 级表块之一。一旦找到合适的 L2 块，我们就使用位 12..31 来找到物理页地址。将其与页偏移量 (位 0..11) 连接起来，我们就得到了物理地址，可以用来从 DRAM 检索数据。
 
@@ -33,6 +33,6 @@ TLB 层次结构为相对较大的内存空间保留翻译。但是，TLB 未命
 
 指向 Huge Page 中数据的地址示例如图 @fig:HugePageVirtualAddress 所示。与默认页面大小一样，使用 Huge Pages 时的确切地址格式由硬件决定，但幸运的是，我们作为程序员通常不必担心这一点。
 
-![指向 2MB 页面中数据的虚拟地址](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/uarch/HugePageVirtualAddress.png){#fig:L2PageTables width=70%}
+![指向 2MB 页面中数据的虚拟地址](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/uarch/HugePageVirtualAddress.png)<div id="L2PageTables"></div>
 
 使用 Huge Pages 可以大大减少对 TLB 层次结构的压力，因为需要的 TLB 条目更少。它大大增加了 TLB 命中率。我们将在 [[sec:secDTLB](../8-Optimizing-Memory-Accesses/8-4_Reducing_DTLB_misses_cn.md#sec:secDTLB)] 和 [@sec:FeTLB] 中讨论如何使用 Huge Pages 减少 TLB 未命中率。使用 Huge Pages 的缺点是内存碎片化，并且在某些情况下，由于操作系统更难管理大量内存块并确保有效利用可用内存，非确定性页面分配延迟会增加。要在运行时满足 2MB Huge Page 分配请求，操作系统需要找到 2MB 的连续块。如果找不到，操作系统需要重组页面，从而导致更长的分配延迟。

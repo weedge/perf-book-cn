@@ -10,7 +10,7 @@
 
 计数背后的想法非常简单：我们希望在程序运行时计数某些性能事件的绝对数量。图@fig:Counting展示了从程序开始到结束计数性能事件的过程。
 
-![计数性能事件。](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/perf-analysis/CountingFlow.png){#fig:Counting width=60%}
+![计数性能事件。](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/perf-analysis/CountingFlow.png)<div id="Counting"></div>
 
 图@fig:Counting中概述的步骤大致代表了典型分析工具会执行的操作来计数性能事件。这个过程是在`perf stat`工具中实现的，它可以用于计数各种硬件事件，比如指令数、周期数、缓存失效等。下面是`perf stat`的输出示例：
 
@@ -66,8 +66,8 @@ $ perf stat -e cpu/event=0xc4,umask=0x0,name=BR_INST_RETIRED.ALL_BRANCHES/ -- ./
 
 <div id="fig:Multiplexing">
 
-![](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/perf-analysis/Multiplexing1.png){#fig:Multiplexing1 width=50%}
-![](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/perf-analysis/Multiplexing2.png){#fig:Multiplexing2 width=60%}
+![](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/perf-analysis/Multiplexing1.png)<div id="Multiplexing1"></div>
+![](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/perf-analysis/Multiplexing2.png)<div id="Multiplexing2"></div>
 
 8个性能事件之间的多路复用示例，只有4个PMC可用。
 </div>

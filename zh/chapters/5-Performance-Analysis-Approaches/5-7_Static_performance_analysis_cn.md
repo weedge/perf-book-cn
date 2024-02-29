@@ -8,7 +8,7 @@
 
 静态性能分析器的输出相当低级，有时会将执行分解到 CPU 周期。通常，开发人员将其用于关键代码区域的细粒度调整，其中每个 CPU 周期都很重要。
 
-### 静态分析器 vs. 动态分析器 {.unlisted .unnumbered}
+### 静态分析器 vs. 动态分析器 
 
 **静态工具**: 不运行实际代码，而是尝试模拟执行，尽可能保留微架构细节。它们无法进行实际测量（执行时间、性能计数器），因为它们不运行代码。优点是您不需要拥有真正的硬件，可以针对不同代的 CPU 模拟代码。另一个好处是您不必担心结果的一致性：静态分析器总是会给您确定性的输出，因为模拟（与实际硬件上的执行相比）不会出现任何偏差。静态工具的缺点是它们通常无法预测和模拟现代 CPU 中的所有内容：它们基于一个可能存在错误和限制的模型。静态性能分析器的例子包括 UICA: [https://uica.uops.info/](https://uica.uops.info/)[^2] 和 llvm-mca: [https://llvm.org/docs/CommandGuide/llvm-mca.html](https://llvm.org/docs/CommandGuide/llvm-mca.html)[^3].
 
@@ -38,7 +38,7 @@ float foo(float * a, float B, int N){  │ .loop:
 
 代码看起来不错，但它真的是最优的吗？让我们找出答案。我们将 [@lst:FMAthroughput] 中的汇编代码片段带到 UICA 进行模拟。在撰写本文时，UICA 不支持 Alderlake (英特尔第 12 代，基于 GoldenCove)，因此我们在最新可用的 RocketLake (英特尔第 11 代，基于 SunnyCove) 上运行了它。虽然架构不同，但这次实验暴露的问题在两者上都同样明显。模拟结果如图 @fig:FMA_tput_UICA 所示。这是一个类似于我们在第 3 章中展示的管道图。我们跳过了前两个迭代，只显示了第 2 和第 3 个迭代（最左列 "It."）。这时，执行已经达到稳定状态，所有后续迭代看起来都非常相似。
 
-![UICA pipeline diagram. `I` = issued, `r` = ready for dispatch, `D` = dispatched, `E` = executed, `R` = retired.](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/perf-analysis/fma_tput_uica.png){#fig:FMA_tput_UICA width=100%}
+![UICA pipeline diagram. `I` = issued, `r` = ready for dispatch, `D` = dispatched, `E` = executed, `R` = retired.](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/perf-analysis/fma_tput_uica.png)<div id="FMA_tput_UICA"></div>
 
 UICA 是一个非常简化的实际 CPU 管道模型。例如，您可能会注意到指令提取和译码阶段丢失了。此外，UICA 不考虑缓存未命中和分支预测错误，因此它假设所有内存访问总是命中 L1 缓存并且分支总是预测正确。我们都知道这在现代处理器中并非如此。同样，这与我们的实验无关，因为我们仍然可以使用模拟结果来找到改进代码的方法。您能看到问题吗？
 
