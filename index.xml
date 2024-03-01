@@ -4,7 +4,7 @@
         <description><![CDATA[现代CPU上的性能分析与优化]]></description>
         <link>https://weedge.github.io/</link>
         <generator>RSS for Node</generator>
-        <lastBuildDate>Fri, 01 Mar 2024 17:37:19 GMT</lastBuildDate>
+        <lastBuildDate>Fri, 01 Mar 2024 17:44:41 GMT</lastBuildDate>
         <atom:link href="https://weedge.github.io/index.xml" rel="self" type="application/rss+xml"/>
         <author><![CDATA[weedge]]></author>
         <managingEditor><![CDATA[weege007@gmail.com]]></managingEditor>
@@ -917,49 +917,49 @@
         </item>
         <item>
             <title><![CDATA[No title]]></title>
-            <description><![CDATA[\markright{Epilog}]]></description>
+            <description><![CDATA[感谢您阅读完整本书。希望您喜欢并从中有所收获。如果本书能帮助您解决实际问题，我会更加高兴。在这种情况下，我将把它视为成功，并证明我的努力没有白费。在您继续努力之前，让我简要强调本书的要点并为您提供最终建议：]]></description>
             <link>https://weedge.github.io/chapters/15-Epilog/15-0_Epilog_cn.html</link>
             <guid isPermaLink="true">https://weedge.github.io/chapters/15-Epilog/15-0_Epilog_cn.html</guid>
             <dc:creator><![CDATA[weedge]]></dc:creator>
         </item>
         <item>
             <title><![CDATA[术语表]]></title>
-            <description><![CDATA[\markright{Glossary}]]></description>
+            <description><![CDATA[\begin{multicols}{2}]]></description>
             <link>https://weedge.github.io/chapters/16-Glossary/16-0_Glossary_cn.html</link>
             <guid isPermaLink="true">https://weedge.github.io/chapters/16-Glossary/16-0_Glossary_cn.html</guid>
             <dc:creator><![CDATA[weedge]]></dc:creator>
         </item>
         <item>
             <title><![CDATA[No title]]></title>
-            <description><![CDATA[\markright{List of the Major CPU Microarchitectures}]]></description>
+            <description><![CDATA[下表列出了来自英特尔、AMD 和基于 ARM 的供应商的最新 ISA 和微架构。当然，这里并未列出所有设计。我们只包含了我们在书中参考的架构，或者代表平台演进中重大转变的架构。]]></description>
             <link>https://weedge.github.io/chapters/17-List-of-Uarch-ISA/17-0_List_of_uarchs_cn.html</link>
             <guid isPermaLink="true">https://weedge.github.io/chapters/17-List-of-Uarch-ISA/17-0_List_of_uarchs_cn.html</guid>
             <dc:creator><![CDATA[weedge]]></dc:creator>
         </item>
         <item>
             <title><![CDATA[No title]]></title>
-            <description><![CDATA[\markright{附录 A}]]></description>
+            <description><![CDATA[以下是一些示例功能，它们可能导致性能测量的不确定性增加。有关完整讨论，请参见 [@sec:secFairExperiments]。]]></description>
             <link>https://weedge.github.io/chapters/18-Appendix/Appendix-A_cn.html</link>
             <guid isPermaLink="true">https://weedge.github.io/chapters/18-Appendix/Appendix-A_cn.html</guid>
             <dc:creator><![CDATA[weedge]]></dc:creator>
         </item>
         <item>
             <title><![CDATA[No title]]></title>
-            <description><![CDATA[\markright{附录 B}]]></description>
+            <description><![CDATA[本章节描述了截至 2020 年 Clang 编译器内部 LLVM 循环向量化的状态。内部循环向量化是将最内层循环中的代码转换为使用跨多个循环迭代的向量的代码的过程。 SIMD 向量中的每个通道对连续的循环迭代执行独立算术运算。 通常，循环不会处于干净状态，向量化必须猜测和假设缺少的信息并会在运行时检查细节。 如果假设错误，向量化会退回到运行标量循环。 下面的示例突出了一些 LLVM 向量化支持的代码模式。]]></description>
             <link>https://weedge.github.io/chapters/18-Appendix/Appendix-B_cn.html</link>
             <guid isPermaLink="true">https://weedge.github.io/chapters/18-Appendix/Appendix-B_cn.html</guid>
             <dc:creator><![CDATA[weedge]]></dc:creator>
         </item>
         <item>
             <title><![CDATA[附录 C. 启用大页面 (.unnumbered)]]></title>
-            <description><![CDATA[\markright{附录 C}]]></description>
+            <description><![CDATA[要在 Windows 上使用大页面，需要启用 SeLockMemoryPrivilege 安全策略 (链接到微软文档: https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/lock-pages-in-memory). 这可以通过 Windows API 以编程方式完成，也可以通过安全策略 GUI 完成。]]></description>
             <link>https://weedge.github.io/chapters/18-Appendix/Appendix-C_cn.html</link>
             <guid isPermaLink="true">https://weedge.github.io/chapters/18-Appendix/Appendix-C_cn.html</guid>
             <dc:creator><![CDATA[weedge]]></dc:creator>
         </item>
         <item>
             <title><![CDATA[附录 D. Intel 处理器跟踪]]></title>
-            <description><![CDATA[\markright{附录 D}]]></description>
+            <description><![CDATA[Intel 处理器跟踪（PT）是一种 CPU 功能，通过将数据包编码为高度压缩的二进制格式记录程序执行，可以在每条指令上附带时间戳，用于重构执行流。PT 具有广泛的覆盖范围和相对较小的开销，[^1] 通常低于 5%。其主要用途是事后分析和排查性能故障的根本原因。]]></description>
             <link>https://weedge.github.io/chapters/18-Appendix/Appendix-D_cn.html</link>
             <guid isPermaLink="true">https://weedge.github.io/chapters/18-Appendix/Appendix-D_cn.html</guid>
             <dc:creator><![CDATA[weedge]]></dc:creator>
