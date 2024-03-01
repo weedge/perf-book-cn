@@ -1,6 +1,6 @@
 ## 附录 A. 减少测量噪声(Reducing Measurement Noise) 
 
-\markright{附录 A}
+
 
 以下是一些示例功能，它们可能导致性能测量的不确定性增加。有关完整讨论，请参见 [@sec:secFairExperiments]。
 

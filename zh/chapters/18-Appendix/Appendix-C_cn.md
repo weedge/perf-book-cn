@@ -1,6 +1,6 @@
 # 附录 C. 启用大页面 (.unnumbered)
 
-\markright{附录 C}
+
 
 ## Windows
 

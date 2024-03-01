@@ -1,6 +1,6 @@
 ## 主要 CPU 微架构列表 
 
-\markright{List of the Major CPU Microarchitectures}
+
 
 下表列出了来自英特尔、AMD 和基于 ARM 的供应商的最新 ISA 和微架构。当然，这里并未列出所有设计。我们只包含了我们在书中参考的架构，或者代表平台演进中重大转变的架构。
 

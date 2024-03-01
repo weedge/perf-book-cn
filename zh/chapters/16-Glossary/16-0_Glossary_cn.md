@@ -1,6 +1,6 @@
 # 术语表 
 
-\markright{Glossary}
+
 
 \begin{multicols}{2}
 
