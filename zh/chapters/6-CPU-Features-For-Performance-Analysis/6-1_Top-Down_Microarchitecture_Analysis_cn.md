@@ -3,7 +3,7 @@
 
 自顶向下微架构分析 (TMA) 方法是一种非常强大的技术，用于识别程序中的 CPU 瓶颈。它是一种健壮、正式的方法，即使是经验不足的开发人员也易于使用。该方法最棒的一点是，它不需要开发人员深入了解系统中的微架构和 PMCs，即可高效找到 CPU 瓶颈。
 
-从概念层面来看，TMA 识别导致程序执行停滞的原因。图 @fig:TMA_concept 展示了 TMA 的核心思想。这不是实际分析的运作方式，因为分析每个微操作 (μop) 会非常慢。尽管如此，该图有助于理解该方法。
+从概念层面来看，TMA 识别导致程序执行停滞的原因。图 [@fig:TMA_concept](#TMA_concept) 展示了 TMA 的核心思想。这不是实际分析的运作方式，因为分析每个微操作 (μop) 会非常慢。尽管如此，该图有助于理解该方法。
 
 ![TMA 顶级细分的概念。(*© 图像来自 [[@TMA_ISPASS](../References.md#TMA_ISPASS)]*)](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/pmu-features/TMAM_diag.png)<div id="TMA_concept"></div>
 

@@ -21,7 +21,7 @@ Each iteration took 31.1 base frequency clocks (	12.5	ns)
 
 选项 `--idle_latency` 测量读取延迟而不加载系统。MLC具有 `--loaded_latency` 选项，用于在由其他线程生成的内存流量存在时测量延迟。选项 `-c0` 将测量线程固定在逻辑CPU 0上，该CPU位于P核心上。选项 `-L` 启用大页以限制我们的测量中的TLB效应。选项 `-b10m` 告诉MLC使用10MB缓冲区，在我们的系统上可以放在L3缓存中。
 
-图 @fig:MemoryLatenciesCharts 显示了L1、L2和L3缓存的读取延迟。图中有四个不同的区域。从1KB到48KB缓冲区大小
+图 [@fig:MemoryLatenciesCharts](#MemoryLatenciesCharts) 显示了L1、L2和L3缓存的读取延迟。图中有四个不同的区域。从1KB到48KB缓冲区大小
 
 的左侧的第一个区域对应于L1d缓存，该缓存是每个物理核心私有的。我们可以观察到E核心的延迟为0.9ns，而P核心稍高为1.1ns。此外，我们可以使用此图来确认缓存大小。请注意，当缓冲区大小超过32KB时，E核心的延迟开始上升，但是在48KB之前E核心的延迟保持不变。这证实了E核心的L1d缓存大小为32KB，而P核心的L1d缓存大小为48KB。
 
@@ -48,7 +48,7 @@ ALL Reads        :      33691.53
 Stream-triad like:      30503.68
 ```
 
-这里的新选项是 `-k`，它指定了用于测量的CPU编号列表。`-Y` 选项告诉MLC使用AVX2加载，即每次加载32字节。MLC使用不同的读写比例来测量带宽，但在下图中，我们只显示了全部读取带宽，因为它可以让我们对内存带宽的峰值有一个直观的了解。但其他比例也可能很重要。我们在使用Intel MLC测量的系统的组合延迟和带宽数字如图 @fig:MemBandwidthAndLatenciesDiagram 所示。
+这里的新选项是 `-k`，它指定了用于测量的CPU编号列表。`-Y` 选项告诉MLC使用AVX2加载，即每次加载32字节。MLC使用不同的读写比例来测量带宽，但在下图中，我们只显示了全部读取带宽，因为它可以让我们对内存带宽的峰值有一个直观的了解。但其他比例也可能很重要。我们在使用Intel MLC测量的系统的组合延迟和带宽数字如图 [@fig:MemBandwidthAndLatenciesDiagram](#MemBandwidthAndLatenciesDiagram) 所示。
 
 ![Intel Core i7-1260P内存层次结构的块图和外部DDR4内存。](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/terms-and-metrics/MemBandwidthAndLatenciesDiagram.png)<div id="MemBandwidthAndLatenciesDiagram width=100%"></div>
 

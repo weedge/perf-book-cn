@@ -24,7 +24,7 @@
 
 为了展示 AMD uProf 工具的外观和感觉，我们在 AMD Ryzen 9 7950X、Windows 11、64 GB RAM 上运行了 [Scimark2](https://math.nist.gov/scimark2/index.html)[^2] 基准测试中的密集 LU 矩阵分解组件。
 
-图 @fig:uProfHotspots 显示了函数热点分析。在图像的顶部，你可以看到事件时间轴，显示了在应用程序执行的不同时间观察到的事件数量。在右侧，你可以选择要绘制的指标，我们选择了 `RETIRED_BR_INST_MISP`。注意在时间范围从 20s 到 40s 的分支误判的峰值。你可以选择该区域以密切分析那里发生了什么。一旦你这样做了，它将更新底部面板，仅显示该时间间隔的统计信息。
+图 [@fig:uProfHotspots](#uProfHotspots) 显示了函数热点分析。在图像的顶部，你可以看到事件时间轴，显示了在应用程序执行的不同时间观察到的事件数量。在右侧，你可以选择要绘制的指标，我们选择了 `RETIRED_BR_INST_MISP`。注意在时间范围从 20s 到 40s 的分支误判的峰值。你可以选择该区域以密切分析那里发生了什么。一旦你这样做了，它将更新底部面板，仅显示该时间间隔的统计信息。
 
 ![uProf 的函数热点视图。](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/perf-tools/uProf_Hopspot.png)<div id="uProfHotspots width=100%"></div>
 

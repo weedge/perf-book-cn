@@ -16,7 +16,7 @@
 
 ### 寻找热点
 
-在本节中，我们将讨论使用 PMC 和 EBS 的机制。图 @fig:Sampling 说明了 PMU 的计数器溢出功能，该功能用于触发性能监控中断 (PMI)，也称为 `SIGPROF`。在基准测试开始时，我们会配置我们想要采样的事件。识别热点意味着知道程序花费大部分时间在哪里。因此，在周期上进行采样是非常自然的，这也是许多性能分析工具的默认设置。但这并不一定是严格的规则；我们可以对任何想要的性能事件进行采样。例如，如果我们想知道程序中 L3 缓存未命中最多的位置，我们将在相应的事件上进行采样，即 `MEM_LOAD_RETIRED.L3_MISS`。
+在本节中，我们将讨论使用 PMC 和 EBS 的机制。图 [@fig:Sampling](#Sampling) 说明了 PMU 的计数器溢出功能，该功能用于触发性能监控中断 (PMI)，也称为 `SIGPROF`。在基准测试开始时，我们会配置我们想要采样的事件。识别热点意味着知道程序花费大部分时间在哪里。因此，在周期上进行采样是非常自然的，这也是许多性能分析工具的默认设置。但这并不一定是严格的规则；我们可以对任何想要的性能事件进行采样。例如，如果我们想知道程序中 L3 缓存未命中最多的位置，我们将在相应的事件上进行采样，即 `MEM_LOAD_RETIRED.L3_MISS`。
 
 ![使用性能计数器进行采样](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/perf-analysis/SamplingFlow.png)<div id="Sampling"></div>
 
@@ -78,7 +78,7 @@ Percent | Source code & Disassembly of x264 for cycles:ppp
 ### 收集调用堆栈 {#sec:secCollectCallStacks}
 
 
-在采样时，我们经常会遇到程序中最热门的函数被多个函数调用的情况。图 @fig:CallStacks 显示了一个这样的场景示例。性能分析工具的输出可能显示 `foo` 是程序中最热门的函数之一，但如果它有多个调用者，我们想知道哪个调用者调用 `foo` 的次数最多。对于程序中出现诸如 `memcpy` 或 `sqrt` 之类的库函数的热点，这是典型情况。要了解特定的函数为什么成为热点，我们需要知道程序控制流图 (CFG) 中哪个路径导致了这种情况。
+在采样时，我们经常会遇到程序中最热门的函数被多个函数调用的情况。图 [@fig:CallStacks](#CallStacks) 显示了一个这样的场景示例。性能分析工具的输出可能显示 `foo` 是程序中最热门的函数之一，但如果它有多个调用者，我们想知道哪个调用者调用 `foo` 的次数最多。对于程序中出现诸如 `memcpy` 或 `sqrt` 之类的库函数的热点，这是典型情况。要了解特定的函数为什么成为热点，我们需要知道程序控制流图 (CFG) 中哪个路径导致了这种情况。
 
 ![Control Flow Graph: hot function "foo" has multiple callers.](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/perf-analysis/CallStacksCFG.png)<div id="CallStacks"></div>
 

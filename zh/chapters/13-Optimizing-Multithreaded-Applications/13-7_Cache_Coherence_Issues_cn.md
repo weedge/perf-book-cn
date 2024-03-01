@@ -4,7 +4,7 @@
 
 多处理器系统采用缓存一致性协议来确保每个包含独立缓存的独立内核共享使用内存时的数据一致性。如果没有这样的协议，如果CPU A和CPU B都将内存位置L读取到各自的缓存中，然后处理器B随后修改其缓存值L，那么CPU将具有相同内存位置L的不一致值。缓存一致性协议确保对缓存条目的任何更新都忠实地更新在同一位置的任何其他缓存条目中。
 
-MESI（**M**odified **E**xclusive **S**hared **I**nvalid）是最著名的缓存一致性协议之一，用于支持现代 CPU 中使用的回写缓存。其缩写表示缓存行可以标记的四种状态（参见图 @fig:MESI）：
+MESI（**M**odified **E**xclusive **S**hared **I**nvalid）是最著名的缓存一致性协议之一，用于支持现代 CPU 中使用的回写缓存。其缩写表示缓存行可以标记的四种状态（参见图 [@fig:MESI](#MESI)）：
 
 * **修改（Modified）：** 缓存行仅存在于当前缓存中，并且已从其在 RAM 中的值进行修改
 * **独占（Exclusive）：** 缓存行仅存在于当前缓存中，并且与其在 RAM 中的值匹配
@@ -20,9 +20,10 @@ MESI（**M**odified **E**xclusive **S**hared **I**nvalid）是最著名的缓存
 
 ### 真共享 {#sec:secTrueSharing}
 
-真共享指的是两个不同的处理器访问同一个变量（请参见 [@lst:TrueSharing]）。
+真共享指的是两个不同的处理器访问同一个变量（请参见 [@lst:TrueSharing](#TrueSharing)）。
 
-代码清单:真正的共享示例。 {#lst:TrueSharing}
+代码清单:真正的共享示例。 <div id="TrueSharing"></div>
+
 ```cpp
 unsigned int sum;
 { // parallel section
@@ -31,15 +32,16 @@ unsigned int sum;
 }
 ```
 
-真实共享意味着存在数据竞争，这很难被检测到。幸运的是，有一些工具可以帮助识别这类问题。Clang 的 Thread sanitizer: [https://clang.llvm.org/docs/ThreadSanitizer.html](https://clang.llvm.org/docs/ThreadSanitizer.html)[^30] 和 helgrind: [https://www.valgrind.org/docs/manual/hg-manual.html](https://www.valgrind.org/docs/manual/hg-manual.html)[^31] 就是其中的一些工具。为了防止 [@lst:TrueSharing] 中的数据竞争，应该将 `sum` 变量声明为 `std::atomic<unsigned int> sum`。
+真实共享意味着存在数据竞争，这很难被检测到。幸运的是，有一些工具可以帮助识别这类问题。Clang 的 Thread sanitizer: [https://clang.llvm.org/docs/ThreadSanitizer.html](https://clang.llvm.org/docs/ThreadSanitizer.html)[^30] 和 helgrind: [https://www.valgrind.org/docs/manual/hg-manual.html](https://www.valgrind.org/docs/manual/hg-manual.html)[^31] 就是其中的一些工具。为了防止 [@lst:TrueSharing](#TrueSharing) 中的数据竞争，应该将 `sum` 变量声明为 `std::atomic<unsigned int> sum`。
 
-当发生真实共享时，使用 C++ 原子类型可以帮助解决数据竞争问题。然而，它实际上序列化了对原子变量的访问，这可能会降低性能。解决真实共享问题的另一种方法是使用线程局部存储 (TLS)。TLS 是一种方法，允许给定多线程进程中的每个线程分配内存来存储线程特定的数据。通过这样做，线程修改自己的本地副本，而不是争用全局可用的内存位置。可以使用 TLS 类说明符 (`thread_local unsigned int sum`，自 C++11 起) 声明 `sum` 来修复 [@lst:TrueSharing] 中的示例。然后，主线程应该合并每个工作线程所有本地副本的结果。
+当发生真实共享时，使用 C++ 原子类型可以帮助解决数据竞争问题。然而，它实际上序列化了对原子变量的访问，这可能会降低性能。解决真实共享问题的另一种方法是使用线程局部存储 (TLS)。TLS 是一种方法，允许给定多线程进程中的每个线程分配内存来存储线程特定的数据。通过这样做，线程修改自己的本地副本，而不是争用全局可用的内存位置。可以使用 TLS 类说明符 (`thread_local unsigned int sum`，自 C++11 起) 声明 `sum` 来修复 [@lst:TrueSharing](#TrueSharing) 中的示例。然后，主线程应该合并每个工作线程所有本地副本的结果。
 
 ## 假共享 {#sec:secFalseSharing}
 
-假共享[^29] 发生在两个不同的处理器修改位于同一缓存行上的不同变量时（参见 [@lst:FalseSharing]）。图 @fig:FalseSharing 展示了假共享问题。
+假共享[^29] 发生在两个不同的处理器修改位于同一缓存行上的不同变量时（参见 [@lst:FalseSharing](#FalseSharing)）。图 [@fig:FalseSharing](#FalseSharing) 展示了假共享问题。
 
-代码清单: 假共享示例。 {#lst:FalseSharing}
+代码清单: 假共享示例。 <div id="FalseSharing"></div>
+
 ```
 struct S {
   int sumA; // sumA and sumB are likely to

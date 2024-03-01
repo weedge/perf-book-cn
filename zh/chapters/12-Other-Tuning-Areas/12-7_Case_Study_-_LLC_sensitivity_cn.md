@@ -30,7 +30,7 @@
 
 ## AMD Milan 7313P 处理器的集群式内存层次结构
 
-图 @fig:milan7313P 展示了 AMD Milan 7313P 处理器的集群式内存层次结构。它由四个核心复合芯片 (CCD) 组成，这些 CCD 通过一个 I/O 芯片连接彼此和片外内存。每个 CCD 集成一个核心复合体 (CCX) 和一个 I/O 连接。反过来，每个 CCX 都有四个 Zen3 内核，可以运行八个线程，共享一个 32 MiB 的受害者 LLC，即 LLC 填充了从 CCX 的四个 L2 缓存驱逐的缓存行。
+图 [@fig:milan7313P](#milan7313P) 展示了 AMD Milan 7313P 处理器的集群式内存层次结构。它由四个核心复合芯片 (CCD) 组成，这些 CCD 通过一个 I/O 芯片连接彼此和片外内存。每个 CCD 集成一个核心复合体 (CCX) 和一个 I/O 连接。反过来，每个 CCX 都有四个 Zen3 内核，可以运行八个线程，共享一个 32 MiB 的受害者 LLC，即 LLC 填充了从 CCX 的四个 L2 缓存驱逐的缓存行。
 
 ![AMD Milan 7313P 处理器的集群式内存层次结构](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/other-tuning/Milan7313P.png)<div id="milan7313P"></div>
 
@@ -102,7 +102,7 @@ $ rdmsr -p 1 0xC0010201
 
 ## 结果 
 
-我们在系统中单独运行一套 SPEC CPU2017 基准测试，仅使用一个实例和单个硬件线程。重复这些运行，同时将可用 LLC 大小从 0 更改为 32 MiB，步长为 2 MiB。图 @fig:characterization_llc 从左到右以图形方式显示每个分配的 LLC 大小的 CPI、DMPKI 和 MPKI。对于 CPI 图表，Y 轴上的较低值意味着更好的性能。此外，由于系统上的频率是固定的，因此 CPI 图表反映了绝对分数。例如，具有 32 MiB LLC 的 `520.omnetpp` (虚线) 比 0 MiB LLC 快 2.5 倍。
+我们在系统中单独运行一套 SPEC CPU2017 基准测试，仅使用一个实例和单个硬件线程。重复这些运行，同时将可用 LLC 大小从 0 更改为 32 MiB，步长为 2 MiB。图 [@fig:characterization_llc](#characterization_llc) 从左到右以图形方式显示每个分配的 LLC 大小的 CPI、DMPKI 和 MPKI。对于 CPI 图表，Y 轴上的较低值意味着更好的性能。此外，由于系统上的频率是固定的，因此 CPI 图表反映了绝对分数。例如，具有 32 MiB LLC 的 `520.omnetpp` (虚线) 比 0 MiB LLC 快 2.5 倍。
 
 对于 DMPKI 和 MPKI 图表，Y 轴上的值越低越好。对应于 `503.bwaves` (实线)、`520.omnetpp` (虚线) 和 `554.roms` (虚线) 的三条线代表了所有应用程序中观察到的三个主要趋势。我们不显示其余基准测试。
 

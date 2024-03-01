@@ -8,9 +8,10 @@
 
 这种混合方法结合了检测和性能事件计数的优点。标记器 API 允许我们将性能统计数据归因于代码区域（循环、函数）或功能片段（远程过程调用 (RPC)、输入事件等），而不是测量整个程序。您获得的数据质量足以证明这种努力是值得的。例如，在追查仅针对特定类型 RPC 出现的性能漏洞时，您可以仅针对该类型的 RPC 启用监控。
 
-下面我们提供了一个非常基本的示例，展示了如何使用  [libpfm4](https://sourceforge.net/p/perfmon2/libpfm4/ci/master/tree/)[^1]，这是一个流行的用于收集性能监控事件的 Linux 库。它构建在 Linux `perf_events` 子系统之上，该子系统允许您直接访问性能事件计数器。`perf_events` 子系统相当底层，因此 `libfm4` 包在这里很有用，因为它增加了用于识别 CPU 上可用事件的发现工具以及围绕原始 `perf_event_open` 系统调用的包装库。[@lst:LibpfmMarkerAPI] 展示了如何使用 `libpfm4` 为 [C-Ray](https://openbenchmarking.org/test/pts/c-ray)[^2] benchmark 的 `render` 函数进行检测。
+下面我们提供了一个非常基本的示例，展示了如何使用  [libpfm4](https://sourceforge.net/p/perfmon2/libpfm4/ci/master/tree/)[^1]，这是一个流行的用于收集性能监控事件的 Linux 库。它构建在 Linux `perf_events` 子系统之上，该子系统允许您直接访问性能事件计数器。`perf_events` 子系统相当底层，因此 `libfm4` 包在这里很有用，因为它增加了用于识别 CPU 上可用事件的发现工具以及围绕原始 `perf_event_open` 系统调用的包装库。[@lst:LibpfmMarkerAPI](#LibpfmMarkerAPI) 展示了如何使用 `libpfm4` 为 [C-Ray](https://openbenchmarking.org/test/pts/c-ray)[^2] benchmark 的 `render` 函数进行检测。
 
-代码清单：在 C-Ray benchmark 上使用 libpfm4 标记器 API {#lst:LibpfmMarkerAPI}
+代码清单：在 C-Ray benchmark 上使用 libpfm4 标记器 API <div id="LibpfmMarkerAPI"></div>
+
 
 ```cpp 
 +#include <perfmon/pfmlib.h>
@@ -92,7 +93,7 @@ branch-misses |        18 |        35 |       146
 
 C-ray基准测试主要强调CPU核心的浮点性能，通常不应该导致测量结果的高方差，换句话说，我们期望所有的测量结果都非常接近。然而，我们看到情况并非如此，因为p90值是平均值的1.33倍，而最大值有时比平均情况慢5倍。这里最可能的解释是对于一些像素，算法遇到了一个边界情况，执行了更多的指令，随后运行时间更长。但最好通过研究源代码或扩展仪器测量来捕获更多有关“慢”像素的数据，以确认假设。
 
-[@lst:LibpfmMarkerAPI]中显示的附加仪器测量代码导致了17%的开销，这对于本地实验来说是可以接受的，但在生产环境中运行的开销相当高。大多数大型分布式系统的目标是小于1%的开销，对于某些系统来说，最多可接受5%的开销，但是17%的减速不太可能让用户满意。管理仪器测量的开销至关重要，特别是如果您选择在生产环境中启用它。
+[@lst:LibpfmMarkerAPI](#LibpfmMarkerAPI)中显示的附加仪器测量代码导致了17%的开销，这对于本地实验来说是可以接受的，但在生产环境中运行的开销相当高。大多数大型分布式系统的目标是小于1%的开销，对于某些系统来说，最多可接受5%的开销，但是17%的减速不太可能让用户满意。管理仪器测量的开销至关重要，特别是如果您选择在生产环境中启用它。
 
 开销通常以时间单位或工作单位（RPC、数据库查询、循环迭代等）的发生率来计算。如果我们系统上的一个系统调用大约需要1.6微秒的CPU时间，并且我们每个像素都执行两次（外部循环的迭代），那么每个像素的开销就是3.2微秒的CPU时间。
 
@@ -102,7 +103,7 @@ C-ray基准测试主要强调CPU核心的浮点性能，通常不应该导致测
 
 对于长时间运行的例程，您可以在开始、结束和一些中间部分收集计数器。在连续运行中，您可以二分搜索执行最差的例程部分并进行优化。重复此过程，直到所有性能差的地方都被消除。如果尾延迟是主要关注的问题，那么在特别慢的运行中发出日志消息可以提供有用的见解。
 
-在[@lst:LibpfmMarkerAPI]中，我们同时收集了4个事件，尽管CPU有6个可编程计数器。您可以打开具有不同事件集的其他组。内核将选择不同的组来运行。`time_enabled`和`time_running`字段指示了多路复用。它们都是以纳秒为单位的持续时间。`time_enabled`字段表示事件组已启用的纳秒数。`time_running`表示实际收集事件的时间占已启用时间的多少。如果同时启用了两个无法放在HW计数器上的事件组，您可能会看到它们都收敛到`time_running = 0.5 * time_enabled`。调度通常很复杂，因此在依赖于您的确切场景之前，请进行验证。
+在[@lst:LibpfmMarkerAPI](#LibpfmMarkerAPI)中，我们同时收集了4个事件，尽管CPU有6个可编程计数器。您可以打开具有不同事件集的其他组。内核将选择不同的组来运行。`time_enabled`和`time_running`字段指示了多路复用。它们都是以纳秒为单位的持续时间。`time_enabled`字段表示事件组已启用的纳秒数。`time_running`表示实际收集事件的时间占已启用时间的多少。如果同时启用了两个无法放在HW计数器上的事件组，您可能会看到它们都收敛到`time_running = 0.5 * time_enabled`。调度通常很复杂，因此在依赖于您的确切场景之前，请进行验证。
 
 同时捕获多个事件允许计算我们在第4章中讨论的各种指标。例如，捕获`INSTRUCTIONS_RETIRED`和`UNHALTED_CLOCK_CYCLES`使我们能够测量IPC。我们可以通过比较CPU周期（`UNHALTED_CORE_CYCLES`）和固定频率参考时钟（`UNHALTED_REFERENCE_CYCLES`）来观察频率缩放的影响。通过请求消耗的CPU周期（`UNHALTED_CORE_CYCLES`，仅在线程运行时计数）并与墙钟时间进行比较，可以检测线程未运行的情况。此外，我们可以对数字进行归一化，以获得每秒/时钟/指令的事件速率。例如，通过测量`MEM_LOAD_RETIRED.L3_MISS`和`INSTRUCTIONS_RETIRED`，我们可以获得`L3MPKI`指标。正如您所见，这种设置非常灵活。
 

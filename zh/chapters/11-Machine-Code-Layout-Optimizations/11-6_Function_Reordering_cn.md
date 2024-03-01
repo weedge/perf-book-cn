@@ -2,11 +2,11 @@
 
 根据前面各节描述的原则，可以将热点函数分组，进一步提高 CPU 前端缓存的利用率。当热点函数被分组在一起时，它们开始共享缓存行，这减少了*代码占用空间*，即 CPU 需要获取的缓存行总数。
 
-图@fig:FunctionGrouping 给出了重新排列热点函数 `foo`、`bar` 和 `zoo` 的图形表示。图像上的箭头显示了最频繁的调用模式，即 `foo` 调用 `zoo`，然后 `zoo` 调用 `bar`。在默认布局中（见图@fig:FuncGroup_default），热点函数不相邻，它们之间有一些冷函数。因此，两个函数调用的序列（`foo` -> `zoo` -> `bar`）需要读取四个缓存行。
+图[@fig:FunctionGrouping](#FunctionGrouping) 给出了重新排列热点函数 `foo`、`bar` 和 `zoo` 的图形表示。图像上的箭头显示了最频繁的调用模式，即 `foo` 调用 `zoo`，然后 `zoo` 调用 `bar`。在默认布局中（见图[@fig:FuncGroup_default](#FuncGroup_default)），热点函数不相邻，它们之间有一些冷函数。因此，两个函数调用的序列（`foo` -> `zoo` -> `bar`）需要读取四个缓存行。
 
-我们可以重新排列函数的顺序，使得热点函数彼此靠近（见图@fig:FuncGroup_better）。在改进的版本中，`foo`、`bar` 和 `zoo` 函数的代码适合于三个缓存行。另外，注意函数 `zoo` 现在根据函数调用的顺序被放置在 `foo` 和 `bar` 之间。当我们从 `foo` 调用 `zoo` 时，`zoo` 的开始已经在 I-cache 中。
+我们可以重新排列函数的顺序，使得热点函数彼此靠近（见图[@fig:FuncGroup_better](#FuncGroup_better)）。在改进的版本中，`foo`、`bar` 和 `zoo` 函数的代码适合于三个缓存行。另外，注意函数 `zoo` 现在根据函数调用的顺序被放置在 `foo` 和 `bar` 之间。当我们从 `foo` 调用 `zoo` 时，`zoo` 的开始已经在 I-cache 中。
 
-<div id="fig:FunctionGrouping">
+<div id="FunctionGrouping">
 
 ![默认布局](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/cpu_fe_opts/FunctionGrouping_Default.png)<div id="FuncGroup_default"></div>
 ![改进的布局](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/cpu_fe_opts/FunctionGrouping_Better.png)<div id="FuncGroup_better"></div>

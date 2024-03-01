@@ -4,7 +4,7 @@
 
 ### 英特尔平台上的 PEBS
 
-与最后分支记录类似，PEBS 用于在分析程序时捕获每个收集到的样本的额外数据。当性能计数器配置为 PEBS 时，处理器会保存一组具有定义格式的额外数据，称为 PEBS 记录。英特尔 Skylake CPU 的 PEBS 记录格式如图 @fig:PEBS_record 所示。记录包含通用寄存器状态 (`EAX`, `EBX`, `ESP` 等）、`EventingIP`, `Data Linear Address` 和稍后将讨论的 `延迟值`。PEBS 记录的内容布局因不同的微架构而异，请参阅 [[@IntelOptimizationManual](../References.md#IntelOptimizationManual), 第 3B 卷，第 20 章 性能监控]。
+与最后分支记录类似，PEBS 用于在分析程序时捕获每个收集到的样本的额外数据。当性能计数器配置为 PEBS 时，处理器会保存一组具有定义格式的额外数据，称为 PEBS 记录。英特尔 Skylake CPU 的 PEBS 记录格式如图 [@fig:PEBS_record](#PEBS_record) 所示。记录包含通用寄存器状态 (`EAX`, `EBX`, `ESP` 等）、`EventingIP`, `Data Linear Address` 和稍后将讨论的 `延迟值`。PEBS 记录的内容布局因不同的微架构而异，请参阅 [[@IntelOptimizationManual](../References.md#IntelOptimizationManual), 第 3B 卷，第 20 章 性能监控]。
 
 ![PEBS记录格式适用于第六代、第七代和第八代英特尔酷睿处理器家族。 *© Image from [[@IntelOptimizationManual](../References.md#IntelOptimizationManual), Volume 3B, Chapter 20].*](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/pmu-features/PEBS_record.png)<div id="PEBS_record"></div>
 
@@ -104,7 +104,7 @@ $ perf record -e cycles:pp -- ./a.exe
 
 内存访问是许多应用程序性能的关键因素。PEBS 和 IBS 都能够收集程序中内存访问的详细信息。例如，您不仅可以对加载进行采样，还可以收集它们的目标地址和访问延迟。请记住，这并不跟踪所有存储和加载。否则，开销会太大。相反，它只分析大约每 10 万次访问中的一个访问。您可以自定义每秒需要多少个样本。通过足够的样本收集，可以提供内存访问的准确统计图片。
 
-在 PEBS 中，允许实现此功能的功能称为数据地址分析 (DLA)。为了提供有关采样加载和存储的更多信息，它使用 PEBS 设施内的“Data Linear Address”和“Latency Value”字段（参见图 @fig:PEBS_record）。如果性能事件支持 DLA 功能并且 DLA 已启用，处理器将转储所采样内存访问的内存地址和延迟。您还可以过滤延迟高于某个阈值的内存访问。这对于查找可能成为许多应用程序性能瓶颈的长延迟内存访问非常有用。
+在 PEBS 中，允许实现此功能的功能称为数据地址分析 (DLA)。为了提供有关采样加载和存储的更多信息，它使用 PEBS 设施内的“Data Linear Address”和“Latency Value”字段（参见图 [@fig:PEBS_record](#PEBS_record)）。如果性能事件支持 DLA 功能并且 DLA 已启用，处理器将转储所采样内存访问的内存地址和延迟。您还可以过滤延迟高于某个阈值的内存访问。这对于查找可能成为许多应用程序性能瓶颈的长延迟内存访问非常有用。
 
 使用 IBS Execute 和 ARM SPE 采样，您还可以深入分析应用程序执行的内存访问。一种方法是转储收集的样本并手动处理它们。IBS 会保存确切的线性地址、其延迟、访问来自何处（缓存或 DRAM）、以及它是否在 DTLB 中命中或未命中。SPE 可用于估计内存子系统组件的延迟和带宽、估计单个加载/存储的内存延迟等等。
 

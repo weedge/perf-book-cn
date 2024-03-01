@@ -43,9 +43,11 @@
 
 #### 向量化是非法的
 
-在某些情况下，遍历数组元素的代码根本不可矢量化。向量化备注非常有效地解释了出了什么问题以及为什么编译器无法矢量化代码。[@lst:VectDep] 显示了一个循环内部的依赖关系，该依赖关系阻止了向量化[^31]。
+在某些情况下，遍历数组元素的代码根本不可矢量化。向量化备注非常有效地解释了出了什么问题以及为什么编译器无法矢量化代码。[@lst:VectDep](#VectDep) 显示了一个循环内部的依赖关系，该依赖关系阻止了向量化[^31]。
 
-代码清单:向量化:读写后写依赖。 {#lst:VectDep .cpp}
+代码清单:向量化:读写后写依赖。 
+<div id="VectDep"></div>
+
 ```cpp
 void vectorDependence(int *A, int n) {
   for (int i = 1; i < n; i++)
@@ -55,7 +57,7 @@ void vectorDependence(int *A, int n) {
 
 一些循环由于上述硬件限制无法矢量化，但另一些循环在放松特定约束时可以矢量化。有时，编译器无法矢量化循环仅仅是因为它无法证明这样做是合法的。编译器通常非常保守，只会确信不会破坏代码时才进行转换。此类软限制可以通过向编译器提供额外的提示来放松。
 
-例如，当转换执行浮点运算的代码时，矢量化可能会改变程序的行为。浮点加法和乘法是交换的，这意味着您可以交换左手侧和右手侧而不改变结果：`(a + b == b + a)`。但是，这些操作不是关联的，因为舍入发生在不同的时间：`((a + b) + c) != (a + (b + c))`。[@lst:VectIllegal] 中的代码无法由编译器自动矢量化。原因是矢量化会将变量 `sum` 更改为矢量累加器，这将改变运算顺序，并可能导致不同的舍入决策和不同的结果。
+例如，当转换执行浮点运算的代码时，矢量化可能会改变程序的行为。浮点加法和乘法是交换的，这意味着您可以交换左手侧和右手侧而不改变结果：`(a + b == b + a)`。但是，这些操作不是关联的，因为舍入发生在不同的时间：`((a + b) + c) != (a + (b + c))`。[@lst:VectIllegal](#VectIllegal) 中的代码无法由编译器自动矢量化。原因是矢量化会将变量 `sum` 更改为矢量累加器，这将改变运算顺序，并可能导致不同的舍入决策和不同的结果。
 
 代码清单:向量化:浮点运算。 {#lst:VectIllegal .cpp .numberLines}
 ```cpp
@@ -84,7 +86,7 @@ a.cpp:4:3: remark: vectorized loop (vectorization width: 4, interleaved count: 2
 
 不幸的是，此标志涉及微妙且潜在危险的行为变化，包括非数字 (NaN)、带符号零、无穷大和次正规数。由于第三方代码可能还没有准备好应对这些影响，因此不应在不仔细验证结果（包括边缘情况）的情况下在大段代码中启用此标志。
 
-让我们看另一个典型情况，编译器可能需要开发人员的支持才能执行矢量化。当编译器无法证明循环操作的是具有非重叠内存区域的数组时，它们通常会选择更安全的选项。让我们重新审视 [@sec:compilerOptReports] 中 [@lst:optReport] 提供的示例。当编译器尝试矢量化 [@lst:OverlappingMemRefions] 中呈现的代码时，它通常无法做到这一点，因为数组 `a`、`b` 和 `c` 的内存区域可能重叠。
+让我们看另一个典型情况，编译器可能需要开发人员的支持才能执行矢量化。当编译器无法证明循环操作的是具有非重叠内存区域的数组时，它们通常会选择更安全的选项。让我们重新审视 [@sec:compilerOptReports] 中 [@lst:optReport](#optReport) 提供的示例。当编译器尝试矢量化 [@lst:OverlappingMemRefions](#OverlappingMemRefions) 中呈现的代码时，它通常无法做到这一点，因为数组 `a`、`b` 和 `c` 的内存区域可能重叠。
 
 代码清单: a.c {#lst:OverlappingMemRefions .cpp .numberLines}
 ```cpp
@@ -106,13 +108,13 @@ a.cpp:2:26: optimized: loop versioned for vectorization because of possible ali
 
 GCC 识别到数组 `a`、`b` 和 `c` 的内存区域可能存在重叠，并创建了相同循环的多个版本。编译器插入了运行时检查[^36] 来检测内存区域是否重叠。基于这些检查，它会在矢量化和标量[^35] 版本之间进行调度。在这种情况下，矢量化会带来插入可能代价高昂的运行时检查的成本。
 
-如果开发人员知道数组 `a`、`b` 和 `c` 的内存区域不会重叠，可以在循环前面插入 `#pragma GCC ivdep`[^37] 或使用 `__restrict__ ` 关键字，如 [@lst:optReport2] 所示。此类编译器提示将消除 GCC 编译器插入上述运行时检查的需要。
+如果开发人员知道数组 `a`、`b` 和 `c` 的内存区域不会重叠，可以在循环前面插入 `#pragma GCC ivdep`[^37] 或使用 `__restrict__ ` 关键字，如 [@lst:optReport2](#optReport2) 所示。此类编译器提示将消除 GCC 编译器插入上述运行时检查的需要。
 
 编译器本质上是静态工具：它们只根据所使用的代码进行推理。例如，一些动态工具（例如 Intel Advisor）可以检测跨迭代依赖或访问具有重叠内存区域的数组等问题是否确实出现在给定的循环中。但要记住，这类工具只提供建议。不加思索地插入编译器提示可能会导致实际问题。
 
 #### 向量化无益
 
-在某些情况下，编译器可以矢量化循环，但认为这样做没有好处。在 [@lst:VectNotProfit] 中呈现的代码中，编译器可以矢量化对数组 `A` 的内存访问，但需要将对数组 `B` 的访问拆分为多个标量加载。这种分散/收集模式相对昂贵，并且能够模拟操作成本的编译器经常会决定避免矢量化具有这种模式的代码。
+在某些情况下，编译器可以矢量化循环，但认为这样做没有好处。在 [@lst:VectNotProfit](#VectNotProfit) 中呈现的代码中，编译器可以矢量化对数组 `A` 的内存访问，但需要将对数组 `B` 的访问拆分为多个标量加载。这种分散/收集模式相对昂贵，并且能够模拟操作成本的编译器经常会决定避免矢量化具有这种模式的代码。
 
 代码清单:向量化:没有好处。 {#lst:VectNotProfit .cpp .numberLines}
 ```cpp
@@ -123,7 +125,7 @@ void stridedLoads(int *A, int *B, int n) {
 }
 ```
 
-下面是[@lst:VectNotProfit]中的代码的编译器优化报告:
+下面是[@lst:VectNotProfit](#VectNotProfit)中的代码的编译器优化报告:
 
 ```bash
 $ clang -c -O3 -march=core-avx2 a.cpp -Rpass-missed=loop-vectorize
@@ -132,7 +134,7 @@ a.cpp:3:3: remark: the cost-model indicates that vectorization is not beneficial
   ^
 ```
 
-用户可以使用 `#pragma` 提示强制 Clang 编译器矢量化循环，如 [@lst:VectNotProfitOverriden] 所示。但是，请记住，矢量化是否真正有利很大程度上取决于运行时数据，例如循环的迭代次数。编译器无法获得这些信息，[^1] 因此它们往往保守行事。开发人员可以在寻找性能提升空间时使用此类提示。
+用户可以使用 `#pragma` 提示强制 Clang 编译器矢量化循环，如 [@lst:VectNotProfitOverriden](#VectNotProfitOverriden) 所示。但是，请记住，矢量化是否真正有利很大程度上取决于运行时数据，例如循环的迭代次数。编译器无法获得这些信息，[^1] 因此它们往往保守行事。开发人员可以在寻找性能提升空间时使用此类提示。
 
 代码清单:向量化:没有好处。 {#lst:VectNotProfitOverriden .cpp .numberLines}
 ```cpp
@@ -170,7 +172,7 @@ void stridedLoads(int *A, int *B, int n) {
 
 ISPC 的另一个优点是其互操作性和易用性。ISPC 编译器生成标准对象文件，可以与传统 C/C++ 编译器生成的代码链接。ISPC 代码可以很容易地插入任何原生项目，因为用 ISPC 编写的函数可以像 C 代码一样调用。
 
-[@lst:ISPC_code] 显示了我们之前在 [@lst:VectIllegal] 中介绍的一个简单函数，用 ISPC 重写。ISPC 考虑程序将在并行实例中运行，基于目标指令集。例如，当使用 SSE 与 `float` 一起使用时，它可以并行计算 4 个操作。每个程序实例将在 `i` 的向量值上操作，分别是 `(0,1,2,3)`、然后是 `(4,5,6,7)`，以此类推，一次有效地计算 4 个和。正如您所看到的，使用了一些非典型 C 和 C++ 的关键字：
+[@lst:ISPC_code](#ISPC_code) 显示了我们之前在 [@lst:VectIllegal](#VectIllegal) 中介绍的一个简单函数，用 ISPC 重写。ISPC 考虑程序将在并行实例中运行，基于目标指令集。例如，当使用 SSE 与 `float` 一起使用时，它可以并行计算 4 个操作。每个程序实例将在 `i` 的向量值上操作，分别是 `(0,1,2,3)`、然后是 `(4,5,6,7)`，以此类推，一次有效地计算 4 个和。正如您所看到的，使用了一些非典型 C 和 C++ 的关键字：
 
 * `export` 关键字意味着该函数可以从 C 兼容的语言调用。
 
@@ -180,7 +182,9 @@ ISPC 的另一个优点是其互操作性和易用性。ISPC 编译器生成标�
 
 * `foreach` 与经典的 `for` 循环相同，除了它会将工作分配到不同的程序实例。
 
-代码清单:ISPC版本的数组元素求和。 {#lst:ISPC_code .cpp}
+代码清单:ISPC版本的数组元素求和。 
+<div id="ISPC_code"></div>
+
 ```cpp
 export uniform float calcSum(const uniform float array[], 
                              uniform ptrdiff_t count)

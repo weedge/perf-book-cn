@@ -20,7 +20,7 @@
 
 开发人员经常会问的一个问题是：“最新处理器拥有 10 多个执行单元；我该如何编写代码让它们一直保持繁忙？” 这确实是一个最难解决的问题之一。有时它需要仔细观察程序如何运行。UICA 模拟器就是这样一个显微镜，可以让您深入了解您的代码如何流经现代处理器。
 
-让我们看一下 [@lst:FMAthroughput] 中的代码。我们有意使示例尽可能简单。当然，现实世界中的代码通常比这更复杂。该代码将数组 `a` 的每个元素乘以常数 `B`，并将缩放后的值累积到 `sum` 中。在右侧，我们展示了使用 `-O3 -ffast-math -march=core-avx2` 编译时 Clang-16 生成的循环的机器代码。汇编代码看起来非常紧凑，让我们更好地理解它。
+让我们看一下 [@lst:FMAthroughput](#FMAthroughput) 中的代码。我们有意使示例尽可能简单。当然，现实世界中的代码通常比这更复杂。该代码将数组 `a` 的每个元素乘以常数 `B`，并将缩放后的值累积到 `sum` 中。在右侧，我们展示了使用 `-O3 -ffast-math -march=core-avx2` 编译时 Clang-16 生成的循环的机器代码。汇编代码看起来非常紧凑，让我们更好地理解它。
 
 代码清单：FMA 吞吐量 {#lst:FMAthroughput .cpp .numberLines}
 ```cpp
@@ -36,7 +36,7 @@ float foo(float * a, float B, int N){  │ .loop:
 
 这段代码是一个归约循环，即我们需要对所有乘积求和，最终返回一个浮点数。按照目前代码的写法，`sum` 上存在循环传递依赖性。您无法覆盖 `sum`，直到累积上一个乘积。一种并行化的巧妙方法是使用多个累加器并在最后将它们汇总。因此，我们可以用多个累加器代替单个 `sum`，例如 `sum1` 用于累积偶数次迭代的结果，`sum2` 用于累积奇数次迭代的结果。这就是 Clang-16 所做的：它使用了 4 个向量寄存器（`ymm2`-`ymm5`），每个都包含 8 个浮点累加器，并使用 FMA 将乘法和加法融合成单个指令。常量 `B` 被广播到 `ymm1` 寄存器中。`-ffast-math` 选项允许编译器重新关联浮点运算，我们将在 [@sec:Vectorization] 中讨论这个选项如何帮助优化。顺便说一句，乘法在循环后只需要做一次。这肯定是程序员的疏忽，但希望编译器将来能够处理它。
 
-代码看起来不错，但它真的是最优的吗？让我们找出答案。我们将 [@lst:FMAthroughput] 中的汇编代码片段带到 UICA 进行模拟。在撰写本文时，UICA 不支持 Alderlake (英特尔第 12 代，基于 GoldenCove)，因此我们在最新可用的 RocketLake (英特尔第 11 代，基于 SunnyCove) 上运行了它。虽然架构不同，但这次实验暴露的问题在两者上都同样明显。模拟结果如图 @fig:FMA_tput_UICA 所示。这是一个类似于我们在第 3 章中展示的管道图。我们跳过了前两个迭代，只显示了第 2 和第 3 个迭代（最左列 "It."）。这时，执行已经达到稳定状态，所有后续迭代看起来都非常相似。
+代码看起来不错，但它真的是最优的吗？让我们找出答案。我们将 [@lst:FMAthroughput](#FMAthroughput) 中的汇编代码片段带到 UICA 进行模拟。在撰写本文时，UICA 不支持 Alderlake (英特尔第 12 代，基于 GoldenCove)，因此我们在最新可用的 RocketLake (英特尔第 11 代，基于 SunnyCove) 上运行了它。虽然架构不同，但这次实验暴露的问题在两者上都同样明显。模拟结果如图 [@fig:FMA_tput_UICA](#FMA_tput_UICA) 所示。这是一个类似于我们在第 3 章中展示的管道图。我们跳过了前两个迭代，只显示了第 2 和第 3 个迭代（最左列 "It."）。这时，执行已经达到稳定状态，所有后续迭代看起来都非常相似。
 
 ![UICA pipeline diagram. `I` = issued, `r` = ready for dispatch, `D` = dispatched, `E` = executed, `R` = retired.](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/perf-analysis/fma_tput_uica.png)<div id="FMA_tput_UICA"></div>
 

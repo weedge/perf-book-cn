@@ -8,11 +8,11 @@
 
 ### 计数性能事件
 
-计数背后的想法非常简单：我们希望在程序运行时计数某些性能事件的绝对数量。图@fig:Counting展示了从程序开始到结束计数性能事件的过程。
+计数背后的想法非常简单：我们希望在程序运行时计数某些性能事件的绝对数量。图[@fig:Counting](#Counting)。
 
 ![计数性能事件。](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/perf-analysis/CountingFlow.png)<div id="Counting"></div>
 
-图@fig:Counting中概述的步骤大致代表了典型分析工具会执行的操作来计数性能事件。这个过程是在`perf stat`工具中实现的，它可以用于计数各种硬件事件，比如指令数、周期数、缓存失效等。下面是`perf stat`的输出示例：
+图[@fig:Counting](#Counting)。这个过程是在`perf stat`工具中实现的，它可以用于计数各种硬件事件，比如指令数、周期数、缓存失效等。下面是`perf stat`的输出示例：
 
 ```bash
 $ perf stat -- ./a.exe
@@ -62,9 +62,9 @@ $ perf stat -e cpu/event=0xc4,umask=0x0,name=BR_INST_RETIRED.ALL_BRANCHES/ -- ./
 
 有些情况下，我们希望同时计数许多不同的事件。但是只有一个计数器，一次只能计数一件事情。这就是为什么PMU中有多个计数器的原因（在最近的英特尔Goldencove微体系结构中，每个硬件线程有12个可编程的PMC，每个线程有6个）。即使这样，固定和可编程计数器的数量并不总是足够的。Top-down微体系结构分析（TMA）方法要求在单个程序执行中收集多达100种不同的性能事件。现代CPU没有那么多的计数器，这就是多路复用发挥作用的时候。
 
-如果事件比计数器多，分析工具使用时间多路复用为每个事件提供访问监视硬件的机会。图@fig:Multiplexing1显示了只有4个PMC可用时8个性能事件之间的多路复用示例。
+如果事件比计数器多，分析工具使用时间多路复用为每个事件提供访问监视硬件的机会。图[@fig:Multiplexing1](#Multiplexing1)。
 
-<div id="fig:Multiplexing">
+<div id="Multiplexing">
 
 ![](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/perf-analysis/Multiplexing1.png)<div id="Multiplexing1"></div>
 ![](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/perf-analysis/Multiplexing2.png)<div id="Multiplexing2"></div>
@@ -76,7 +76,7 @@ $ perf stat -e cpu/event=0xc4,umask=0x0,name=BR_INST_RETIRED.ALL_BRANCHES/ -- ./
 $$
 \text{最终计数} = \text{原始计数} \times (\text{运行时间} / \text{启用时间})
 $$
-让我们以图@fig:Multiplexing2为例。假设在分析过程中，我们能够在三个时间间隔内测量来自第1组的一个事件。每个测量间隔持续100ms（`启用时间`）。程序运行时间为500ms（`运行时间`）。该计数器的总事件数为10'000（`原始计数`）。因此，最终计数需要按以下方式进行缩放：
+让我们以图[@fig:Multiplexing2](#Multiplexing2)。假设在分析过程中，我们能够在三个时间间隔内测量来自第1组的一个事件。每个测量间隔持续100ms（`启用时间`）。程序运行时间为500ms（`运行时间`）。该计数器的总事件数为10'000（`原始计数`）。因此，最终计数需要按以下方式进行缩放：
 $$
 \text{最终计数} = 10'000 \times ( 500ms / ( 100ms \times 3) ) = 16'666
 $$

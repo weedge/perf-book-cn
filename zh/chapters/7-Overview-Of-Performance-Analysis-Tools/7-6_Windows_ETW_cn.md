@@ -62,7 +62,7 @@ C:\Windows\System32\wpr.exe
 #### 捕获痕迹
 
 - 启动 ETWController。
-- 选择 CSwitch 配置文件以跟踪线程等待时间以及其他默认录制设置。保持复选框“*记录鼠标点击*”和“*获取循环屏幕截图*”启用，以便稍后借助屏幕截图导航到慢速点。参见图 @fig:ETWController_Dialog。
+- 选择 CSwitch 配置文件以跟踪线程等待时间以及其他默认录制设置。保持复选框“*记录鼠标点击*”和“*获取循环屏幕截图*”启用，以便稍后借助屏幕截图导航到慢速点。参见图 [@fig:ETWController_Dialog](#ETWController_Dialog)。
 - 按“*开始录制*”。
 - 从互联网下载一些可执行文件，解压缩它并双击可执行文件启动它。
 - 之后，您可以通过按“*停止录制*”按钮停止分析。
@@ -75,7 +75,7 @@ Windows 支持事件日志和性能计数器触发器，允许在性能计数器
 
 #### 在 WPA 中分析
 
-图 @fig:WPA_MainView 显示了在 Windows Performance Analyzer (WPA) 中打开的已录制 ETW 数据。WPA 视图分为三个部分：*CPU 使用率（采样）*、*通用事件* 和 *CPU 使用率（精确）*。为了理解它们之间的区别，让我们更深入地研究一下。上面 *CPU 使用率（采样）* 图表可用于识别 CPU 时间花在何处。数据是通过定期间隔对所有正在运行的线程进行采样收集的。与其他分析工具中的热点视图非常相似。
+图 [@fig:WPA_MainView](#WPA_MainView) 显示了在 Windows Performance Analyzer (WPA) 中打开的已录制 ETW 数据。WPA 视图分为三个部分：*CPU 使用率（采样）*、*通用事件* 和 *CPU 使用率（精确）*。为了理解它们之间的区别，让我们更深入地研究一下。上面 *CPU 使用率（采样）* 图表可用于识别 CPU 时间花在何处。数据是通过定期间隔对所有正在运行的线程进行采样收集的。与其他分析工具中的热点视图非常相似。
 
 ![Windows Performance Analyzer 应用程序启动缓慢概览.](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/perf-tools/WPA_MainView.png)<div id="WPA_MainView width=100%"></div>
 
@@ -83,7 +83,7 @@ Windows 支持事件日志和性能计数器触发器，允许在性能计数器
 
 底部图表 *CPU 使用率（精确）* 使用的数据源与 *采样* 视图不同。虽然采样数据只会捕获正在运行的线程，但 *精确* 收集会考虑进程未运行的时间间隔。精确视图的数据来自 Windows 线程调度程序。它跟踪线程运行的时间和所处 CPU (CPU 使用率)、它在内核调用中被阻塞了多长时间 (等待)、它的优先级以及线程等待 CPU 可用有多长时间 (准备时间) 等。因此，精确视图不会显示顶级 CPU 耗用者。但是，这个视图对于理解某个进程被阻塞了多长时间以及 *为什么* 被阻塞非常有用。
 
-现在我们熟悉了 WPA 界面，让我们观察一下图表。首先，我们可以在时间线上找到 `MouseButton` 事件 63 和 64。ETWController 将收集期间拍摄的所有屏幕截图保存在一个新建的文件夹中。分析数据本身保存在名为 `SlowProcessStart.etl` 的文件中，还有一个名为 `SlowProcessStart.etl.Screenshots` 的新文件夹。该文件夹包含屏幕截图和一个可以在浏览器中查看的 `Report.html` 文件。每个记录的键盘/鼠标交互都保存在一个以其事件编号命名的文件中，例如 `Screenshot_63.jpg`。图 @fig:ETWController_ClickScreenshot（已裁剪）显示鼠标双击（事件 63 和 64）。鼠标指针位置标记为绿色方块，除非单击事件发生，则为红色。这使得很容易发现何时何地执行了鼠标单击。
+现在我们熟悉了 WPA 界面，让我们观察一下图表。首先，我们可以在时间线上找到 `MouseButton` 事件 63 和 64。ETWController 将收集期间拍摄的所有屏幕截图保存在一个新建的文件夹中。分析数据本身保存在名为 `SlowProcessStart.etl` 的文件中，还有一个名为 `SlowProcessStart.etl.Screenshots` 的新文件夹。该文件夹包含屏幕截图和一个可以在浏览器中查看的 `Report.html` 文件。每个记录的键盘/鼠标交互都保存在一个以其事件编号命名的文件中，例如 `Screenshot_63.jpg`。图 [@fig:ETWController_ClickScreenshot](#ETWController_ClickScreenshot)（已裁剪）显示鼠标双击（事件 63 和 64）。鼠标指针位置标记为绿色方块，除非单击事件发生，则为红色。这使得很容易发现何时何地执行了鼠标单击。
 
 ![使用 ETWController 捕获的鼠标点击屏幕截图.](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/perf-tools/ETWController_ClickScreenshot.png)<div id="ETWController_ClickScreenshot width=60%"></div>
 

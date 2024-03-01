@@ -24,7 +24,7 @@
 $ clang++ -O3 -DNDEBUG -arch arm64 <other options ...> -c llvm/lib/Transforms/Vectorize/LoopVectorize.cpp
 ```
 
-首先，打开 Instruments 并选择 “CPU 计数器” 分析类型。（这里我们需要稍微提前一点）。它将打开主时间轴视图，如图 @fig:InstrumentsView 所示，准备开始分析。但在开始之前，让我们配置收集。单击并按住红色目标图标 \circled{1}，然后选择 “Recording Options...” 菜单。它将显示如图 @fig:InstrumentsDialog 所示的对话框窗口。在这里，你可以为收集添加 HW 性能监视事件。
+首先，打开 Instruments 并选择 “CPU 计数器” 分析类型。（这里我们需要稍微提前一点）。它将打开主时间轴视图，如图 [@fig:InstrumentsView](#InstrumentsView) 所示，准备开始分析。但在开始之前，让我们配置收集。单击并按住红色目标图标 \circled{1}，然后选择 “Recording Options...” 菜单。它将显示如图 [@fig:InstrumentsDialog](#InstrumentsDialog) 所示的对话框窗口。在这里，你可以为收集添加 HW 性能监视事件。
 
 ![Xcode Instruments：CPU 计数器选项。](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/perf-tools/XcodeInstrumentsDialog.png)<div id="InstrumentsDialog width=50%"></div>
 
@@ -36,13 +36,13 @@ $ plutil -convert json /usr/share/kpep/a14.plist -o a14.json
 
 然后使用简单的文本编辑器打开 `a14.json`。
 
-第二步是设置分析目标。要做到这一点，单击并按住应用程序的名称（在图 @fig:InstrumentsView 中标记为 \circled{2}），然后选择你感兴趣的应用程序，如果需要，设置参数和环境变量。现在，你已经准备好开始收集了，请按红色目标图标 \circled{1}。
+第二步是设置分析目标。要做到这一点，单击并按住应用程序的名称（在图 [@fig:InstrumentsView](#InstrumentsView) 中标记为 \circled{2}），然后选择你感兴趣的应用程序，如果需要，设置参数和环境变量。现在，你已经准备好开始收集了，请按红色目标图标 \circled{1}。
 
 ![Xcode Instruments：时间轴和统计面板。](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/perf-tools/XcodeInstrumentsView.jpg)<div id="InstrumentsView width=100%"></div>
 
-Instruments 显示一个时间轴，并不断更新有关正在运行的应用程序的统计信息。一旦程序完成，Instruments 将显示类似于图 @fig:InstrumentsView 所示的图像。编译花费了 7.3 秒，我们可以看到事件量随时间的变化。例如，分支错误预测在运行时末尾变得更加明显。你可以放大时间轴上的该区间，以检查所涉及的函数。
+Instruments 显示一个时间轴，并不断更新有关正在运行的应用程序的统计信息。一旦程序完成，Instruments 将显示类似于图 [@fig:InstrumentsView](#InstrumentsView) 所示的图像。编译花费了 7.3 秒，我们可以看到事件量随时间的变化。例如，分支错误预测在运行时末尾变得更加明显。你可以放大时间轴上的该区间，以检查所涉及的函数。
 
-底部面板显示了数值统计信息。要检查类似于 Intel Vtune 的自下而上视图的热点，选择菜单 \circled{3} 中的 “Profile”，然后单击菜单 \circled{4} 中的 “Call Tree” 并选中 “Invert Call Tree” 复选框。这正是我们在图 @fig:InstrumentsView 中所做的。
+底部面板显示了数值统计信息。要检查类似于 Intel Vtune 的自下而上视图的热点，选择菜单 \circled{3} 中的 “Profile”，然后单击菜单 \circled{4} 中的 “Call Tree” 并选中 “Invert Call Tree” 复选框。这正是我们在图 [@fig:InstrumentsView](#InstrumentsView) 中所做的。
 
 Instruments 显示原始计数以及相对于总数的百分比，如果你想计算次要指标（如 IPC、MPKI 等），则非常有用。在右侧，我们有函数 `llvm::FoldingSetBase::FindNodeOrInsertPos` 的热调用栈。如果你双击一个函数，则可以查看为源代码生成的 ARM 汇编指令。
 

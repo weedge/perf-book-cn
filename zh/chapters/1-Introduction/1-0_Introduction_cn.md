@@ -4,7 +4,7 @@
 
 在个人电脑时代[^2]，开发人员通常直接在操作系统之上进行编程，可能之间会有一些库。随着世界进入云时代，软件堆栈变得更加深奥和复杂。开发人员大多数时间都在工作的顶层堆栈已经远离了硬件。这些额外的层次抽象出实际的硬件，从而允许使用新型加速器来处理新兴工作负载。然而，这种演进的负面影响是，现代应用程序的开发人员对其软件运行的实际硬件的了解较少。
 
-多亏了摩尔定律，软件程序员几十年来一直“轻松愉快”。过去，一些软件供应商更倾向于等待新一代硬件以加速其应用程序，而不是花费人力资源改进其代码。从图@fig:50YearsProcessorTrend可以看出，单线程性能增长正在放缓。单线程性能是指在隔离环境中测量时CPU核心内的单个硬件线程的性能。
+多亏了摩尔定律，软件程序员几十年来一直“轻松愉快”。过去，一些软件供应商更倾向于等待新一代硬件以加速其应用程序，而不是花费人力资源改进其代码。从图[@fig:50YearsProcessorTrend](#50YearsProcessorTrend)可以看出，单线程性能增长正在放缓。单线程性能是指在隔离环境中测量时CPU核心内的单个硬件线程的性能。
 
 ![50 Years of Microprocessor Trend Data. *© Image by K. Rupp via karlrupp.net*](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/intro/50-years-processor-trend.png)<div id="50YearsProcessorTrend"></div>
 

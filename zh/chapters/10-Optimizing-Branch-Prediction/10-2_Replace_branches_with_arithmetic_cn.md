@@ -1,6 +1,6 @@
 ## 用算术替换分支
 
-在某些情况下，可以用算术来替换分支。如[@lst:LookupBranches]中的代码，也可以使用简单的算术公式重写，如[@lst:ArithmeticBranches]所示。对于这段代码，Clang-17 编译器用更便宜的乘法运算替换了昂贵的除法运算。
+在某些情况下，可以用算术来替换分支。如[@lst:LookupBranches](#LookupBranches)中的代码，也可以使用简单的算术公式重写，如[@lst:ArithmeticBranches](#ArithmeticBranches)所示。对于这段代码，Clang-17 编译器用更便宜的乘法运算替换了昂贵的除法运算。
 
 **代码清单：** 用算术替换分支。
 

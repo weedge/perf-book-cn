@@ -12,9 +12,10 @@
 
 虽然“轻微”这个词存在，但轻微页面错误对运行时延迟的影响并不轻微。回想一下，当用户代码分配内存时，操作系统只会承诺提供一个页面，但不会立即通过提供一个已清零的物理页面来执行承诺。相反，它会等到用户代码第一次访问它时，然后操作系统才会履行其职责。第一次访问新分配的页面会触发轻微页面错误，这是一个由操作系统处理的硬件中断。轻微错误的延迟影响可以从不到 1 微秒到几微秒，尤其是在您使用具有 5 层页表而不是 4 层页表的 Linux 内核时。
 
-如何检测应用程序中运行时的轻微页面错误？一种简单的方法是使用 `top` 实用程序（添加 `-H` 选项以查看线程级别视图）。将 `vMn` 字段添加到默认的显示列选择中，以查看每次显示刷新间隔发生的轻微页面错误数量。[@lst:DumpTopWithMinorFaults] 显示了在编译大型 C++ 项目时使用 `top` 命令查看排名前 10 的进程的转储。附加的 `vMn` 列显示了过去 3 秒内发生的轻微页面错误数量。
+如何检测应用程序中运行时的轻微页面错误？一种简单的方法是使用 `top` 实用程序（添加 `-H` 选项以查看线程级别视图）。将 `vMn` 字段添加到默认的显示列选择中，以查看每次显示刷新间隔发生的轻微页面错误数量。[@lst:DumpTopWithMinorFaults](#DumpTopWithMinorFaults) 显示了在编译大型 C++ 项目时使用 `top` 命令查看排名前 10 的进程的转储。附加的 `vMn` 列显示了过去 3 秒内发生的轻微页面错误数量。
 
-代码清单:编译大型c++项目时，带有附加vMn字段的Linux top命令的转储。 {#lst:DumpTopWithMinorFaults}
+代码清单:编译大型c++项目时，带有附加vMn字段的Linux top命令的转储。 <div id="DumpTopWithMinorFaults"></div>
+
 ```shell
    PID USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND  vMn
 341763 dendiba+  20   0  303332 165396  83200 R  99.3   1.0   0:05.09 c++      13k
@@ -44,9 +45,10 @@ for (int i = 0; i < size; i += pageSize)
 
 首先，这段示例代码像往常一样在堆上分配了 `size` 大小的内存。然而，紧接在分配之后，它会逐个页面访问新分配的内存，确保每个页面都加载到 RAM 中。这种方法有助于避免未来访问时因轻微页面错误造成的运行时延迟。
 
-请看 [@lst:LockPagesAndNoRelease] 中更全面的方法，它结合了 `mlock/mlockall` 系统调用对 glibc 分配器进行调整（摘自“实时 Linux Wiki” [^1])。
+请看 [@lst:LockPagesAndNoRelease](#LockPagesAndNoRelease) 中更全面的方法，它结合了 `mlock/mlockall` 系统调用对 glibc 分配器进行调整（摘自“实时 Linux Wiki” [^1])。
 
-代码清单:调整glibc分配器以锁定内存中的页，并防止将它们释放到操作系统。 {#lst:LockPagesAndNoRelease}
+代码清单:调整glibc分配器以锁定内存中的页，并防止将它们释放到操作系统。 <div id="LockPagesAndNoRelease"></div>
+
 ```cpp
 #include <malloc.h>
 #include <sys/mman.h>
@@ -64,7 +66,7 @@ for (int i = 0; i < size; i += sysconf(_SC_PAGESIZE))
 free(mem);
 ```
 
-代码 [@lst:LockPagesAndNoRelease] 调整了三个 glibc malloc 设置：`M_MMAP_MAX`、`M_TRIM_THRESHOLD` 和 `M_ARENA_MAX`。
+代码 [@lst:LockPagesAndNoRelease](#LockPagesAndNoRelease) 调整了三个 glibc malloc 设置：`M_MMAP_MAX`、`M_TRIM_THRESHOLD` 和 `M_ARENA_MAX`。
 
 - 将 `M_MMAP_MAX` 设置为 `0` 会禁用底层 `mmap` 系统调用用于大分配 - 这是必要的，因为当库尝试将 `mmap` 过的段释放回操作系统时，`mlockall` 可能会被 `munmap` 撤销，从而挫败我们的努力。
 - 将 `M_TRIM_THRESHOLD` 设置为 `-1` 可以防止 glibc 在调用 `free` 后将内存返回给操作系统。正如之前所说，此选项对 `mmap` 过的段没有影响。
@@ -100,9 +102,10 @@ TLB 驱逐是实现多线程应用程序低延迟时最容易忽视的陷阱之�
 
 如何检测多线程应用程序中的 TLB 驱逐？一种简单的方法是检查 `/proc/interrupts` 中的 TLB 行。一种检测运行时连续 TLB 中断的有用方法是在查看此文件时使用 `watch` 命令。例如，您可以运行 `watch -n5 -d 'grep TLB /proc/interrupts'`, 其中 `-n 5` 选项每 5 秒刷新视图，而 `-d` 则突出显示每次刷新输出之间的差异。
 
-[@lst:ProcInterrupts] 显示了在运行延迟关键线程的 `CPU2` 处理器上出现大量 TLB 驱逐的 `/proc/interrupts` 转储。注意其他内核数量级上的差异。在这种情况下，这种行为的罪魁祸首是 Linux 内核的一个名为自动 NUMA 平衡的功能，可以通过 `sysctl -w numa_balancing=0` 轻松禁用。
+[@lst:ProcInterrupts](#ProcInterrupts) 显示了在运行延迟关键线程的 `CPU2` 处理器上出现大量 TLB 驱逐的 `/proc/interrupts` 转储。注意其他内核数量级上的差异。在这种情况下，这种行为的罪魁祸首是 Linux 内核的一个名为自动 NUMA 平衡的功能，可以通过 `sysctl -w numa_balancing=0` 轻松禁用。
 
-代码清单:一个/proc/interrupts的转储文件，其中显示了CPU2上大量TLB被击落的情况 {#lst:ProcInterrupts}
+代码清单:一个/proc/interrupts的转储文件，其中显示了CPU2上大量TLB被击落的情况 <div id="ProcInterrupts"></div>
+
 ```bash
            CPU0       CPU1       CPU2       CPU3       
 ...

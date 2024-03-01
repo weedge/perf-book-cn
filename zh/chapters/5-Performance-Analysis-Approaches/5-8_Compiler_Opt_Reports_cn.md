@@ -4,9 +4,10 @@
 
 假设您想知道一个关键循环是否被展开。如果是，展开因子是多少？有一种艰苦的方法可以知道这一点：研究生成的汇编指令。不幸的是，并不是每个人都习惯于阅读汇编语言。如果函数很大，它调用其他函数或也有许多被矢量化的循环，或者如果编译器为同一个循环创建了多个版本，这可能会特别困难。大多数编译器，包括 GCC、Clang 和 Intel 编译器（但不包括 MSVC），都提供优化报告，用于检查特定代码段执行了哪些优化。
 
-让我们看一下 [@lst:optReport]，它展示了一个由 clang 16.0 未矢量化的循环示例。
+让我们看一下 [@lst:optReport](#optReport)，它展示了一个由 clang 16.0 未矢量化的循环示例。
 
-代码清单：a.c {#lst:optReport}
+代码清单：a.c <div id="optReport"></div>
+
 ```cpp
 void foo(float* __restrict__ a, 
          float* __restrict__ b, 
@@ -31,7 +32,7 @@ a.c:5:3: remark: unrolled loop by a factor of 8 with run-time trip count [-Rpass
   ^
 ```
 
-检查上面的优化报告，我们可以看到循环没有被矢量化，而是被展开了。开发人员并不总是很容易识别 [@lst:optReport] 第 6 行循环中是否存在循环进位依赖。由 c[i-1] 加载的值取决于前一次迭代的存储（参见图 @fig:VectorDep 中的操作 \circled{2} 和 \circled{3}）。可以通过手动展开循环的前几个迭代来揭示依赖关系：
+检查上面的优化报告，我们可以看到循环没有被矢量化，而是被展开了。开发人员并不总是很容易识别 [@lst:optReport](#optReport) 第 6 行循环中是否存在循环进位依赖。由 c[i-1] 加载的值取决于前一次迭代的存储（参见图 [@fig:VectorDep](#VectorDep) 中的操作 \circled{2} 和 \circled{3}）。可以通过手动展开循环的前几个迭代来揭示依赖关系：
 
 ```cpp
 // iteration 1
@@ -43,9 +44,9 @@ a.c:5:3: remark: unrolled loop by a factor of 8 with run-time trip count [-Rpass
 ...
 ```
 
-![Visualizing the order of operations in [@lst:optReport].](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/perf-analysis/VectorDep.png)<div id="VectorDep"></div>
+![Visualizing the order of operations in [@lst:optReport](#optReport).](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/perf-analysis/VectorDep.png)<div id="VectorDep"></div>
 
-如果我们将 [@lst:optReport] 中的代码矢量化，它会导致在数组 a 中写入错误的值。假设 CPU SIMD 单元可以一次处理四个浮点数，我们可以得到可以用以下伪代码表示的代码：
+如果我们将 [@lst:optReport](#optReport) 中的代码矢量化，它会导致在数组 a 中写入错误的值。假设 CPU SIMD 单元可以一次处理四个浮点数，我们可以得到可以用以下伪代码表示的代码：
 ```cpp
 // iteration 1
   a[1..4] = c[0..3]; // oops!, a[2..4] get wrong values
@@ -53,9 +54,10 @@ a.c:5:3: remark: unrolled loop by a factor of 8 with run-time trip count [-Rpass
 ...
 ```
 
-[@lst:optReport] 中的代码无法矢量化，因为循环内部的操作顺序很重要。如 [@lst:optReport2] 所示，通过交换第 6 行和第 7 行可以修复此示例。这不会改变代码的语义，所以这是一个完全合法的更改。另外，可以通过将循环拆分成两个单独的循环来改善代码。
+[@lst:optReport](#optReport) 中的代码无法矢量化，因为循环内部的操作顺序很重要。如 [@lst:optReport2](#optReport2) 所示，通过交换第 6 行和第 7 行可以修复此示例。这不会改变代码的语义，所以这是一个完全合法的更改。另外，可以通过将循环拆分成两个单独的循环来改善代码。
 
-代码清单：a.c  {#lst:optReport2}
+代码清单：a.c  <div id="optReport2"></div>
+
 ```cpp
 void foo(float* __restrict__ a, 
          float* __restrict__ b, 

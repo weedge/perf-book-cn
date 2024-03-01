@@ -2,7 +2,7 @@
 
 现代计算机仍然基于经典的冯·诺伊曼体系结构构建，其中包括 CPU、内存和输入/输出单元。内存操作（加载和存储）占据了性能瓶颈和功耗的最大部分。毫无疑问，我们首先从这个类别开始。
 
-关于内存层次结构性能非常重要的说法得到了图 @fig:CpuMemGap 的支持。它显示了内存和处理器之间性能差距的增长。垂直轴是对数刻度，显示了 CPU-DRAM 性能差距的增长。内存基线是来自 1980 年的 64 KB DRAM 芯片的内存访问延迟。典型的 DRAM 性能改进为每年 7%，而 CPU 每年享受 20-50% 的改进。[[@Hennessy](../References.md#Hennessy)]
+关于内存层次结构性能非常重要的说法得到了图 [@fig:CpuMemGap](#CpuMemGap) 的支持。它显示了内存和处理器之间性能差距的增长。垂直轴是对数刻度，显示了 CPU-DRAM 性能差距的增长。内存基线是来自 1980 年的 64 KB DRAM 芯片的内存访问延迟。典型的 DRAM 性能改进为每年 7%，而 CPU 每年享受 20-50% 的改进。[[@Hennessy](../References.md#Hennessy)]
 
 ![内存和处理器之间性能差距。*© 图片来自 [[@Hennessy](../References.md#Hennessy)]。*](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/memory-access-opts/ProcessorMemoryGap.png)<div id="CpuMemGap"></div>
 

@@ -1,8 +1,8 @@
 ### 在英特尔平台上的 TMA {#sec:secTMA_Intel}
 
-TMA方法学首次由英特尔于2014年提出，并从SandyBridge系列处理器开始提供支持。英特尔的实现支持每个高级别桶的嵌套类别，从而更好地了解程序中的CPU性能瓶颈（参见图@fig:TMA）。
+TMA方法学首次由英特尔于2014年提出，并从SandyBridge系列处理器开始提供支持。英特尔的实现支持每个高级别桶的嵌套类别，从而更好地了解程序中的CPU性能瓶颈（参见图[@fig:TMA](#TMA)）。
 
-该工作流程旨在“深入挖掘(drill down)”TMA层次结构的较低级别，直到我们达到对性能瓶颈的非常具体的分类为止。例如，首先，我们收集主要的四个桶的指标：`Front End Bound`、`Back End Bound`、`Retiring`、`Bad Speculation`。比如，我们发现程序执行的大部分时间被内存访问阻塞了（这是`Back End Bound`桶，参见图@fig:TMA）。接下来的步骤是再次运行工作负载，并仅收集与`Memory Bound`桶有关的特定指标。这个过程重复进行，直到我们知道确切的根本原因，例如，`L3 Bound`。
+该工作流程旨在“深入挖掘(drill down)”TMA层次结构的较低级别，直到我们达到对性能瓶颈的非常具体的分类为止。例如，首先，我们收集主要的四个桶的指标：`Front End Bound`、`Back End Bound`、`Retiring`、`Bad Speculation`。比如，我们发现程序执行的大部分时间被内存访问阻塞了（这是`Back End Bound`桶，参见图[@fig:TMA](#TMA)）。接下来的步骤是再次运行工作负载，并仅收集与`Memory Bound`桶有关的特定指标。这个过程重复进行，直到我们知道确切的根本原因，例如，`L3 Bound`。
 
 ![TMA性能瓶颈的层次结构。*© Image by Ahmad Yasin.*](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/pmu-features/TMAM.png)<div id="TMA"></div>
 
@@ -119,9 +119,10 @@ $ perf report -n --stdio
 
 几乎所有 L3 未命中都是由可执行文件 `benchmark.exe` 中的函数 `foo` 中的内存访问引起的。现在是时候查看基准测试的源代码了，可以在 Github: [https://github.com/dendibakh/dendibakh.github.io/tree/master/_posts/code/TMAM](https://github.com/dendibakh/dendibakh.github.io/tree/master/_posts/code/TMAM) 上找到。[^8]
 
-为了避免编译器优化，函数 `foo` 是用汇编语言实现的，如 [@lst:TMA_asm] 所示。基准测试的“驱动”部分在 `main` 函数中实现，如 [@lst:TMA_cpp] 所示。我们分配了一个足够大的数组 `a` 以使其不适合 6MB 的 L3 缓存。基准测试生成一个指向数组 `a` 的随机索引，并将此索引与数组 `a` 的地址一起传递给 `foo` 函数。稍后，`foo` 函数会读取此随机内存位置。[^11]
+为了避免编译器优化，函数 `foo` 是用汇编语言实现的，如 [@lst:TMA_asm](#TMA_asm) 所示。基准测试的“驱动”部分在 `main` 函数中实现，如 [@lst:TMA_cpp](#TMA_cpp) 所示。我们分配了一个足够大的数组 `a` 以使其不适合 6MB 的 L3 缓存。基准测试生成一个指向数组 `a` 的随机索引，并将此索引与数组 `a` 的地址一起传递给 `foo` 函数。稍后，`foo` 函数会读取此随机内存位置。[^11]
 
-代码清单：函数 foo 的汇编代码。 {#lst:TMA_asm}
+代码清单：函数 foo 的汇编代码。 <div id="TMA_asm"></div>
+
 ```bash
 $ perf annotate --stdio -M intel foo
 Percent |  Disassembly of benchmark.exe for MEM_LOAD_RETIRED.L3_MISS
@@ -139,7 +140,8 @@ Percent |  Disassembly of benchmark.exe for MEM_LOAD_RETIRED.L3_MISS
    0.00 :    400e16:  ret 
 ```
 
-Listing: Source code of function main. {#lst:TMA_cpp}
+Listing: Source code of function main. <div id="TMA_cpp"></div>
+
 
 ```cpp
 extern "C" { void foo(char* a, int n); }
@@ -155,13 +157,14 @@ int main() {
 }
 ```
 
-通过查看 [@lst:TMA_asm]，我们可以看到函数 `foo` 中的所有 L3 缓存未命中都被标记为单个指令。现在我们知道是哪条指令导致了这么多 L3 未命中，让我们来修复它。
+通过查看 [@lst:TMA_asm](#TMA_asm)，我们可以看到函数 `foo` 中的所有 L3 缓存未命中都被标记为单个指令。现在我们知道是哪条指令导致了这么多 L3 未命中，让我们来修复它。
 
 ### 步骤 3：修复问题 
 
-请记住，在 `foo` 函数的开头有用 NOP 模拟的虚拟工作。这会在我们获得将要访问的下一个地址的那一刻与实际加载指令之间创建一个时间窗口。这个时间窗口的存在使我们有机会在虚拟工作的同时开始预取内存位置。[@lst:TMA_prefetch] 展示了这个想法。有关显式内存预取技术的更多信息，请参阅 [@sec:memPrefetch]。
+请记住，在 `foo` 函数的开头有用 NOP 模拟的虚拟工作。这会在我们获得将要访问的下一个地址的那一刻与实际加载指令之间创建一个时间窗口。这个时间窗口的存在使我们有机会在虚拟工作的同时开始预取内存位置。[@lst:TMA_prefetch](#TMA_prefetch) 展示了这个想法。有关显式内存预取技术的更多信息，请参阅 [@sec:memPrefetch]。
 
-列表：在 main 中插入内存预取。 {#lst:TMA_prefetch}
+列表：在 main 中插入内存预取。 <div id="TMA_prefetch"></div>
+
 
 ```cpp
   for (int i = 0; i < 100000000; i++) {

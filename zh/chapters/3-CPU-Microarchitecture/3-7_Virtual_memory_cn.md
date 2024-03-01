@@ -4,11 +4,11 @@
 
 在支持虚拟内存的 CPU 中，程序使用虚拟地址进行访问。但是，虽然用户代码在虚拟地址上运行，但从内存中检索数据需要物理地址。此外，为了有效管理稀缺的物理内存，它被划分为页面。因此，应用程序在一组由操作系统提供​​的页面上运行。
 
-访问数据和代码（指令）都需要地址转换。具有 4KB 页面大小的系统的机制如图 @fig:VirtualMem 所示。虚拟地址分为两部分。虚拟页号（52 个最高有效位）用于索引页表，以生成虚拟页号和相应物理页之间的映射。对于 4KB 页面中的偏移量，我们需要 12 位；正如已经说过的那样，64 位指针的其他 52 位用于页本身的地址。请注意，页面内的偏移量（12 个最低有效位）不需要转换，并且“原样”用于访问物理内存位置。
+访问数据和代码（指令）都需要地址转换。具有 4KB 页面大小的系统的机制如图 [@fig:VirtualMem](#VirtualMem) 所示。虚拟地址分为两部分。虚拟页号（52 个最高有效位）用于索引页表，以生成虚拟页号和相应物理页之间的映射。对于 4KB 页面中的偏移量，我们需要 12 位；正如已经说过的那样，64 位指针的其他 52 位用于页本身的地址。请注意，页面内的偏移量（12 个最低有效位）不需要转换，并且“原样”用于访问物理内存位置。
 
 ![4KB 页面的虚拟到物理地址转换](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/uarch/VirtualMem.png)<div id="L2PageTables"></div>
 
-页表可以是单层或嵌套的。图 @fig:L2PageTables 显示了一个 2 级页表的示例。请注意地址如何分成更多部分。首先要提的是，没有使用 16 个最高有效位。这似乎浪费了位，但即使使用剩余的 48 位，我们也可以寻址 256 TB 的总内存 (2^48^)。一些应用程序使用这些未使用的位来保留元数据，也称为“指针标记”。
+页表可以是单层或嵌套的。图 [@fig:L2PageTables](#L2PageTables) 显示了一个 2 级页表的示例。请注意地址如何分成更多部分。首先要提的是，没有使用 16 个最高有效位。这似乎浪费了位，但即使使用剩余的 48 位，我们也可以寻址 256 TB 的总内存 (2^48^)。一些应用程序使用这些未使用的位来保留元数据，也称为“指针标记”。
 
 ![2 级页表示例](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/uarch/L2PageTables.png)<div id="L2PageTables"></div>
 
@@ -31,7 +31,7 @@ TLB 层次结构为相对较大的内存空间保留翻译。但是，TLB 未命
 
 使用较小的页面大小可以更有效地管理可用内存并减少碎片化。然而，缺点是它需要更多的页表条目来覆盖相同的内存区域。考虑两种页面大小：4KB（x86 上的默认大小）和 2MB 的“大页”大小。对于处理 10MB 数据的应用程序，在第一种情况下需要 2560 个条目，而如果将地址空间映射到巨大页面，只需要 5 个条目。这些在 Linux 上称为“Huge Pages”，FreeBSD 上称为“Super Pages”，Windows 上称为“Large Pages”，但它们都表示同一个意思。在本书的其余部分，我们将它们称为 Huge Pages。
 
-指向 Huge Page 中数据的地址示例如图 @fig:HugePageVirtualAddress 所示。与默认页面大小一样，使用 Huge Pages 时的确切地址格式由硬件决定，但幸运的是，我们作为程序员通常不必担心这一点。
+指向 Huge Page 中数据的地址示例如图 [@fig:HugePageVirtualAddress](#HugePageVirtualAddress) 所示。与默认页面大小一样，使用 Huge Pages 时的确切地址格式由硬件决定，但幸运的是，我们作为程序员通常不必担心这一点。
 
 ![指向 2MB 页面中数据的虚拟地址](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/uarch/HugePageVirtualAddress.png)<div id="L2PageTables"></div>
 

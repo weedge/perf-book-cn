@@ -1,8 +1,9 @@
 ## 用谓词替换分支 {#sec:BranchlessPredication}
 
-某些分支可以通过执行分支的两部分，然后选择正确的结果（*谓词*）来有效地消除。当这种转换可能有利可图时，代码示例显示在 [@lst:PredicatingBranchesCode] 中。如果 TMA 提示 `if (cond)` 分支具有非常高的误判率，您可以尝试通过执行右侧显示的转换来消除分支。
+某些分支可以通过执行分支的两部分，然后选择正确的结果（*谓词*）来有效地消除。当这种转换可能有利可图时，代码示例显示在 [@lst:PredicatingBranchesCode](#PredicatingBranchesCode) 中。如果 TMA 提示 `if (cond)` 分支具有非常高的误判率，您可以尝试通过执行右侧显示的转换来消除分支。
 
-代码清单：谓词分支。 {#lst:PredicatingBranchesCode}
+代码清单：谓词分支。 <div id="PredicatingBranchesCode"></div>
+
 ```cpp
 int a;                                             int x = computeX();
 if (cond) { /* frequently mispredicted */   =>     int y = computeY();
@@ -12,9 +13,10 @@ if (cond) { /* frequently mispredicted */   =>     int y = computeY();
 }
 ```
 
-对于右侧的代码，编译器可以替换来自三元运算符的分支，并生成 `CMOV` x86 指令。`CMOVcc` 指令检查 `EFLAGS` 寄存器（`CF、OF、PF、SF` 和 `ZF`）中一个或多个状态标志的状态，并在标志处于特定状态或条件下执行移动操作。可以使用 `FCMOVcc,VMAXSS/VMINSS` 指令对浮点数字进行类似的转换。[@lst:PredicatingBranchesAsm] 显示了原始版本和无分支版本的汇编列表。
+对于右侧的代码，编译器可以替换来自三元运算符的分支，并生成 `CMOV` x86 指令。`CMOVcc` 指令检查 `EFLAGS` 寄存器（`CF、OF、PF、SF` 和 `ZF`）中一个或多个状态标志的状态，并在标志处于特定状态或条件下执行移动操作。可以使用 `FCMOVcc,VMAXSS/VMINSS` 指令对浮点数字进行类似的转换。[@lst:PredicatingBranchesAsm](#PredicatingBranchesAsm) 显示了原始版本和无分支版本的汇编列表。
 
-代码清单：谓词分支 - x86 汇编代码。 {#lst:PredicatingBranchesAsm}
+代码清单：谓词分支 - x86 汇编代码。 <div id="PredicatingBranchesAsm"></div>
+
 ```asm
 # original version                  # branchless version
 400504: test edi,edi                400537: mov eax,0x0

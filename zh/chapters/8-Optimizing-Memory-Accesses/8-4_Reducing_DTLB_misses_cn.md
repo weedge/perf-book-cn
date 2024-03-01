@@ -16,9 +16,11 @@ Windows 和 Linux 都允许应用程序建立大页面内存区域。有关如�
 
 显式大页面 (EHP) 是系统内存的一部分，作为大页面文件系统 `hugetlbfs` 暴露。顾名思义，EHP 应在启动时或运行时预留。有关如何操作的说明，请参见附录 C。在启动时预留 EHP 可以增加分配成功的可能性，因为内存尚未严重碎片化。显式预分配的页面驻留在预留的内存块中，并且在内存压力下无法换出。此外，该内存空间无法用于其他目的，因此用户应谨慎分配，仅预留他们需要的页面数量。
 
-在应用程序中使用 EHP 的最简单方法是在 `mmap` 中调用 `MAP_HUGETLB`，如 [@lst:ExplicitHugepages1] 所示。在此代码中，指针 `ptr` 将指向一个 2MB 的内存区域，该区域是显式预留给 EHP 的。请注意，由于 EHP 没有预先保留，分配可能会失败。应用程序中使用 EHP 的另一种不太流行的方法可以在附录 C 中找到。此外，开发人员可以编写自己的基于 arena 的分配器，利用 EHP 进行分配。
+在应用程序中使用 EHP 的最简单方法是在 `mmap` 中调用 `MAP_HUGETLB`，如 [@lst:ExplicitHugepages1](#ExplicitHugepages1) 所示。在此代码中，指针 `ptr` 将指向一个 2MB 的内存区域，该区域是显式预留给 EHP 的。请注意，由于 EHP 没有预先保留，分配可能会失败。应用程序中使用 EHP 的另一种不太流行的方法可以在附录 C 中找到。此外，开发人员可以编写自己的基于 arena 的分配器，利用 EHP 进行分配。
 
-代码清单:从显式分配的巨大页面映射内存区域。 {#lst:ExplicitHugepages1 .cpp}
+代码清单:从显式分配的巨大页面映射内存区域。 
+<div id="ExplicitHugepages1"></div>
+
 ```cpp
 void ptr = mmap(nullptr, size, PROT_READ | PROT_WRITE,
                 MAP_PRIVATE | MAP_ANONYMOUS | MAP_HUGETLB, -1, 0);
@@ -48,9 +50,11 @@ always [madvise] never
 
 启用系统范围的大页面时，应用程序最终可能会分配更多的内存资源。应用程序可能会映射一个大区域，但只触碰其中 1 个字节，在这种情况下，可能会分配一个 2MB 的页面而不是 4k 的页面，这毫无意义。这就是为什么可以禁用系统范围的 THP，只让它们存在于 MADV_HUGEPAGE madvise 区域中，我们将在下面讨论这一点。完成实验后，请记得禁用系统范围的 THP，因为它可能不会使系统上运行的每个应用程序都受益。
 
-使用 `madvise`（每个进程）选项时，THP 仅在通过 `madvise` 系统调用并带有 `MADV_HUGEPAGE` 标志的内存区域内启用。如 [@lst:TransparentHugepages1] 所示，指针 `ptr` 将指向一个 2MB 的匿名（透明）内存区域，该区域由内核动态分配。如果内核找不到 2MB 的连续内存块，`mmap` 调用可能会失败。
+使用 `madvise`（每个进程）选项时，THP 仅在通过 `madvise` 系统调用并带有 `MADV_HUGEPAGE` 标志的内存区域内启用。如 [@lst:TransparentHugepages1](#TransparentHugepages1) 所示，指针 `ptr` 将指向一个 2MB 的匿名（透明）内存区域，该区域由内核动态分配。如果内核找不到 2MB 的连续内存块，`mmap` 调用可能会失败。
 
-代码清单:将内存区域映射到一个透明的巨大页面。{#lst:TransparentHugepages1 .cpp}
+代码清单:将内存区域映射到一个透明的巨大页面。
+<div id="TransparentHugepages1"></div>
+
 ```cpp
 void ptr = mmap(nullptr, size, PROT_READ | PROT_WRITE | PROT_EXEC,
                 MAP_PRIVATE | MAP_ANONYMOUS, -1 , 0);
@@ -61,7 +65,7 @@ madvise(ptr, size, MADV_HUGEPAGE);
 munmap(ptr, size);
 ```
 
-开发人员可以根据 [@lst:TransparentHugepages1] 中的代码构建自定义 THP 分配器。但是，他们还可以将 THP 用于应用程序进行的 `malloc` 调用中。许多内存分配库通过覆盖 `libc` 的 `malloc` 实现来提供此功能。以下是最流行的此类库之一 `jemalloc` 的示例。
+开发人员可以根据 [@lst:TransparentHugepages1](#TransparentHugepages1) 中的代码构建自定义 THP 分配器。但是，他们还可以将 THP 用于应用程序进行的 `malloc` 调用中。许多内存分配库通过覆盖 `libc` 的 `malloc` 实现来提供此功能。以下是最流行的此类库之一 `jemalloc` 的示例。
 
 如果您拥有应用程序的源代码，则可以使用附加的 `-ljemalloc` 选项重新链接二进制文件。这将使您的应用程序与 `jemalloc` 库动态链接，该库将处理所有 `malloc` 调用。然后使用以下选项启用堆分配的 THP：
 

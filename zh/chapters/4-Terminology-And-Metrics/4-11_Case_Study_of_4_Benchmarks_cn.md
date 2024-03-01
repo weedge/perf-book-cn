@@ -70,7 +70,7 @@ $ ~/workspace/pmu-tools/toplev.py -m --global --no-desc -v -- <app with args>
 
 正如您从这项研究中看到的，仅仅通过查看指标就可以了解很多关于程序行为的信息。它回答了“是什么？”的问题，但没有告诉你“为什么？”。为此，您需要收集性能配置文件，我们将在以后的章节中介绍。本书的第二部分将讨论如何减轻我们分析的四个基准测试中可能出现的性能问题。
 
-请记住，表 {@tbl:perf_metrics_case_study} 中的性能指标摘要只告诉您程序的*平均*行为。例如，我们可能看到 CloverLeaf 的 IPC 为 0.2，而实际上它可能永远不会以这样的 IPC 运行，相反它可能有两个持续时间相同的阶段，一个以 IPC 0.1 运行，另一个以 IPC 0.3 运行。性能工具通过为每个指标报告统计数据和平均值来解决这个问题。通常，最小值、最大值、第 95 个百分位数和方差 (stdev/avg) 足以了解分布。此外，一些工具允许绘制数据，因此您可以看到特定指标的值在程序运行期间如何变化。例如，图 @fig:CloverMetricCharts 显示了 CloverLeaf 基准测试中 IPC、L*MPKI、DRAM BW 和平均频率的动态变化。“pmu-tools” 软件包可以在您添加 `--xlsx` 和 `--xchart` 选项后自动生成这些图表。
+请记住，表 {@tbl:perf_metrics_case_study} 中的性能指标摘要只告诉您程序的*平均*行为。例如，我们可能看到 CloverLeaf 的 IPC 为 0.2，而实际上它可能永远不会以这样的 IPC 运行，相反它可能有两个持续时间相同的阶段，一个以 IPC 0.1 运行，另一个以 IPC 0.3 运行。性能工具通过为每个指标报告统计数据和平均值来解决这个问题。通常，最小值、最大值、第 95 个百分位数和方差 (stdev/avg) 足以了解分布。此外，一些工具允许绘制数据，因此您可以看到特定指标的值在程序运行期间如何变化。例如，图 [@fig:CloverMetricCharts](#CloverMetricCharts) 显示了 CloverLeaf 基准测试中 IPC、L*MPKI、DRAM BW 和平均频率的动态变化。“pmu-tools” 软件包可以在您添加 `--xlsx` 和 `--xchart` 选项后自动生成这些图表。
 
 ```bash
 $ ~/workspace/pmu-tools/toplev.py -m --global --no-desc -v --xlsx workload.xlsx –xchart -- ./clover_leaf

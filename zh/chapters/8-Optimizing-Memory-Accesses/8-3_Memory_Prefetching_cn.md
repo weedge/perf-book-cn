@@ -6,9 +6,11 @@
 
 当数据访问模式太复杂无法预测时，硬件预取器就会失败。软件开发人员对此无能为力，因为我们无法控制该单元的行为。另一方面，OOO 引擎不像硬件预取器那样试图预测未来需要的内存位置。因此，它成功的唯一衡量标准是它通过提前调度加载隐藏了多少延迟。
 
-考虑 [@lst:MemPrefetch1] 中的一段代码片段，其中 `arr` 是一个包含一百万个整数的数组。索引 `idx` 被赋予一个随机值，然后立即用于访问 `arr` 中的一个位置，该位置几乎肯定会错过缓存，因为它是随机的。硬件预取器不可能预测，因为每次加载都进入内存中一个完全新的位置。从知道内存位置的地址（从函数 `random_distribution` 返回）到需要该内存位置的值（调用 `doSomeExtensiveComputation`）的时间间隔称为 *预取窗口*。在这个例子中，由于预取窗口非常小，OOO 引擎没有机会提前发出加载指令。这导致内存访问 `arr[idx]` 的延迟成为执行循环时的关键路径，如图 @fig:SWmemprefetch1 所示。可以看到，程序在没有取得值的情况下等待（阴影填充矩形），无法向前推进。
+考虑 [@lst:MemPrefetch1](#MemPrefetch1) 中的一段代码片段，其中 `arr` 是一个包含一百万个整数的数组。索引 `idx` 被赋予一个随机值，然后立即用于访问 `arr` 中的一个位置，该位置几乎肯定会错过缓存，因为它是随机的。硬件预取器不可能预测，因为每次加载都进入内存中一个完全新的位置。从知道内存位置的地址（从函数 `random_distribution` 返回）到需要该内存位置的值（调用 `doSomeExtensiveComputation`）的时间间隔称为 *预取窗口*。在这个例子中，由于预取窗口非常小，OOO 引擎没有机会提前发出加载指令。这导致内存访问 `arr[idx]` 的延迟成为执行循环时的关键路径，如图 [@fig:SWmemprefetch1](#SWmemprefetch1) 所示。可以看到，程序在没有取得值的情况下等待（阴影填充矩形），无法向前推进。
 
-代码清单:随机数为后续加载提供数据。 {#lst:MemPrefetch1 .cpp}
+代码清单:随机数为后续加载提供数据。 
+<div id="MemPrefetch1"></div>
+
 ```cpp
 for (int i = 0; i < N; ++i) {
   size_t idx = random_distribution(generator);
@@ -21,9 +23,11 @@ for (int i = 0; i < N; ++i) {
 
 这里还有另一个重要观察。当 CPU 接近完成第一次迭代时，它会推测性地开始执行来自第二次迭代的指令。这在迭代之间创建了一个积极的执行重叠。然而，即使在现代处理器中，也缺少足够的 OOO 功能，无法完全将缓存未命中延迟与来自迭代 1 的 `doSomeExtensiveComputation` 的执行重叠。换句话说，在我们的例子中，CPU 无法提前查看当前执行，以便足够早地发出加载指令。
 
-幸运的是，这并不是死路一条，因为有一种方法可以加速这段代码。为了隐藏缓存未命中延迟，我们需要将其与 `doSomeExtensiveComputation` 的执行重叠。如果我们管道化随机数生成并在下一次迭代中开始预取内存位置，就可以实现这一点，如 [@lst:MemPrefetch2] 所示。请注意使用 `__builtin_prefetch`: [https://gcc.gnu.org/onlinedocs/gcc/Other-Builtins.html](https://gcc.gnu.org/onlinedocs/gcc/Other-Builtins.html),[^4] 开发人员可以使用的特殊提示，明确请求 CPU 预取特定内存位置。图 @fig:SWmemprefetch2 展示了这种转换的图形说明。
+幸运的是，这并不是死路一条，因为有一种方法可以加速这段代码。为了隐藏缓存未命中延迟，我们需要将其与 `doSomeExtensiveComputation` 的执行重叠。如果我们管道化随机数生成并在下一次迭代中开始预取内存位置，就可以实现这一点，如 [@lst:MemPrefetch2](#MemPrefetch2) 所示。请注意使用 `__builtin_prefetch`: [https://gcc.gnu.org/onlinedocs/gcc/Other-Builtins.html](https://gcc.gnu.org/onlinedocs/gcc/Other-Builtins.html),[^4] 开发人员可以使用的特殊提示，明确请求 CPU 预取特定内存位置。图 [@fig:SWmemprefetch2](#SWmemprefetch2) 展示了这种转换的图形说明。
 
-代码清单:利用明确的软件内存预取提示。 {#lst:MemPrefetch2 .cpp}
+代码清单:利用明确的软件内存预取提示。 
+<div id="MemPrefetch2"></div>
+
 ```cpp
 size_t idx = random_distribution(generator);
 for (int i = 0; i < N; ++i) {
@@ -41,13 +45,15 @@ for (int i = 0; i < N; ++i) {
 
 存在一些情况下，软件内存预取是不可能的。例如，当遍历链表时，预取窗口非常小，无法隐藏指针追逐的延迟。
 
-在 [@lst:MemPrefetch2] 中，我们看到了针对下一次迭代进行预取的示例，但您也经常会遇到需要为 2、4、8 甚至更多次迭代进行预取的情况。[@lst:MemPrefetch3] 中的代码就是这种情况之一，当图非常稀疏并且有很多顶点时，访问 `this->out_neighbors` 和 `this->in_neighbors` 向量很可能会错过缓存。
+在 [@lst:MemPrefetch2](#MemPrefetch2) 中，我们看到了针对下一次迭代进行预取的示例，但您也经常会遇到需要为 2、4、8 甚至更多次迭代进行预取的情况。[@lst:MemPrefetch3](#MemPrefetch3) 中的代码就是这种情况之一，当图非常稀疏并且有很多顶点时，访问 `this->out_neighbors` 和 `this->in_neighbors` 向量很可能会错过缓存。
 
 这段代码与前面的例子不同，因为每个迭代中都没有大量计算，所以缓存未命中的惩罚很可能主导了每个迭代的延迟。但是我们可以利用我们知道未来将访问的所有元素这一事实。向量 `edges` 的元素被顺序访问，因此很可能由硬件预取器及时地引入 L1 缓存。我们在这里的目标是将缓存未命中延迟与执行足够多的迭代重叠，以完全隐藏它。
 
-一般来说，为了让预取提示有效，它们必须提前插入，以便在加载的值用于其他计算时，它已经存在于缓存中。但是，也不应该插入得太早，因为它可能会污染缓存，使数据长时间未使用。请注意，在 [@lst:MemPrefetch3] 中，`lookAhead` 是一个模板参数，它允许尝试不同的值并查看哪个值能提供最佳性能。更高级的用户可以尝试使用 [@sec:timed_lbr] 中描述的方法估计预取窗口，在 easyperf 博客上可以找到使用这种方法的例子。[^5]
+一般来说，为了让预取提示有效，它们必须提前插入，以便在加载的值用于其他计算时，它已经存在于缓存中。但是，也不应该插入得太早，因为它可能会污染缓存，使数据长时间未使用。请注意，在 [@lst:MemPrefetch3](#MemPrefetch3) 中，`lookAhead` 是一个模板参数，它允许尝试不同的值并查看哪个值能提供最佳性能。更高级的用户可以尝试使用 [@sec:timed_lbr] 中描述的方法估计预取窗口，在 easyperf 博客上可以找到使用这种方法的例子。[^5]
 
-代码清单:接下来8次迭代的SW预获取示例。 {#lst:MemPrefetch3 .cpp}
+代码清单:接下来8次迭代的SW预获取示例。 
+<div id="MemPrefetch3"></div>
+
 ```cpp
 template <int lookAhead = 8>
 void Graph::update(const std::vector<Edge>& edges) {
