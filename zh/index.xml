@@ -4,7 +4,7 @@
         <description><![CDATA[现代CPU上的性能分析与优化]]></description>
         <link>https://weedge.github.io/</link>
         <generator>RSS for Node</generator>
-        <lastBuildDate>Thu, 29 Feb 2024 15:29:13 GMT</lastBuildDate>
+        <lastBuildDate>Fri, 01 Mar 2024 09:15:58 GMT</lastBuildDate>
         <atom:link href="https://weedge.github.io/index.xml" rel="self" type="application/rss+xml"/>
         <author><![CDATA[weedge]]></author>
         <managingEditor><![CDATA[weege007@gmail.com]]></managingEditor>
@@ -342,7 +342,7 @@
         </item>
         <item>
             <title><![CDATA[No title]]></title>
-            <description><![CDATA[也许有史以来进行性能分析的第一种方法就是代码仪器化。它是一种在程序中插入额外代码以收集特定运行时信息的技术。[@lst:CodeInstrumentation]展示了在函数开头插入printf语句的最简单示例，以指示该函数何时被调用。然后，运行程序并计算输出中看到“foo被调用”的次数。也许，世界上每个程序员在其职业生涯中至少有一次这样做过。]]></description>
+            <description><![CDATA[也许有史以来进行性能分析的第一种方法就是代码仪器化。它是一种在程序中插入额外代码以收集特定运行时信息的技术。@lst:CodeInstrumentation展示了在函数开头插入printf语句的最简单示例，以指示该函数何时被调用。然后，运行程序并计算输出中看到“foo被调用”的次数。也许，世界上每个程序员在其职业生涯中至少有一次这样做过。]]></description>
             <link>https://weedge.github.io/chapters/5-Performance-Analysis-Approaches/5-1_Code_instrumentation_cn.html</link>
             <guid isPermaLink="true">https://weedge.github.io/chapters/5-Performance-Analysis-Approaches/5-1_Code_instrumentation_cn.html</guid>
             <dc:creator><![CDATA[weedge]]></dc:creator>
@@ -583,7 +583,7 @@
         </item>
         <item>
             <title><![CDATA[No title]]></title>
-            <description><![CDATA[内存分析是识别程序内存使用情况并优化其内存分配和释放行为的过程。它对于提高应用程序性能和稳定性至关重要，尤其是在资源受限的环境中。]]></description>
+            <description><![CDATA[在软件开发和性能优化的过程中，内存分析是一个关键的步骤。它帮助开发者理解程序如何使用内存，以及如何优化内存使用以提高性能。以下是一些关于内存分析的要点：]]></description>
             <link>https://weedge.github.io/chapters/8-Optimizing-Memory-Accesses/8-3_Memory_Profiling_cn.html</link>
             <guid isPermaLink="true">https://weedge.github.io/chapters/8-Optimizing-Memory-Accesses/8-3_Memory_Profiling_cn.html</guid>
             <dc:creator><![CDATA[weedge]]></dc:creator>
@@ -608,8 +608,8 @@
             <dc:creator><![CDATA[weedge]]></dc:creator>
         </item>
         <item>
-            <title><![CDATA[优化计算]]></title>
-            <description><![CDATA[在上章节中，我们讨论了如何清除路径以实现高效的内存访问。完成后，是时候研究 CPU 如何使用从内存中获取的数据。现代应用程序需要大量的 CPU 计算，尤其是涉及复杂图形、人工智能、加密货币挖掘和大数据处理的应用程序。在本章中，我们将重点关注优化计算，可以减少 CPU 需要做的工作量并提高程序的整体性能。]]></description>
+            <title><![CDATA[优化计算 {#sec:CoreBound}]]></title>
+            <description><![CDATA[在前一章中，我们讨论了如何为高效的内存访问扫清道路。一旦完成这一点，就是时候看看CPU如何处理它从内存中获取的数据了。现代应用程序需要大量的CPU计算，尤其是那些涉及复杂图形、人工智能、加密货币挖矿和大数据处理的应用程序。在本章中，我们将专注于优化计算，这可以减少CPU需要完成的工作量，并提高程序的整体性能。]]></description>
             <link>https://weedge.github.io/chapters/9-Optimizing-Computations/9-0_Core_Bound_cn.html</link>
             <guid isPermaLink="true">https://weedge.github.io/chapters/9-Optimizing-Computations/9-0_Core_Bound_cn.html</guid>
             <dc:creator><![CDATA[weedge]]></dc:creator>
@@ -670,14 +670,14 @@
         </item>
         <item>
             <title><![CDATA[No title]]></title>
-            <description><![CDATA[在某些情况下，可以用算术来替换分支。如[@lst:LookupBranches]中的代码，也可以使用简单的算术公式重写，如[@lst:ArithmeticBranches]所示。对于这段代码，Clang-17 编译器用更便宜的乘法运算替换了昂贵的除法运算。]]></description>
+            <description><![CDATA[在某些情况下，可以用算术来替换分支。如@lst:LookupBranches中的代码，也可以使用简单的算术公式重写，如@lst:ArithmeticBranches所示。对于这段代码，Clang-17 编译器用更便宜的乘法运算替换了昂贵的除法运算。]]></description>
             <link>https://weedge.github.io/chapters/10-Optimizing-Branch-Prediction/10-2_Replace_branches_with_arithmetic_cn.html</link>
             <guid isPermaLink="true">https://weedge.github.io/chapters/10-Optimizing-Branch-Prediction/10-2_Replace_branches_with_arithmetic_cn.html</guid>
             <dc:creator><![CDATA[weedge]]></dc:creator>
         </item>
         <item>
             <title><![CDATA[No title]]></title>
-            <description><![CDATA[某些分支可以通过执行分支的两部分，然后选择正确的结果（谓词）来有效地消除。当这种转换可能有利可图时，代码示例显示在 [@lst:PredicatingBranchesCode] 中。如果 TMA 提示 if (cond) 分支具有非常高的误判率，您可以尝试通过执行右侧显示的转换来消除分支。]]></description>
+            <description><![CDATA[某些分支可以通过执行分支的两部分，然后选择正确的结果（谓词）来有效地消除。当这种转换可能有利可图时，代码示例显示在 @lst:PredicatingBranchesCode 中。如果 TMA 提示 if (cond) 分支具有非常高的误判率，您可以尝试通过执行右侧显示的转换来消除分支。]]></description>
             <link>https://weedge.github.io/chapters/10-Optimizing-Branch-Prediction/10-3_Replace_branches_with_predication_cn.html</link>
             <guid isPermaLink="true">https://weedge.github.io/chapters/10-Optimizing-Branch-Prediction/10-3_Replace_branches_with_predication_cn.html</guid>
             <dc:creator><![CDATA[weedge]]></dc:creator>
@@ -718,14 +718,14 @@
         </item>
         <item>
             <title><![CDATA[No title]]></title>
-            <description><![CDATA[有时，性能会根据指令在内存中的偏移量而发生显着变化。考虑 [@lst:LoopAlignment] 中提供的简单函数以及使用 -O3 -march=core-avx2 -fno-unroll-loops 编译时对应的机器码。为了说明这个想法，循环展开被禁用了。]]></description>
+            <description><![CDATA[有时，性能会根据指令在内存中的偏移量而发生显着变化。考虑 @lst:LoopAlignment 中提供的简单函数以及使用 -O3 -march=core-avx2 -fno-unroll-loops 编译时对应的机器码。为了说明这个想法，循环展开被禁用了。]]></description>
             <link>https://weedge.github.io/chapters/11-Machine-Code-Layout-Optimizations/11-4_Basic_Block_Alignment_cn.html</link>
             <guid isPermaLink="true">https://weedge.github.io/chapters/11-Machine-Code-Layout-Optimizations/11-4_Basic_Block_Alignment_cn.html</guid>
             <dc:creator><![CDATA[weedge]]></dc:creator>
         </item>
         <item>
             <title><![CDATA[No title]]></title>
-            <description><![CDATA[函数拆分的思想是将热点代码与冷代码分开。这种转换通常也被称为函数轮廓化。这种优化对于具有复杂控制流图和热路径中存在大量冷代码块的相对较大函数非常有益。[@lst:FunctionSplitting1] 中显示了这种转换可能会有益处的代码示例。为了将热路径中的冷基本块移除，我们将它们剪切并粘贴到一个新函数中，并创建一个调用它们的调用。]]></description>
+            <description><![CDATA[函数拆分的思想是将热点代码与冷代码分开。这种转换通常也被称为函数轮廓化。这种优化对于具有复杂控制流图和热路径中存在大量冷代码块的相对较大函数非常有益。@lst:FunctionSplitting1 中显示了这种转换可能会有益处的代码示例。为了将热路径中的冷基本块移除，我们将它们剪切并粘贴到一个新函数中，并创建一个调用它们的调用。]]></description>
             <link>https://weedge.github.io/chapters/11-Machine-Code-Layout-Optimizations/11-5_Function_Splitting_cn.html</link>
             <guid isPermaLink="true">https://weedge.github.io/chapters/11-Machine-Code-Layout-Optimizations/11-5_Function_Splitting_cn.html</guid>
             <dc:creator><![CDATA[weedge]]></dc:creator>
@@ -801,7 +801,7 @@
         </item>
         <item>
             <title><![CDATA[No title]]></title>
-            <description><![CDATA[一些进行大量浮点值计算的应用程序容易出现一个非常微妙的问题，从而导致性能下降。这个问题出现在应用程序遇到“次规格”浮点值时，我们将在本节讨论。您还可以找到术语“去规格”浮点值，它是指同一个东西。根据 IEEE 标准 754，[^2] 次规格值是一个非零数字，其指数小于最小规格数。[^1] [@lst:Subnormals] 展示了一个非常简单的次规格值的实例。]]></description>
+            <description><![CDATA[一些进行大量浮点值计算的应用程序容易出现一个非常微妙的问题，从而导致性能下降。这个问题出现在应用程序遇到“次规格”浮点值时，我们将在本节讨论。您还可以找到术语“去规格”浮点值，它是指同一个东西。根据 IEEE 标准 754，[^2] 次规格值是一个非零数字，其指数小于最小规格数。[^1] @lst:Subnormals 展示了一个非常简单的次规格值的实例。]]></description>
             <link>https://weedge.github.io/chapters/12-Other-Tuning-Areas/12-5_Detecting_Slow_FP_Arithmetic_cn.html</link>
             <guid isPermaLink="true">https://weedge.github.io/chapters/12-Other-Tuning-Areas/12-5_Detecting_Slow_FP_Arithmetic_cn.html</guid>
             <dc:creator><![CDATA[weedge]]></dc:creator>
