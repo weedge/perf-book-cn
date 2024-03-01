@@ -21,7 +21,7 @@
 
 [@TODO]: 后续将上述流程用代码实现一个工作流(尽量)自动化翻译,归纳,Q&A的应用工具(CI)。
 
-**在线阅读地址**: [https://weedge.github.io/perf-book-cn/zh/](https://github.com/dendibakh/perf-ninja)
+**在线阅读地址**: [https://weedge.github.io/perf-book-cn/zh/](https://weedge.github.io/perf-book-cn/zh/)
 
 **中文版PDF(推荐)**: [https://raw.githubusercontent.com/weedge/perf-book-cn/main/perf-book-cn.pdf](https://raw.githubusercontent.com/weedge/perf-book-cn/main/perf-book-cn.pdf)
 
