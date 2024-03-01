@@ -23,7 +23,7 @@ void matmul(int N, float a[][2048], float b[][2048], float c[][2048]) {
 }
 ```
 
-传统的应用程序性能提升方式是充分利用机器的 SIMD 和多核能力。通常情况下，我们需要优化多个方面：矢量化、内存、线程。Roofline 方法可以帮助评估应用程序的这些特性。在 roofline 图表上，我们可以绘制标量单核、SIMD 单核和 SIMD 多核性能的理论最大值（见图 [@fig:RooflineIntro2](#RooflineIntro2)）。这将使我们了解改进应用程序性能的空间。如果我们发现我们的应用程序受计算绑定（即具有高算术强度）并且低于峰值标量单核性能，我们应该考虑强制矢量化（参见 [@sec:Vectorization]）并将工作分发到多个线程上。相反，如果应用程序的算术强度低，我们应该寻求改善内存访问的方法（参见 [@sec:MemBound]）。使用 Roofline 模型优化性能的最终目标是向上移动这些点。矢量化和线程化向上移动点，而通过增加算术强度优化内存访问则会将点向右移动，并且可能也会提高性能。
+传统的应用程序性能提升方式是充分利用机器的 SIMD 和多核能力。通常情况下，我们需要优化多个方面：向量化、内存、线程。Roofline 方法可以帮助评估应用程序的这些特性。在 roofline 图表上，我们可以绘制标量单核、SIMD 单核和 SIMD 多核性能的理论最大值（见图 [@fig:RooflineIntro2](#RooflineIntro2)）。这将使我们了解改进应用程序性能的空间。如果我们发现我们的应用程序受计算绑定（即具有高算术强度）并且低于峰值标量单核性能，我们应该考虑强制向量化（参见 [@sec:Vectorization]）并将工作分发到多个线程上。相反，如果应用程序的算术强度低，我们应该寻求改善内存访问的方法（参见 [@sec:MemBound]）。使用 Roofline 模型优化性能的最终目标是向上移动这些点。向量化和线程化向上移动点，而通过增加算术强度优化内存访问则会将点向右移动，并且可能也会提高性能。
 
 ![Roofline model.](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/perf-analysis/Roofline-intro2.jpg)<div id="RooflineIntro2"></div>
 
@@ -52,7 +52,7 @@ $$
 Roofline 方法可以通过在同一个图表上打印“之前”和“之后”的点来跟踪优化进度。因此，它是一个迭代的过程，指导开发人员帮助他们的应用程序充分利用硬件功能。图 [@fig:RooflineMatrix](#RooflineMatrix) 显示了对之前在 [@lst:BasicMatMul](#BasicMatMul) 中显示的代码进行以下两个更改所带来的性能提升：
 
 * 交换两个最内层的循环（交换第 4 和第 5 行）。这可以实现缓存友好的内存访问（参见 [@sec:MemBound]）。
-* 使用 AVX2 指令启用最内层循环的自动矢量化。
+* 使用 AVX2 指令启用最内层循环的自动向量化。
 
 ![Roofline analysis for matrix multiplication on Intel NUC Kit NUC8i5BEH with 8GB RAM using clang 10 compiler.](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/perf-analysis/roofline_matrix.png)<div id="RooflineMatrix"></div>
 

@@ -1,4 +1,4 @@
-## 使用配置分析文件引导的优化（Profile Guided Optimizations）{#sec:secPGO}
+## 基于性能分析引导的优化（Profile Guided Optimizations）{#sec:secPGO}
 
 编译程序和生成最佳汇编代码都是关于启发式的。代码转换算法有很多特殊情况，旨在在特定情况下实现最佳性能。对于编译器做出的许多决策，它会尝试根据一些典型案例猜测最佳选择。例如，当决定是否内联特定函数时，编译器可能会考虑该函数被调用的次数。问题是编译器事先并不知道这一点。它首先需要运行程序才能找出答案。如果没有运行时信息，编译器就必须猜测。
 
@@ -18,7 +18,7 @@ PGO 流程的另一个注意事项是，编译器应该只使用应用程序将�
 
 谷歌在 2016 年率先提出了另一种基于样本的 PGO 解决方案。[[@AutoFDO](../References.md#AutoFDO)] 除了检测代码之外，还可以从标准配置文件工具（例如 Linux `perf`）的输出中获取配置文件数据。谷歌开发了一个名为 AutoFDO: [https://github.com/google/autofdo](https://github.com/google/autofdo)[^8] 的开源工具，可以将 Linux `perf` 生成的采样数据转换为 GCC 和 LLVM 等编译器可以理解的格式。
 
-与带仪器的 PGO 相比，这种方法有一些优点。首先，它消除了 PGO 构建工作流程的一个步骤，即步骤 1，因为无需构建带有仪器的二进制文件。其次，配置文件数据收集运行在已经优化的二进制文件上，因此运行时开销要低得多。这使得可以在生产环境中更长时间地收集配置文件数据。由于这种方法基于硬件收集，它还支持使用带仪器的 PGO 无法实现的新型优化。一个例子是分支到 cmov 转换，这是一个用条件移动替换条件跳转以避免分支预测错误开销的转换 (参见 [@sec:BranchlessPredication])。为了有效地执行此转换，编译器需要知道原始分支的错误预测频率。此信息可在现代 CPU（Intel Skylake+）上的基于样本的 PGO 中获得。
+与带插桩的 PGO 相比，这种方法有一些优点。首先，它消除了 PGO 构建工作流程的一个步骤，即步骤 1，因为无需构建带有插桩的二进制文件。其次，配置文件数据收集运行在已经优化的二进制文件上，因此运行时开销要低得多。这使得可以在生产环境中更长时间地收集配置文件数据。由于这种方法基于硬件收集，它还支持使用带插桩的 PGO 无法实现的新型优化。一个例子是分支到 cmov 转换，这是一个用条件移动替换条件跳转以避免分支预测错误开销的转换 (参见 [@sec:BranchlessPredication])。为了有效地执行此转换，编译器需要知道原始分支的错误预测频率。此信息可在现代 CPU（Intel Skylake+）上的基于样本的 PGO 中获得。
 
 下一个创新想法来自 Meta，它在 2018 年年中开源了其名为 BOLT: [https://code.fb.com/data-infrastructure/accelerate-large-scale-applications-with-bolt/](https://code.fb.com/data-infrastructure/accelerate-large-scale-applications-with-bolt/) 的二进制优化工具。[^9] BOLT 在已经编译的二进制文件上工作。它首先反汇编代码，然后使用 Linux perf 等采样分析器收集的配置文件信息进行各种布局转换，然后重新链接二进制文件。[[@BOLT](../References.md#BOLT)] 截至今天，BOLT 拥有超过 15 个优化通道，包括基本块重新排序、函数拆分和重新排序等。与传统 PGO 类似，BOLT 优化的主要候选是遭受许多指令缓存和 iTLB 未命中折磨的程序。自 2022 年 1 月起，BOLT 成为 LLVM 项目的一部分，并作为独立工具提供。
 

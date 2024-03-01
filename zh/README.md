@@ -14,7 +14,10 @@
   - 对每章节的内容通过 『chatGPT』/『gemini/moonshot(kimi)』 进行归纳总结，结巩固知识点，并对课后练习进行回答,并验证答案。
   - 最后整体勘误，定搞。
 
-> 授之以鱼不如授之以渔, 使用AI赋能。
+> [!TIP]
+> - 授之以鱼不如授之以渔, 使用AI赋能。
+> - 性能优化分析数据可以借助『chatGPT』分析。
+> - 『chatGPT』和『moonshot(kimi)』 翻译效果差不多(相同的prompt,调用openai接口知识蒸馏?)，但是当问文中的规划练习和代码练习时，『moonshot(kimi)』不能理解问题，不过长文本上传根据章节翻译和归纳总结不错，毕竟不用翻墙就可以使用。
 
 [@TODO]: 后续将上述流程用代码实现一个工作流(尽量)自动化翻译,归纳,Q&A的应用工具(CI)。
 
@@ -35,7 +38,8 @@
 
 ------
 
-> [!NOTE]
+> [!NOTE] 
+> 1. 在写代码时或多或少会知道一些代码层次(比如c++)的优化，但可能不知道为啥是这样的，这本书结合cpu讲解了相关原理(比如`unlikely`,`likely`)。
 > 1. 木桶效应，通过监控测量分析，寻找性能短板在哪，结合场景对症下药(理解工作原理)
 > 2. 了解现代cpu微体系架构(本文中提到的 Intel GoldenCove 架构白皮书[@IntelOptimizationManual](./chapters//References.md#IntelOptimizationManual)), 以小见大, 设计思路借鉴到业务系统中(虽然有些详细信息未公开)
 > 3. AMD处理器 [@AMDProgrammingManual](./chapters/References.md#AMDProgrammingManual) ; ARM Neoverse V1处理器 [@ARMNeoverseV1](./chapters/References.md#ARMNeoverseV1)
@@ -47,3 +51,9 @@
 > 9. 利用人工智能和 LLM 启发架构来处理性能分析样本，分析
 > 函数之间关系，最终高精度地找出直接影响整体吞吐量和延迟的函数和库。[Raven.io](https://raven.io/)提供这种功能的一家公司
 > 10. [源代码优化章节](./chapters/8-Optimizing-Memory-Accesses/8-0_Source_Code_Tuning_For_CPU_cn.md)重点掌握
+    1. 编译链接层面静态分析，通过优化报告(比如: GCC的[`-fopt-info`](https://gcc.gnu.org/onlinedocs/gcc/Developer-Options.html#index-fopt-info);clang使用[`-Rpass*`](https://llvm.org/docs/Vectorizers.html#diagnostics))来获取优化建议(需要实践测试)
+    2. **PGO** [@sec:secPGO] 练习: https://github.com/dendibakh/perf-ninja/blob/main/labs/misc/pgo/README.md (PGO 主要用于具有大型代码库的项目，比如：数据库，分布式文件系统); 特地场景，谨慎分析配置引导优化(可组合)。
+> 11. 充分考虑到时间局部性和空间局部性对性能的影响
+> 12. 尽量做扩展阅读，比如作者的博客文章，相关引用(比如：[@fogOptimizeCpp](./chapters/References.md#fogOptimizeCpp))
+> 13. 对于cpu性能优化，有些已在编译器层面进行了优化，比如机器代码布局
+> 14. 关注[低延迟系统的性能优化](./chapters/12-Other-Tuning-Areas/12-4_Low-Latency-Tuning-Techniques_cn.md) (比如HFT系统中的这个快速演讲：[CppCon 2018: Jonathan Keinan “Cache Warming: Warm Up The Code”](https://www.youtube.com/watch?v=XzRxikGgaHI); 这些关键路径代码值钱)

@@ -35,7 +35,7 @@ $ perf stat -- ./a.exe
 | C0H  | 00H   | INST_RETIRED.ANY_P | 退役的指令数量。 |
 | C4H  | 00H   | BR_INST_RETIRED.ALL_BRANCHES | 退役的分支指令。 |
 
-表：Skylake性能事件的编码示例。{#tbl:perf_count}
+表：Skylake性能事件的编码示例。<div id="perf_count"></div>
 
 Linux `perf`提供了常用性能计数器的映射。可以通过伪名称而不是指定`Event`和`Umask`十六进制值来访问它们。例如，`branches`只是`BR_INST_RETIRED.ALL_BRANCHES`的同义词，并且将测量相同的内容。可以使用`perf list`查看可用映射名称的列表：
 

@@ -60,7 +60,7 @@
 
 ## 5.性能分析方法 Performance-Analysis-Approaches
 * [5-0.性能分析方法](./chapters/5-Performance-Analysis-Approaches/5-0_Performance_analysis_approaches_cn.md)
-* [5-1.代码仪器化](./chapters/5-Performance-Analysis-Approaches/5-1_Code_instrumentation_cn.md)
+* [5-1.代码插桩化](./chapters/5-Performance-Analysis-Approaches/5-1_Code_instrumentation_cn.md)
 * [5-2.跟踪](./chapters/5-Performance-Analysis-Approaches/5-2_Tracing_cn.md)
 * [5-3.工作负载特征化](./chapters/5-Performance-Analysis-Approaches/5-3_Characterization_cn.md)
 * [5-4.使用标记器 API](./chapters/5-Performance-Analysis-Approaches/5-4_Marker_APIs_cn.md)
@@ -131,7 +131,7 @@
 * [11-4.基本块对齐](./chapters/11-Machine-Code-Layout-Optimizations/11-4_Basic_Block_Alignment_cn.md)
 * [11-5.函数拆分](./chapters/11-Machine-Code-Layout-Optimizations/11-5_Function_Splitting_cn.md)
 * [11-6.函数重排序](./chapters/11-Machine-Code-Layout-Optimizations/11-6_Function_Reordering_cn.md)
-* [11-7.使用配置分析文件引导的优化](./chapters/11-Machine-Code-Layout-Optimizations/11-7_PGO_cn.md)
+* [11-7.基于性能分析引导的优化(PGO)](./chapters/11-Machine-Code-Layout-Optimizations/11-7_PGO_cn.md)
 * [11-8.减少 ITLB 未命中](./chapters/11-Machine-Code-Layout-Optimizations/11-8_Reducing_ITLB_misses_cn.md)
 * [11-9.案例研究：测量代码足迹](./chapters/11-Machine-Code-Layout-Optimizations/11-9_Code_footprint_cn.md)
 * [11-10.问题和练习](./chapters/11-Machine-Code-Layout-Optimizations/11-10_Questions-Exercises_cn.md)

@@ -1,7 +1,7 @@
 
 ## 缓存失效
 
-正如在[@sec:MemHierar]中讨论的那样，任何在特定级别的缓存中缺失的内存请求都必须由更高级别的缓存或DRAM进行服务。这意味着这种内存访问的延迟会显著增加。内存子系统组件的典型延迟如表{@tbl:mem_latency}所示。还有一个[交互视图](https://colin-scott.github.io/personal_website/research/interactive_latency.html)[^1]，可视化了现代系统中不同操作的延迟。性能会受到严重影响，特别是当内存请求在最后一级缓存（LLC）中丢失并一直到达主存时。英特尔® [Memory Latency Checker](https://www.intel.com/software/mlc)[^2]（MLC）是用于测量内存延迟和带宽以及它们随系统负载增加而变化的工具。MLC对于建立测试系统的基准和进行性能分析非常有用。当我们讨论[@sec:MemLatBw]中的内存延迟和带宽时，我们将使用这个工具。
+正如在[@sec:MemHierar]中讨论的那样，任何在特定级别的缓存中缺失的内存请求都必须由更高级别的缓存或DRAM进行服务。这意味着这种内存访问的延迟会显著增加。内存子系统组件的典型延迟如表[@tbl:mem_latency](#mem_latency)所示。还有一个[交互视图](https://colin-scott.github.io/personal_website/research/interactive_latency.html)[^1]，可视化了现代系统中不同操作的延迟。性能会受到严重影响，特别是当内存请求在最后一级缓存（LLC）中丢失并一直到达主存时。英特尔® [Memory Latency Checker](https://www.intel.com/software/mlc)[^2]（MLC）是用于测量内存延迟和带宽以及它们随系统负载增加而变化的工具。MLC对于建立测试系统的基准和进行性能分析非常有用。当我们讨论[@sec:MemLatBw]中的内存延迟和带宽时，我们将使用这个工具。
 
 -------------------------------------------------
 内存层次结构组件          延迟（周期/时间）
@@ -17,7 +17,7 @@ L3缓存                      ~40个周期（20纳秒）
 
 -------------------------------------------------
 
-表：x86平台内存子系统的典型延迟。{#tbl:mem_latency}
+表：x86平台内存子系统的典型延迟。<div id="mem_latency"></div>
 
 缓存失效可能会发生在指令和数据上。根据Top-down Microarchitecture Analysis（见[@sec:TMA]），指令缓存（I-cache）失效被定义为前端停顿，而数据缓存（D-cache）失效被定义为后端停顿。指令缓存失效在CPU流水线的早期阶段（指令获取阶段）发生。数据缓存失效则发生在后期，即指令执行阶段。
 

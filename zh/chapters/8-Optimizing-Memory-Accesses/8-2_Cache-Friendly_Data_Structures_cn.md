@@ -117,7 +117,7 @@ struct S {
 
 使用 `malloc` 进行动态分配时，保证返回的内存地址满足目标平台的最小对齐要求。一些应用程序可能受益于更严格的对齐。例如，以 64 字节对齐而不是默认的 16 字节对齐动态分配 16 字节。POSIX 系统的用户可以利用 `memalign`: [https://linux.die.net/man/3/memalign](https://linux.die.net/man/3/memalign)[^13] API 来实现这一目的。其他人可以像 这里: [https://embeddedartistry.com/blog/2017/02/22/generating-aligned-memory/](https://embeddedartistry.com/blog/2017/02/22/generating-aligned-memory/)[^14] 所描述的那样自己实现。
 
-对齐考虑最重要的领域之一是 SIMD 代码。当依赖于编译器自动矢量化时，开发人员无需做任何特殊操作。但是，当您使用编译器向量内联函数编写代码时 (参见 [@sec:secIntrinsics])，它们通常要求地址可被 16、32 或 64 整除。编译器内联头文件中提供的向量类型已经做了注释，以确保适当的对齐。[[@fogOptimizeCpp](../References.md#fogOptimizeCpp)]
+对齐考虑最重要的领域之一是 SIMD 代码。当依赖于编译器自动向量化时，开发人员无需做任何特殊操作。但是，当您使用编译器向量内联函数编写代码时 (参见 [@sec:secIntrinsics])，它们通常要求地址可被 16、32 或 64 整除。编译器内联头文件中提供的向量类型已经做了注释，以确保适当的对齐。[[@fogOptimizeCpp](../References.md#fogOptimizeCpp)]
 
 ```cpp
 // ptr will be aligned by alignof(__m512) if using C++17

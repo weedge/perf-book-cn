@@ -21,9 +21,9 @@
 
 在下面的例子中，我们使用了 ToyPathTracer: [https://github.com/wolfpld/tracy/tree/master/examples/ToyPathTracer](https://github.com/wolfpld/tracy/tree/master/examples/ToyPathTracer)[^2] 程序，这是一个简单的路径追踪器，类似于光线追踪技术，通过向场景中每个像素发射数千条射线来渲染逼真的图像。为了处理一帧，该实现将每个像素行的处理分配给一个单独的线程。
 
-为了模拟 Tracy 可以帮助找到问题根源的典型场景，我们手动修改了代码，使某些帧比其他帧消耗更多时间。[@lst:TracyInstrumentation](#TracyInstrumentation) 显示了添加了 Tracy 仪器的代码草图。请注意，我们随机选择帧来减慢速度。此外，我们还包含了 Tracy 的头文件，并向我们想要跟踪的函数添加了 `ZoneScoped` 和 `FrameMark` 宏。`FrameMark` 宏可以插入到性能分析器中标识单个帧。每个帧的持续时间将在时间线上可见，这非常有用。
+为了模拟 Tracy 可以帮助找到问题根源的典型场景，我们手动修改了代码，使某些帧比其他帧消耗更多时间。[@lst:TracyInstrumentation](#TracyInstrumentation) 显示了添加了 Tracy 插桩的代码草图。请注意，我们随机选择帧来减慢速度。此外，我们还包含了 Tracy 的头文件，并向我们想要跟踪的函数添加了 `ZoneScoped` 和 `FrameMark` 宏。`FrameMark` 宏可以插入到性能分析器中标识单个帧。每个帧的持续时间将在时间线上可见，这非常有用。
 
-代码清单：Tracy 仪器 <div id="TracyInstrumentation"></div>
+代码清单：Tracy 插桩 <div id="TracyInstrumentation"></div>
 
 ```cpp 
 #include "tracy/Tracy.hpp"

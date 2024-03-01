@@ -15,7 +15,7 @@
 | Golden Cove | GLC     | 2021     | AVX2 / AVX512                                         | Alder Lake                 |
 | Redwood Cove| RWC     | 2023     | AVX2 / AVX512                                         | Raptor Lake                 |
 
-表：最近的英特尔酷睿微架构列表。 {#tbl:IntelUarchs}
+表：最近的英特尔酷睿微架构列表。 <div id="IntelUarchs"></div>
 
 ----------------------------------------------
 | 名称 | 发布年份 | 支持的 ISA |
@@ -27,7 +27,7 @@
 | Zen3 | 2020 | AVX2 |
 | Zen4 | 2022 | AVX512 |
 
-表：最近的 AMD 微架构列表。{#tbl:AMDUarchs}
+表：最近的 AMD 微架构列表。<div id="AMDUarchs"></div>
 
 ------------------------------------------------------------------
 | ISA | ISA 发布年份 | ARM 微架构 (最新) | 第三方微架构 |
@@ -39,6 +39,6 @@
 | ARMv8.6-A (仅限 64 位) | 2019 | --- | Apple A15, A16, M2, M3 |
 | ARMv9.2-A | 2020 | Cortex X4 | --- |
 
-表：最近的 ARM ISA 及其自身和第三方实现。{#tbl:ARMUarchs}
+表：最近的 ARM ISA 及其自身和第三方实现。<div id="ARMUarchs"></div>
 
 \bibliography{biblio}

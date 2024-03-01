@@ -1,4 +1,4 @@
-## 软件和硬件性能的当前和未来趋势 {#sec:secTrendsInPerf}
+# 软件和硬件性能的当前和未来趋势 {#sec:secTrendsInPerf}
 
 **软件性能**
 

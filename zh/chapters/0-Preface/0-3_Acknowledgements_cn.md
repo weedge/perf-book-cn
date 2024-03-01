@@ -4,7 +4,7 @@
 
 接下来，我要感谢Sridhar Lakshmanamurthy，在关于CPU微体系结构的部分（[@sec:uarch]）中撰写了大部分内容。Sridhar在Intel工作了几十年，是半导体行业的老手。
 
-非常感谢Nadav Rotem，他是LLVM编译器中矢量化框架的原始作者，他帮助我撰写了关于矢量化的部分（[@sec:Vectorization]）。
+非常感谢Nadav Rotem，他是LLVM编译器中向量化框架的原始作者，他帮助我撰写了关于向量化的部分（[@sec:Vectorization]）。
 
 Clément Grégoire编写了关于ISPC编译器的部分（[@sec:ISPC]）。Clément在游戏开发行业拥有丰富的背景。他的评论和反馈帮助解决了游戏开发行业中一些挑战。
 
