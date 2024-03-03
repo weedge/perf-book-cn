@@ -51,12 +51,22 @@
 > 函数之间关系，最终高精度地找出直接影响整体吞吐量和延迟的函数和库。[Raven.io](https://raven.io/)提供这种功能的一家公司
 > 10. [源代码优化章节](./zh/chapters/8-Optimizing-Memory-Accesses/8-0_Source_Code_Tuning_For_CPU_cn.md)重点掌握
     1. 编译链接层面静态分析，通过优化报告(比如: GCC的[`-fopt-info`](https://gcc.gnu.org/onlinedocs/gcc/Developer-Options.html#index-fopt-info);clang使用[`-Rpass*`](https://llvm.org/docs/Vectorizers.html#diagnostics))来获取优化建议(需要实践测试)
-    2. **PGO** [@sec:secPGO] 练习: https://github.com/dendibakh/perf-ninja/blob/main/labs/misc/pgo/README.md (PGO 主要用于具有大型代码库的项目，比如：数据库，分布式文件系统); 特地场景，谨慎分析配置引导优化(可组合)。
+    2. **PGO** [基于性能分析引导的优化](./zh/chapters/11-Machine-Code-Layout-Optimizations/11-7_PGO_cn.md) 练习: https://github.com/dendibakh/perf-ninja/blob/main/labs/misc/pgo/README.md (PGO 主要用于具有大型代码库的项目，比如：数据库，分布式文件系统); 特地场景，谨慎分析配置引导优化(可组合)。
 > 11. 充分考虑到时间局部性和空间局部性对性能的影响
 > 12. 尽量做扩展阅读，比如作者的博客文章，相关引用(比如：[@fogOptimizeCpp](./zh/chapters/References.md#fogOptimizeCpp))
 > 13. 对于cpu性能优化，有些已在编译器层面进行了优化，比如机器代码布局
 > 14. 关注[低延迟系统的性能优化](./zh/chapters/12-Other-Tuning-Areas/12-4_Low-Latency-Tuning-Techniques_cn.md) (比如HFT系统中的这个快速演讲：[CppCon 2018: Jonathan Keinan “Cache Warming: Warm Up The Code”](https://www.youtube.com/watch?v=XzRxikGgaHI); 这些关键路径代码值钱)
+> 15. 优化多线程应用:
+>     1. 借助可视化分析工具进行分析定位性能瓶颈(同步事件，锁，上下文切换)，书中举了一些case, Intel VTune Profiler 这个工具对于作者来说经常使用， 类似GPU性能分析工具 [nsight-compute](https://docs.nvidia.com/nsight-compute/ProfilingGuide/index.html) (通过[nsight-systems](https://docs.nvidia.com/nsight-systems/UserGuide/index.html)分析系统整体性能耗时)；
+>     2. 通过eBPF追踪内核中 futex 系统调用的执行（内核通过 futex 系统调用支持线程同步原语 - 互斥锁、信号量、条件变量等），从涉及的线程中收集有用的元数据
+>     3. 尽量避免真共享下的数据竞争问题，通过编译器集成的 sanitizers 工具来识别，比如Clang [Thread sanitizer](https://clang.llvm.org/docs/ThreadSanitizer.html)
+>     4. 避免伪共享。由于多核处理器cpu之间独立的L1/L2 cache，会出现cache line不一致的问题，为了解决这个问题，有相关协议模型，常用MESI协议，MESI 通过 这个网站模拟更直观的了解 https://www.scss.tcd.ie/Jeremy.Jones/VivioJS/caches/MESIHelp.htm ；为了保证一个core上修改的cache line数据同步到其他core的cache line上，则需要MESI协议来保证，如果同一个cache line上有个两个变量sum1 和 sum2 之间虽然没有相互依赖逻辑，但是当修改sum1 或者sum2 时，需要同步同一块cache line的内容，导致 即使没有相互关系的变量在同一cache line中， 需要彼此共享同步，从而出现所说的伪共享 flase sharing。伪共享因为cache line的同步会带来一些cpu 时钟周期的性能损失。
+>     5. 深入了解并行编程： [Is Parallel Programming Hard, And, If So, What Can You Do About It?](https://mirrors.edge.kernel.org/pub/linux/kernel/people/paulmck/perfbook/perfbook.html)
 
+----
+
+> [!TIP] 
+> 由于多核处理器cpu之间独立的L1/L2 cache，会出现cache line不一致的问题，为了解决这个问题，有相关协议模型，比如MESI协议来保证cache数据一致，同时由于CPU对「缓存一致性协议」进行的异步优化，对写和读分别引入了「store buffer」和「invalid queue」，很可能导致后面的指令查不到前面指令的执行结果（各个指令的执行顺序非代码执行顺序），这种现象很多时候被称作「CPU乱序执行」，为了解决乱序问题（也可以理解为可见性问题，修改完没有及时同步到其他的CPU），又引出了「内存屏障」的概念；内存屏障可以分为三种类型：写屏障，读屏障以及全能屏障（包含了读写屏障），屏障可以简单理解为：在操作数据的时候，往数据插入一条”特殊的指令”。只要遇到这条指令，那前面的操作都得「完成」。CPU当发现写屏障指令时，会把该指令「之前」存在于「store Buffer」所有写指令刷入高速缓存。就可以让CPU修改的数据马上暴露给其他CPU，达到「写操作」可见性的效果。读屏障也是类似的：CPU当发现读屏障的指令时，会把该指令「之前」存在于「invalid queue」所有的指令都处理掉。通过这种方式就可以确保当前CPU的缓存状态是准确的，达到「读操作」一定是读取最新的效果。由于不同CPU架构的缓存体系不一样、缓存一致性协议不一样、重排序的策略不一样、所提供的内存屏障指令也有差异，所以一些语言c++/java/go/rust 都有实现自己的内存模型, 比如 golang大牛Russ Cox写的内存模型系列文章 **Memory Models**: [https://research.swtch.com/mm](https://research.swtch.com/mm) 值得深入了解
 
 ## License
 

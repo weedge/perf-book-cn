@@ -92,7 +92,7 @@ struct CACHELINE_ALIGN S {
 
 对齐可能会导致未使用字节的空洞，从而降低内存带宽利用率。在上面的例子中，如果结构体 `S` 只有 40 个字节，那么下一个 `S` 对象将会从下一个缓存行的开头开始，这会在每个保存 `S` 结构体的缓存行中留下 64 - 40 = 24 个未使用的字节。
 
-有时需要填充数据结构成员以避免一些极端情况，例如缓存争用 [[@fogOptimizeCpp](../References.md#fogOptimizeCpp), 第 9.10 章 缓存争用] 和伪共享 (参见 [@sec:secFalseSharing])。例如，在多线程应用程序中，当两个线程 A 和 B 访问同一结构的不同字段时，可能会出现伪共享问题。[@lst:PadFalseSharing1](#PadFalseSharing1) 展示了可能发生这种情况的代码示例。由于结构体 `S` 的成员 `a` 和 `b` 可能占据同一个缓存行，因此缓存一致性问题可能会显著减慢程序运行速度。为了解决这个问题，可以填充 `S` 使得成员 `a` 和 `b` 不共享同一个缓存行，如 [@lst:PadFalseSharing2](#PadFalseSharing2) 所示。
+有时需要填充数据结构成员以避免一些极端情况，例如缓存竞争 [[@fogOptimizeCpp](../References.md#fogOptimizeCpp), 第 9.10 章 缓存竞争] 和伪共享 (参见 [@sec:secFalseSharing])。例如，在多线程应用程序中，当两个线程 A 和 B 访问同一结构的不同字段时，可能会出现伪共享问题。[@lst:PadFalseSharing1](#PadFalseSharing1) 展示了可能发生这种情况的代码示例。由于结构体 `S` 的成员 `a` 和 `b` 可能占据同一个缓存行，因此缓存一致性问题可能会显著减慢程序运行速度。为了解决这个问题，可以填充 `S` 使得成员 `a` 和 `b` 不共享同一个缓存行，如 [@lst:PadFalseSharing2](#PadFalseSharing2) 所示。
 
 代码清单:填充数据:基线版本。 
 <div id="PadFalseSharing1"></div>

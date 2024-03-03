@@ -108,7 +108,7 @@ $ perf record -e cycles:pp -- ./a.exe
 
 使用 IBS Execute 和 ARM SPE 采样，您还可以深入分析应用程序执行的内存访问。一种方法是转储收集的样本并手动处理它们。IBS 会保存确切的线性地址、其延迟、访问来自何处（缓存或 DRAM）、以及它是否在 DTLB 中命中或未命中。SPE 可用于估计内存子系统组件的延迟和带宽、估计单个加载/存储的内存延迟等等。
 
-这些扩展最重要的用例之一是检测真实共享和虚伪共享，我们将在 [@sec:TrueFalseSharing] 中讨论。Linux `perf c2c` 工具大量依赖所有三种机制（PEBS、IBS 和 SPE）来查找可能遇到真实/虚伪共享的争用内存访问：它匹配不同线程的加载/存储地址，并检查命中是否发生在由其他线程修改的缓存行中。
+这些扩展最重要的用例之一是检测真实共享和虚伪共享，我们将在 [@sec:TrueFalseSharing] 中讨论。Linux `perf c2c` 工具大量依赖所有三种机制（PEBS、IBS 和 SPE）来查找可能遇到真实/虚伪共享的竞争内存访问：它匹配不同线程的加载/存储地址，并检查命中是否发生在由其他线程修改的缓存行中。
 
 [^1]: PEBS 抓取器工具 - [https://github.com/andikleen/pmu-tools/tree/master/pebs-grabber](https://github.com/andikleen/pmu-tools/tree/master/pebs-grabber)。需要 root 权限。
 [^2]: 性能滑移 - [https://easyperf.net/blog/2018/08/29/Understanding-performance-events-skid](https://easyperf.net/blog/2018/08/29/Understanding-performance-events-skid)

@@ -2,14 +2,14 @@
 
 ### 缓存一致性协议
 
-多处理器系统采用缓存一致性协议来确保每个包含独立缓存的独立内核共享使用内存时的数据一致性。如果没有这样的协议，如果CPU A和CPU B都将内存位置L读取到各自的缓存中，然后处理器B随后修改其缓存值L，那么CPU将具有相同内存位置L的不一致值。缓存一致性协议确保对缓存条目的任何更新都忠实地更新在同一位置的任何其他缓存条目中。
+多处理器系统采用缓存一致性协议来确保每个包含独立缓存的独立内核共享使用内存时的数据一致性。如果没有这样的协议，假设CPU A和CPU B都将内存位置L读取到各自的缓存中，然后处理器B随后修改其缓存值L，那么CPU将具有相同内存位置L的不一致值。缓存一致性协议确保对缓存条目的任何更新都忠实地更新在同一位置的任何其他缓存条目中。
 
-MESI（**M**odified **E**xclusive **S**hared **I**nvalid）是最著名的缓存一致性协议之一，用于支持现代 CPU 中使用的回写缓存。其缩写表示缓存行可以标记的四种状态（参见图 [@fig:MESI](#MESI)）：
+MESI（**M**odified **E**xclusive **S**hared **I**nvalid）是最著名的缓存一致性协议之一，用于支持现代 CPU 中使用的回写缓存。其缩写表示缓存行可以标记的四种状态（参见图  @fig:MESI）：
 
-* **修改（Modified）：** 缓存行仅存在于当前缓存中，并且已从其在 RAM 中的值进行修改
-* **独占（Exclusive）：** 缓存行仅存在于当前缓存中，并且与其在 RAM 中的值匹配
-* **共享（Shared）：** 缓存行存在于这里和其他缓存行中，并且与其在 RAM 中的值匹配
-* **无效（Invalid）：** 缓存行未使用（即不包含任何 RAM 位置）
+* **修改（Modified）：** 缓存行仅存在于当前缓存中，并且已从其在 RAM 中的值进行修改 (Cache上的数据已经被更新过，但是还没有写到内存里)
+* **独占（Exclusive）：** 缓存行仅存在于当前缓存中，并且与其在 RAM 中的值匹配 (数据只存储在一个CPU 核心的Cache里，而其他 CPU 核心的 Cache 没有该数据; 如果要向独占的 Cache 写数据，就可以直接自由地写入，而不需要通知其他 CPU 核心，因为只有你这有这个数据，就不存在缓存一致性的问题)
+* **共享（Shared）：** 缓存行存在于这里和其他缓存行中，并且与其在 RAM 中的值匹配 (相同的数据在多个 CPU 核心的 Cache 里都有，所以当我们要更新 Cache 里面的数据的时候，不能直接修改，而是要先向所有的其他 CPU 核心广播一个请求，要求先把其他核心的 Cache 中对应的 Cache Line 标记为「无效」状态，然后再更新当前 Cache 里面的数据)
+* **无效（Invalid）：** 缓存行未使用（即不包含任何 RAM 位置）（数据已经失效了，不可以读取该状态的数据）
 
 ![MESI 状态图. *© Image by University of Washington via courses.cs.washington.edu.*](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/mt-perf/MESI_Cache_Diagram.jpg)<div id="MESI"></div>
 
@@ -34,7 +34,7 @@ unsigned int sum;
 
 真实共享意味着存在数据竞争，这很难被检测到。幸运的是，有一些工具可以帮助识别这类问题。Clang 的 Thread sanitizer: [https://clang.llvm.org/docs/ThreadSanitizer.html](https://clang.llvm.org/docs/ThreadSanitizer.html)[^30] 和 helgrind: [https://www.valgrind.org/docs/manual/hg-manual.html](https://www.valgrind.org/docs/manual/hg-manual.html)[^31] 就是其中的一些工具。为了防止 [@lst:TrueSharing](#TrueSharing) 中的数据竞争，应该将 `sum` 变量声明为 `std::atomic<unsigned int> sum`。
 
-当发生真实共享时，使用 C++ 原子类型可以帮助解决数据竞争问题。然而，它实际上序列化了对原子变量的访问，这可能会降低性能。解决真实共享问题的另一种方法是使用线程局部存储 (TLS)。TLS 是一种方法，允许给定多线程进程中的每个线程分配内存来存储线程特定的数据。通过这样做，线程修改自己的本地副本，而不是争用全局可用的内存位置。可以使用 TLS 类说明符 (`thread_local unsigned int sum`，自 C++11 起) 声明 `sum` 来修复 [@lst:TrueSharing](#TrueSharing) 中的示例。然后，主线程应该合并每个工作线程所有本地副本的结果。
+当发生真实共享时，使用 C++ 原子类型可以帮助解决数据竞争问题。然而，它实际上序列化了对原子变量的访问，这可能会降低性能。解决真实共享问题的另一种方法是使用线程局部存储 (TLS)。TLS 是一种方法，允许给定多线程进程中的每个线程分配内存来存储线程特定的数据。通过这样做，线程修改自己的本地副本，而不是竞争全局可用的内存位置。可以使用 TLS 类说明符 (`thread_local unsigned int sum`，自 C++11 起) 声明 `sum` 来修复 [@lst:TrueSharing](#TrueSharing) 中的示例。然后，主线程应该合并每个工作线程所有本地副本的结果。
 
 ### 伪共享 {#sec:secFalseSharing}
 
@@ -62,9 +62,9 @@ S s;
 
 ![False共享:两个线程访问同一个缓存行。 *© Image by Intel Developer Zone via software.intel.com.*](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/mt-perf/FalseSharing.jpg)<div id="FalseSharing"></div>
 
-伪共享是多线程应用程序性能问题的常见来源。因此，现代分析工具内置了检测此类案例的支持。TMA 将经历真/伪共享的应用程序描述为内存绑定。通常，在这种情况下，您会看到 争用访问: [https://software.intel.com/en-us/vtune-help-contested-accesses](https://software.intel.com/en-us/vtune-help-contested-accesses)[^18] 指标的高值。
+伪共享是多线程应用程序性能问题的常见来源。因此，现代分析工具内置了检测此类案例的支持。TMA 将经历真/伪共享的应用程序描述为内存绑定。通常，在这种情况下，您会看到 竞争访问: [https://software.intel.com/en-us/vtune-help-contested-accesses](https://software.intel.com/en-us/vtune-help-contested-accesses)[^18] 指标的高值。
 
-使用 Intel VTune Profiler 时，用户需要两种类型的分析来查找和消除伪共享问题。首先，运行 微架构探索: [https://software.intel.com/en-us/vtune-help-general-exploration-analysis](https://software.intel.com/en-us/vtune-help-general-exploration-analysis)[^19] 分析，该分析实施 TMA 方法来检测应用程序中是否存在伪共享。正如之前提到的，争用访问指标的高值促使我们深入挖掘并运行启用了“分析动态内存对象”选项的 内存访问: [https://software.intel.com/en-us/vtune-help-memory-access-analysis](https://software.intel.com/en-us/vtune-help-memory-access-analysis) 分析。此分析有助于找出导致争用问题的对数据结构的访问。通常，这些内存访问具有高延迟，分析会揭示这一点。有关使用 Intel VTune Profiler 修复伪共享问题的示例，请参见 英特尔开发者社区: [https://software.intel.com/en-us/vtune-cookbook-false-sharing](https://software.intel.com/en-us/vtune-cookbook-false-sharing)[^20]。
+使用 Intel VTune Profiler 时，用户需要两种类型的分析来查找和消除伪共享问题。首先，运行 微架构探索: [https://software.intel.com/en-us/vtune-help-general-exploration-analysis](https://software.intel.com/en-us/vtune-help-general-exploration-analysis)[^19] 分析，该分析实施 TMA 方法来检测应用程序中是否存在伪共享。正如之前提到的，竞争访问指标的高值促使我们深入挖掘并运行启用了“分析动态内存对象”选项的 内存访问: [https://software.intel.com/en-us/vtune-help-memory-access-analysis](https://software.intel.com/en-us/vtune-help-memory-access-analysis) 分析。此分析有助于找出导致竞争问题的对数据结构的访问。通常，这些内存访问具有高延迟，分析会揭示这一点。有关使用 Intel VTune Profiler 修复伪共享问题的示例，请参见 英特尔开发者社区: [https://software.intel.com/en-us/vtune-cookbook-false-sharing](https://software.intel.com/en-us/vtune-cookbook-false-sharing)[^20]。
 
 Linux `perf` 也支持查找伪共享。与 Intel VTune Profiler 一样，首先运行 TMA（请参见 [@sec:secTMA_Intel]）以找出程序是否经历假/真共享问题。如果是这种情况，请使用 `perf c2c` 工具检测具有高缓存一致性成本的内存访问。`perf c2c` 匹配不同线程的存储/加载地址，并查看是否命中了修改后的缓存行。读者可以在专门的 博客文章: [https://joemario.github.io/blog/2016/09/01/c2c-blog/](https://joemario.github.io/blog/2016/09/01/c2c-blog/)[^21] 中找到该过程及其如何使用工具的详细解释。
 
@@ -72,7 +72,7 @@ Linux `perf` 也支持查找伪共享。与 Intel VTune Profiler 一样，首先
 
 从一般的性能角度来看，最重要的考虑因素是可能状态转换的成本。在所有缓存状态中，唯一不涉及昂贵的跨缓存子系统通信和 CPU 读/写操作期间的数据传输的是修改 (M) 和独占 (E) 状态。因此，缓存行保持“M”或“E”状态的时间越长（即跨缓存的数据共享越少），多线程应用程序产生的一致性成本就越低。有关如何利用此属性的示例，请参见 Nitsan Wakart 的博客文章“深入了解缓存一致性: [http://psy-lob-saw.blogspot.com/2013/09/diving-deeper-into-cache-coherency.html](http://psy-lob-saw.blogspot.com/2013/09/diving-deeper-into-cache-coherency.html)"[^28]。
 
-[^18]: 争用访问 - [https://software.intel.com/en-us/vtune-help-contested-accesses](https://software.intel.com/en-us/vtune-help-contested-accesses).
+[^18]: 竞争访问 - [https://software.intel.com/en-us/vtune-help-contested-accesses](https://software.intel.com/en-us/vtune-help-contested-accesses).
 [^19]: Vtune 一般探索分析 - [https://software.intel.com/en-us/vtune-help-general-exploration-analysis](https://software.intel.com/en-us/vtune-help-general-exploration-analysis).
 [^20]: Vtune 食谱：伪共享 - [https://software.intel.com/en-us/vtune-cookbook-false-sharing](https://software.intel.com/en-us/vtune-cookbook-false-sharing).
 [^21]: 关于 `perf c2c` 的文章 - [https://joemario.github.io/blog/2016/09/01/c2c-blog/](https://joemario.github.io/blog/2016/09/01/c2c-blog/).
@@ -81,5 +81,5 @@ Linux `perf` 也支持查找伪共享。与 Intel VTune Profiler 一样，首先
 [^27]: MOESI - [https://en.wikipedia.org/wiki/MOESI_protocol](https://en.wikipedia.org/wiki/MOESI_protocol)
 [^28]: 博客文章“深入缓存一致性”- [http://psy-lob-saw.blogspot.com/2013/09/diving-deeper-into-cache-coherency.html](http://psy-lob-saw.blogspot.com/2013/09/diving-deeper-into-cache-coherency.html)
 [^29]: 值得注意的是，错误共享不仅在C/C++/Ada等低级语言中可以观察到，在Java/C#等高级语言中也可以观察到。
-[^30]: Clang的线程消毒工具:[https://clang.llvm.org/docs/ThreadSanitizer.html](https://clang.llvm.org/docs/ThreadSanitizer.html)。
+[^30]: Clang的线程Sanitizer工具:[https://clang.llvm.org/docs/ThreadSanitizer.html](https://clang.llvm.org/docs/ThreadSanitizer.html)。
 [^31]: Helgrind，一个线程错误检测工具:[https://www.valgrind.org/docs/manual/hg-manual.html](https://www.valgrind.org/docs/manual/hg-manual.html)。

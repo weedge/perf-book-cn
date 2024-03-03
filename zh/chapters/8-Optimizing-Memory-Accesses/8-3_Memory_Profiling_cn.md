@@ -14,6 +14,7 @@
 
 3. **性能方法**：内存分析是性能分析的一部分。性能方法通常包括一系列的工具和技术，用于测量和优化程序的执行速度。内存分析可以提供关于程序性能瓶颈的重要信息，例如，如果程序的内存访问模式导致缓存未命中，那么可能需要重新设计数据结构或算法来改善缓存利用率。
 
-见：easyperf Memory Profiling博客文章[^1]
+见：easyperf [Memory Profiling博客文章](https://easyperf.net/blog/2024/02/12/Memory-Profiling-Part1)[^1], [翻译成中文的博客文章](https://weedge.github.io/post/cpu/memory_profiling/)[^2]。
 
 [^1]: [easyperf-Memory-Profiling](https://easyperf.net/blog/2024/02/12/Memory-Profiling-Part1)
+[^2]: [译：内存分析](https://weedge.github.io/post/cpu/memory_profiling/)

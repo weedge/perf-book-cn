@@ -15,16 +15,16 @@
 
 在 Intel Core i5-8259U 上的 h264dec 基准测试的性能扩展和开销。
 
-事实上，进一步增加计算节点可能会导致逆向加速。这种效应由 Neil Gunther 解释为[通用可扩展性法则](http://www.perfdynamics.com/Manifesto/USLscalability.html#tth_sEc1)[^8]（USL），它是安达尔定律的一个扩展。USL 描述了计算节点（线程）之间的通信作为性能的另一个限制因素。随着系统的扩展，开销开始阻碍性能的增长。超过临界点后，系统的能力开始下降（见图 [@fig:MT_USL](#MT_USL)）。USL 被广泛用于对系统的容量和可扩展性建模。
+事实上，进一步增加计算节点可能会导致逆向加速。这种效应由 Neil Gunther 解释为[通用可扩展性法则(Universal Scalability Law)](http://www.perfdynamics.com/Manifesto/USLscalability.html#tth_sEc1)[^8]（USL），它是安达尔定律的一个扩展。USL 描述了计算节点（线程）之间的通信作为性能的另一个限制因素。随着系统的扩展，开销开始阻碍性能的增长。超过临界点后，系统的能力开始下降（见图 [@fig:MT_USL](#MT_USL)）。USL 被广泛用于对系统的容量和可扩展性建模。
 
 ![通用可扩展性法则和安达尔定律。*© Image by Neha Bhardwaj via [Knoldus Blogs](https://blog.knoldus.com/understanding-laws-of-scalability-and-the-effects-on-a-distributed-system/)*.](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/mt-perf/USL.jpg)<div id="MT_USL"></div>
 
 由 USL 描述的减速是由多种因素驱动的。首先，随着计算节点数量的增加，它们开始竞争资源（争用）。这导致额外的时间用于同步这些访问。另一个问题是资源在许多工作线程之间共享。我们需要在许多工作线程之间保持共享资源的一致状态（一致性）。例如，当多个工作线程频繁地更改全局可见对象时，这些更改需要广播到使用该对象的所有节点。突然之间，由于额外的一致性维护需求，通常的操作开始花费更多的时间来完成。在 Intel Core i5-8259U 上，h264dec 基准测试的通信开销可以在图 [@fig:MT_cycles](#MT_cycles) 中观察到。请注意，随着我们为任务分配超过 4 个线程，图表表明开销以经过的核心周期数的形式增加。[^9]
 
-优化多线程应用程序不仅涉及到本书迄今描述的所有技术，还涉及到检测和减轻争用和一致性的前述影响。下一小节将描述针对调优多线程程序的这些额外挑战的技术。
+优化多线程应用程序不仅涉及到本书迄今描述的所有技术，还涉及到检测和减轻竞争和一致性的前述影响。下一小节将描述针对调优多线程程序的这些额外挑战的技术。
 
 [^4]: 这不一定总是成立。例如，资源在线程/核心之间共享（如缓存）可能限制扩展性。此外，计算密集型基准测试往往只能在物理（而不是逻辑）核心数量上进行扩展，因为两个相邻的硬件线程共享同一个执行引擎。
-[^6]: 安达尔定律 - [https://zh.wikipedia.org/wiki/%E5%AE%89%E8%BE%BE%E5%B0%94%E6%AE%B5%E6%97%B6%E5%AE%9A%E5%BE%8B](https://zh.wikipedia.org/wiki/%E5%AE%89%E8%BE%BE%E5%B0%94%E6%AE%B5%E6%97%B6%E5%AE%9A%E5%BE%8B)。
+[^6]: Amdahl's law - [https://en.wikipedia.org/wiki/Amdahl's_law](https://en.wikipedia.org/wiki/Amdahl's_law).
 [^7]: 然而 ，它会受益于频率更高的 CPU。
 [^8]: 通用可扩展性法则 - [http://www.perfdynamics.com/Manifesto/USLscalability.html#tth_sEc1](http://www.perfdynamics.com/Manifesto/USLscalability.html#tth_sEc1)。
 [^9]: 使用 5 和 6 个工作线程时，已完成的指令数量出现了一个有趣的峰值。这应该通过对工作负载进行分析来进行调查。

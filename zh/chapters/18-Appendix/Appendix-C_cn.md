@@ -1,15 +1,13 @@
-# 附录 C. 启用大页面 (.unnumbered)
-
-
+# 附录 C. 启用大页面
 
 ## Windows
 
 要在 Windows 上使用大页面，需要启用 `SeLockMemoryPrivilege` 安全策略 (链接到微软文档: [https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/lock-pages-in-memory](https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/lock-pages-in-memory)). 这可以通过 Windows API 以编程方式完成，也可以通过安全策略 GUI 完成。
 
 1. 点击开始 -> 搜索 "secpol.msc"，启动它。
-2. 在左侧选择 "本地策略" -> "用户权利分配"，然后双击 "锁定内存中的页面"。
+2. 在左侧选择 "Local Policies" -> "User Rights Assignment" ("本地策略" -> "用户权利分配")，然后双击 "锁定内存中的页面"。
 
-Windows 安全：锁定内存中的页面: https://raw.githubusercontent.com/dendibakh/perf-book/main/img/appendix-C/WinLockPages.png
+![Windows 安全：锁定内存中的页面](https://raw.githubusercontent.com/dendibakh/perf-book/main/img/appendix-C/WinLockPages.png)
 
 3. 添加您的用户并重新启动机器。
 
@@ -30,7 +28,7 @@ VirtualFree(ptr, 0, MEM_RELEASE);
 
 在 Linux 操作系统上，应用程序可以使用大页面的两种方式：显式和大页面透明分配。
 
-### 显式大页面 (.unnumbered)
+### 显式大页面
 
 显式大页面可以在启动时或运行时预留。要在启动时强制 Linux内核分配 128 个大页面，请运行以下命令：
 
@@ -70,7 +68,7 @@ Hugepagesize:       2048 kB
 Hugetlb:          262144 kB <== 256MB of space occupied
 ```
 
-开发人员可以在代码中通过调用带有 `MAP_HUGETLB` 标志的 `mmap` 来利用显式大页面（[完整示例](https://github.com/torvalds/linux/blob/master/tools/testing/selftests/vm/map_hugetlb.c)[^25]）：
+开发人员可以在代码中通过调用带有 `MAP_HUGETLB` 标志的 `mmap` 来利用显式大页面（[完整示例](https://github.com/torvalds/linux/blob/master/tools/testing/selftests/mm/map_hugetlb.c)[^25]）：
 
 ```c++
 void ptr = mmap(nullptr, size, PROT_READ | PROT_WRITE,
@@ -81,8 +79,8 @@ munmap(ptr, size);
 
 其他替代方案包括：
 
-* 使用来自已挂载的 `hugetlbfs` 文件系统的文件进行 `mmap` ([示例代码](https://github.com/torvalds/linux/blob/master/tools/testing/selftests/vm/hugepage-mmap.c)[^26])。
-* 使用 `SHM_HUGETLB` 标志的 `shmget` ([示例代码](https://github.com/torvalds/linux/blob/master/tools/testing/selftests/vm/hugepage-shm.c)[^27]).
+* 使用来自已挂载的 `hugetlbfs` 文件系统的文件进行 `mmap` ([示例代码](https://github.com/torvalds/linux/blob/master/tools/testing/selftests/mm/hugepage-mmap.c)[^26])。
+* 使用 `SHM_HUGETLB` 标志的 `shmget` ([示例代码](https://github.com/torvalds/linux/blob/master/tools/testing/selftests/mm/hugepage-shm.c)[^27]).
 
 ## 透明大页内存 
 
@@ -111,6 +109,6 @@ HugePages_Free:      128        <== explicit huge pages are not used
 $ watch -n1 "cat /proc/<PID_OF_PROCESS>/smaps"
 ```
 
-[^25]: MAP_HUGETLB 示例 - [https://github.com/torvalds/linux/blob/master/tools/testing/selftests/vm/map_hugetlb.c](https://github.com/torvalds/linux/blob/master/tools/testing/selftests/vm/map_hugetlb.c).
-[^26]: 已挂载的 `hugetlbfs` 文件系统 - [https://github.com/torvalds/linux/blob/master/tools/testing/selftests/vm/hugepage-mmap.c](https://github.com/torvalds/linux/blob/master/tools/testing/selftests/vm/hugepage-mmap.c).
-[^27]: SHM_HUGETLB 示例 - [https://github.com/torvalds/linux/blob/master/tools/testing/selftests/vm/hugepage-shm.c](https://github.com/torvalds/linux/blob/master/tools/testing/selftests/vm/hugepage-shm.c).
+[^25]: MAP_HUGETLB 示例 - [https://github.com/torvalds/linux/blob/master/tools/testing/selftests/mm/map_hugetlb.c](https://github.com/torvalds/linux/blob/master/tools/testing/selftests/vm/map_hugetlb.c).
+[^26]: 已挂载的 `hugetlbfs` 文件系统 - [https://github.com/torvalds/linux/blob/master/tools/testing/selftests/mm/hugepage-mmap.c](https://github.com/torvalds/linux/blob/master/tools/testing/selftests/vm/hugepage-mmap.c).
+[^27]: SHM_HUGETLB 示例 - [https://github.com/torvalds/linux/blob/master/tools/testing/selftests/mm/hugepage-shm.c](https://github.com/torvalds/linux/blob/master/tools/testing/selftests/vm/hugepage-shm.c).
