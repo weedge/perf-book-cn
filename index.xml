@@ -4,7 +4,7 @@
         <description><![CDATA[现代CPU上的性能分析与优化]]></description>
         <link>https://weedge.github.io/</link>
         <generator>RSS for Node</generator>
-        <lastBuildDate>Sat, 02 Mar 2024 06:31:01 GMT</lastBuildDate>
+        <lastBuildDate>Sun, 03 Mar 2024 14:06:27 GMT</lastBuildDate>
         <atom:link href="https://weedge.github.io/index.xml" rel="self" type="application/rss+xml"/>
         <author><![CDATA[weedge]]></author>
         <managingEditor><![CDATA[weege007@gmail.com]]></managingEditor>
@@ -883,14 +883,14 @@
         </item>
         <item>
             <title><![CDATA[No title]]></title>
-            <description><![CDATA[Linux 支持各种线程同步原语 - 互斥锁、信号量、条件变量等。内核通过 futex 系统调用支持这些线程原语。因此，通过追踪内核中 futex 系统调用的执行，同时从涉及的线程中收集有用的元数据，可以更轻松地识别争用瓶颈。Linux 提供了内核跟踪/分析工具，使之成为可能，其中 eBPF (Extended Berkley Packet Filter[^22]) 的功能最为强大。]]></description>
+            <description><![CDATA[Linux 支持各种线程同步原语 - 互斥锁、信号量、条件变量等。内核通过 futex 系统调用支持这些线程原语。因此，通过追踪内核中 futex 系统调用的执行，同时从涉及的线程中收集有用的元数据，可以更轻松地识别竞争瓶颈。Linux 提供了内核跟踪/分析工具，使之成为可能，其中 eBPF (Extended Berkley Packet Filter[^22]) 的功能最为强大。]]></description>
             <link>https://weedge.github.io/chapters/13-Optimizing-Multithreaded-Applications/13-6_Analysis_with_eBPF_and_GAPP_cn.html</link>
             <guid isPermaLink="true">https://weedge.github.io/chapters/13-Optimizing-Multithreaded-Applications/13-6_Analysis_with_eBPF_and_GAPP_cn.html</guid>
             <dc:creator><![CDATA[weedge]]></dc:creator>
         </item>
         <item>
             <title><![CDATA[No title]]></title>
-            <description><![CDATA[多处理器系统采用缓存一致性协议来确保每个包含独立缓存的独立内核共享使用内存时的数据一致性。如果没有这样的协议，如果CPU A和CPU B都将内存位置L读取到各自的缓存中，然后处理器B随后修改其缓存值L，那么CPU将具有相同内存位置L的不一致值。缓存一致性协议确保对缓存条目的任何更新都忠实地更新在同一位置的任何其他缓存条目中。]]></description>
+            <description><![CDATA[多处理器系统采用缓存一致性协议来确保每个包含独立缓存的独立内核共享使用内存时的数据一致性。如果没有这样的协议，假设CPU A和CPU B都将内存位置L读取到各自的缓存中，然后处理器B随后修改其缓存值L，那么CPU将具有相同内存位置L的不一致值。缓存一致性协议确保对缓存条目的任何更新都忠实地更新在同一位置的任何其他缓存条目中。]]></description>
             <link>https://weedge.github.io/chapters/13-Optimizing-Multithreaded-Applications/13-7_Cache_Coherence_Issues_cn.html</link>
             <guid isPermaLink="true">https://weedge.github.io/chapters/13-Optimizing-Multithreaded-Applications/13-7_Cache_Coherence_Issues_cn.html</guid>
             <dc:creator><![CDATA[weedge]]></dc:creator>
@@ -951,7 +951,7 @@
             <dc:creator><![CDATA[weedge]]></dc:creator>
         </item>
         <item>
-            <title><![CDATA[附录 C. 启用大页面 (.unnumbered)]]></title>
+            <title><![CDATA[附录 C. 启用大页面]]></title>
             <description><![CDATA[要在 Windows 上使用大页面，需要启用 SeLockMemoryPrivilege 安全策略 (链接到微软文档: https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/lock-pages-in-memory). 这可以通过 Windows API 以编程方式完成，也可以通过安全策略 GUI 完成。]]></description>
             <link>https://weedge.github.io/chapters/18-Appendix/Appendix-C_cn.html</link>
             <guid isPermaLink="true">https://weedge.github.io/chapters/18-Appendix/Appendix-C_cn.html</guid>
