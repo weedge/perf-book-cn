@@ -28,6 +28,9 @@
 ## 学习资料
 1. https://github.com/dendibakh/perf-ninja
 2. https://www.youtube.com/watch?v=2tzdkC6IDbo&list=PLRWO2AL1QAV6bJAU2kgB4xfodGID43Y5d
+3. 现代cpu微架构(书中第一章微架构内容)：
+   1. [Architecture All Access: Modern CPU Architecture Part 1 – Key Concepts | Intel Technology](https://www.youtube.com/watch?v=vgPFzblBh7w)
+   2. [Architecture All Access: Modern CPU Architecture 2 - Microarchitecture Deep Dive ](https://www.youtube.com/watch?v=o_WXTRS2qTY) | [bilibili](https://www.bilibili.com/video/BV1a2421M7Tz/)
 
 
 > [!TIP]
